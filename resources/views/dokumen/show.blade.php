@@ -88,6 +88,9 @@
                     <a href="{{ route('dokumen.download', $dokumen) }}" class="btn btn-success" id="btn-download">
                         <i class="bi bi-download me-1"></i>Download
                     </a>
+                    <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#shareModal" id="btn-share">
+                        <i class="bi bi-share me-1"></i>Bagikan
+                    </button>
                     <a href="{{ route('dokumen.edit', $dokumen) }}" class="btn btn-warning" id="btn-edit">
                         <i class="bi bi-pencil-square me-1"></i>Edit
                     </a>
@@ -98,6 +101,67 @@
                             <i class="bi bi-trash3 me-1"></i>Hapus
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Share Links --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="bi bi-link-45deg me-2 text-sipsr-primary"></i>Tautan Berbagi
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">URL</th>
+                                <th>Kedaluwarsa</th>
+                                <th>Status</th>
+                                <th class="text-end pe-3">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="share-links-table-body">
+                            @forelse($dokumen->shareLinks()->orderBy('created_at', 'desc')->get() as $link)
+                            <tr>
+                                <td class="ps-3 small" style="width: 45%;">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control bg-white" value="{{ route('share.show', $link->token) }}" readonly id="link-{{ $link->id }}">
+                                        <button class="btn btn-outline-secondary btn-copy" type="button" data-clipboard-target="#link-{{ $link->id }}" title="Salin">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="small">{{ $link->expired_at->format('d/m/Y H:i') }}</td>
+                                <td class="small">
+                                    @if($link->revoked_at)
+                                        <span class="badge bg-danger">Dicabut</span>
+                                    @elseif($link->expired_at < now())
+                                        <span class="badge bg-warning text-dark">Kedaluwarsa</span>
+                                    @else
+                                        <span class="badge bg-success">Aktif</span>
+                                    @endif
+                                </td>
+                                <td class="text-end pe-3">
+                                    @if(!$link->revoked_at && $link->expired_at >= now())
+                                    <form method="POST" action="{{ route('share.revoke', $link->id) }}" class="d-inline" onsubmit="return confirm('Cabut tautan ini?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-1" title="Cabut Tautan">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr id="no-link-row">
+                                <td colspan="4" class="text-center py-3 text-muted small">Belum ada tautan berbagi</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -167,4 +231,129 @@
         </div>
     </div>
 </div>
+
+{{-- Share Modal --}}
+<div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title" id="shareModalLabel">Bagikan Dokumen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Buat tautan baru untuk membagikan dokumen <strong>{{ $dokumen->nama_dokumen }}</strong>.</p>
+                <p class="small text-muted mb-4"><i class="bi bi-info-circle me-1"></i> Tautan akan berlaku selama 7 hari sejak dibuat.</p>
+                
+                <div id="share-result" class="d-none">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Tautan Berhasil Dibuat:</label>
+                        <div class="input-group">
+                            <input type="text" id="new-share-link" class="form-control" readonly>
+                            <button class="btn btn-primary" type="button" id="btn-copy-new-link">
+                                <i class="bi bi-clipboard me-1"></i> Salin
+                            </button>
+                        </div>
+                        <div class="text-success small mt-1 d-none" id="copy-success-msg"><i class="bi bi-check-circle me-1"></i>Tersalin ke clipboard!</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" id="btn-generate-link">
+                    <span class="spinner-border spinner-border-sm d-none me-1" role="status" aria-hidden="true" id="generate-spinner"></span>
+                    <i class="bi bi-link-45deg me-1" id="generate-icon"></i>Buat Tautan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Copy existing links
+    document.querySelectorAll('.btn-copy').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-clipboard-target');
+            const input = document.querySelector(targetId);
+            input.select();
+            input.setSelectionRange(0, 99999); // For mobile devices
+            navigator.clipboard.writeText(input.value);
+            
+            const icon = this.querySelector('i');
+            icon.classList.remove('bi-clipboard');
+            icon.classList.add('bi-check2');
+            setTimeout(() => {
+                icon.classList.remove('bi-check2');
+                icon.classList.add('bi-clipboard');
+            }, 2000);
+        });
+    });
+
+    // Generate new link
+    const btnGenerate = document.getElementById('btn-generate-link');
+    const spinner = document.getElementById('generate-spinner');
+    const icon = document.getElementById('generate-icon');
+    const shareResult = document.getElementById('share-result');
+    const inputNewLink = document.getElementById('new-share-link');
+    const btnCopyNew = document.getElementById('btn-copy-new-link');
+    const copySuccessMsg = document.getElementById('copy-success-msg');
+
+    if (btnGenerate) {
+        btnGenerate.addEventListener('click', async function() {
+            // Show loading state
+            btnGenerate.disabled = true;
+            spinner.classList.remove('d-none');
+            icon.classList.add('d-none');
+            
+            try {
+                const response = await fetch(`{{ route('dokumen.share', $dokumen->id) }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    // Show result
+                    inputNewLink.value = result.data.url;
+                    shareResult.classList.remove('d-none');
+                    btnGenerate.classList.add('d-none');
+                    
+                    // Reload page after modal closed to show the new link in table
+                    const shareModal = document.getElementById('shareModal');
+                    shareModal.addEventListener('hidden.bs.modal', function () {
+                        window.location.reload();
+                    });
+                } else {
+                    alert('Gagal membuat tautan.');
+                    btnGenerate.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan sistem.');
+                btnGenerate.disabled = false;
+            } finally {
+                spinner.classList.add('d-none');
+                icon.classList.remove('d-none');
+            }
+        });
+    }
+
+    // Copy new link
+    if (btnCopyNew) {
+        btnCopyNew.addEventListener('click', function() {
+            inputNewLink.select();
+            inputNewLink.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(inputNewLink.value);
+            copySuccessMsg.classList.remove('d-none');
+            setTimeout(() => {
+                copySuccessMsg.classList.add('d-none');
+            }, 3000);
+        });
+    }
+});
+</script>
 @endsection

@@ -3,6 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\RecycleBinController;
+use App\Http\Controllers\ShareLinkController;
+use App\Http\Controllers\ShareViewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -10,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+// Share Link Public Route
+Route::get('/share/{token}', [ShareViewController::class, 'show'])->name('share.show');
 
 // Redirect root to dashboard or login
 Route::get('/', function () {
@@ -42,8 +48,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/dokumen/{dokumen}/download', [DocumentController::class, 'download'])->name('dokumen.download');
     Route::get('/dokumen/{dokumen}/preview', [DocumentController::class, 'preview'])->name('dokumen.preview');
 
+    // ── Share Link ──────────────────────────────────────
+    Route::post('/dokumen/{dokumen}/share', [ShareLinkController::class, 'store'])->name('dokumen.share');
+    Route::delete('/share/{link}/revoke', [ShareLinkController::class, 'destroy'])->name('share.revoke');
+
+    // ── Recycle Bin ──────────────────────────────────────
+    Route::get('/recycle-bin', [RecycleBinController::class, 'index'])->name('recycle-bin.index');
+    Route::post('/recycle-bin/{id}/restore', [RecycleBinController::class, 'restore'])->name('recycle-bin.restore');
+
     // Placeholder routes for future features
-    // Route::get('/recycle-bin', ...)
     // Route::get('/laporan', ...)
     // Route::get('/aktivitas', ...)
     // Route::get('/profil', ...)
@@ -51,6 +64,10 @@ Route::middleware('auth')->group(function () {
 
 // Admin-only routes
 Route::middleware(['auth', 'role:ADMIN'])->group(function () {
+    // Recycle Bin (Admin only actions)
+    Route::delete('/recycle-bin/empty', [RecycleBinController::class, 'empty'])->name('recycle-bin.empty');
+    Route::delete('/recycle-bin/{id}', [RecycleBinController::class, 'destroy'])->name('recycle-bin.destroy');
+
     // Placeholder routes for admin features
     // Route::resource('/users', UserController::class)
     // Route::resource('/kategori', CategoryController::class)

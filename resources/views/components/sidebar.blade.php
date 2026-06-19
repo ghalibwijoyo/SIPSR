@@ -38,7 +38,7 @@
             {{-- Recycle Bin --}}
             <li class="nav-item">
                 <a class="nav-link sidebar-link {{ request()->is('recycle-bin*') ? 'active' : '' }}"
-                   href="#" id="nav-recycle-bin">
+                   href="{{ route('recycle-bin.index') }}" id="nav-recycle-bin">
                     <i class="bi bi-trash3 me-2"></i>Recycle Bin
                 </a>
             </li>
