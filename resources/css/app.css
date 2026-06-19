@@ -1,0 +1,282 @@
+/* ============================================================
+   SIPSR — CSS Theme
+   Sistem Informasi Pengarsipan PSR Tanaman · PTPN IV Regional IV
+   ============================================================ */
+
+/* ─── Imports (must come first) ─────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+/* ─── CSS Custom Properties ─────────────────────────────── */
+:root {
+    --sipsr-primary: #3B6D11;
+    --sipsr-primary-dark: #2d5a0b;
+    --sipsr-primary-light: #4a8a15;
+    --sipsr-primary-rgb: 59, 109, 17;
+    --sipsr-sidebar-bg: #1a2e0a;
+    --sipsr-sidebar-width: 260px;
+    --sipsr-sidebar-hover: rgba(255, 255, 255, 0.08);
+    --sipsr-sidebar-active: rgba(255, 255, 255, 0.15);
+    --sipsr-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+
+/* ─── Base ──────────────────────────────────────────────── */
+
+body {
+    font-family: var(--sipsr-font);
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+/* ─── Utility Classes ───────────────────────────────────── */
+.bg-sipsr-primary   { background-color: var(--sipsr-primary) !important; }
+.text-sipsr-primary { color: var(--sipsr-primary) !important; }
+.border-sipsr       { border-color: var(--sipsr-primary) !important; }
+
+.bg-sipsr-gradient {
+    background: linear-gradient(135deg, #1a2e0a 0%, #3B6D11 50%, #4a8a15 100%);
+    min-height: 100vh;
+}
+
+/* ─── Sidebar ───────────────────────────────────────────── */
+.sidebar {
+    width: var(--sipsr-sidebar-width);
+    min-width: var(--sipsr-sidebar-width);
+    background: linear-gradient(180deg, #1a2e0a 0%, #243b0e 100%);
+    color: #fff;
+    transition: transform 0.3s ease;
+    z-index: 1050;
+}
+
+.sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo {
+    width: 38px;
+    height: 38px;
+    background: var(--sipsr-primary);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sidebar-logo-text {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #fff;
+    letter-spacing: 1px;
+}
+
+/* Sidebar Navigation */
+.sidebar-link {
+    color: rgba(255, 255, 255, 0.65) !important;
+    border-radius: 8px;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-link:hover {
+    color: #fff !important;
+    background: var(--sipsr-sidebar-hover);
+}
+
+.sidebar-link.active {
+    color: #fff !important;
+    background: var(--sipsr-primary) !important;
+    box-shadow: 0 2px 8px rgba(var(--sipsr-primary-rgb), 0.4);
+}
+
+.sidebar-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 1.5px;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-avatar {
+    width: 34px;
+    height: 34px;
+    background: var(--sipsr-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+/* Sidebar Overlay (Mobile) */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ─── Login Page ────────────────────────────────────────── */
+.login-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 1rem;
+}
+
+.login-card {
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.login-logo {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--sipsr-primary) 0%, var(--sipsr-primary-light) 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(var(--sipsr-primary-rgb), 0.3);
+}
+
+.login-logo-text {
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: #fff;
+    letter-spacing: 2px;
+}
+
+/* ─── Stats Cards ───────────────────────────────────────── */
+.stats-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ─── Cards ─────────────────────────────────────────────── */
+.card {
+    border-radius: 12px;
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ─── Tables ────────────────────────────────────────────── */
+.table thead th {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    border-bottom-width: 1px;
+}
+
+/* ─── Buttons ───────────────────────────────────────────── */
+.btn-success {
+    background-color: var(--sipsr-primary);
+    border-color: var(--sipsr-primary);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background-color: var(--sipsr-primary-dark);
+    border-color: var(--sipsr-primary-dark);
+}
+
+.btn-outline-success {
+    color: var(--sipsr-primary);
+    border-color: var(--sipsr-primary);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--sipsr-primary);
+    border-color: var(--sipsr-primary);
+}
+
+/* ─── Form Controls ─────────────────────────────────────── */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--sipsr-primary-light);
+    box-shadow: 0 0 0 0.2rem rgba(var(--sipsr-primary-rgb), 0.15);
+}
+
+/* ─── Badges ────────────────────────────────────────────── */
+.badge.bg-sipsr-primary {
+    background-color: var(--sipsr-primary) !important;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────── */
+.sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+/* ─── Responsive ────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+}
+
+/* ─── Animations ────────────────────────────────────────── */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+.card:nth-child(2) { animation-delay: 0.05s; }
+.card:nth-child(3) { animation-delay: 0.1s; }
+.card:nth-child(4) { animation-delay: 0.15s; }
