@@ -54,7 +54,7 @@
             {{-- Aktivitas --}}
             <li class="nav-item">
                 <a class="nav-link sidebar-link {{ request()->is('aktivitas*') ? 'active' : '' }}"
-                   href="#" id="nav-aktivitas">
+                   href="{{ route('aktivitas.index') }}" id="nav-aktivitas">
                     <i class="bi bi-clock-history me-2"></i>Aktivitas
                 </a>
             </li>

@@ -174,30 +174,43 @@
                     <i class="bi bi-clock-history me-2 text-sipsr-primary"></i>Riwayat Perubahan
                 </h5>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-sm table-hover mb-0 align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-3">Field</th>
-                                <th>Sebelum</th>
-                                <th>Sesudah</th>
-                                <th>Oleh</th>
-                                <th>Waktu</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($dokumen->histories->sortByDesc('changed_at') as $hist)
-                            <tr>
-                                <td class="ps-3 fw-semibold small">{{ $hist->field_name }}</td>
-                                <td class="small text-danger">{{ Str::limit($hist->old_value, 30) ?: '-' }}</td>
-                                <td class="small text-success">{{ Str::limit($hist->new_value, 30) ?: '-' }}</td>
-                                <td class="small">{{ $hist->changedBy->nama_lengkap ?? '-' }}</td>
-                                <td class="small text-muted">{{ $hist->changed_at?->format('d/m/Y H:i') }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            <div class="card-body">
+                <div class="position-relative" style="border-left: 2px solid #e9ecef; margin-left: 10px; padding-left: 20px;">
+                    @foreach($dokumen->histories->sortByDesc('changed_at') as $hist)
+                    <div class="mb-4 position-relative">
+                        <div class="position-absolute" style="left: -29px; top: 0; background: #fff; border: 2px solid #3B6D11; border-radius: 50%; width: 16px; height: 16px;"></div>
+                        <div class="small text-muted fw-bold mb-1">
+                            {{ $hist->changed_at?->format('d/m/Y H:i') }} · Diubah oleh: {{ $hist->changedBy->nama_lengkap ?? '-' }}
+                        </div>
+                        <div class="bg-light p-2 rounded-3 small">
+                            <div class="d-flex mb-1">
+                                <div class="fw-semibold" style="width: 70px;">Field</div>
+                                <div>: {{ $hist->field_name }}</div>
+                            </div>
+                            <div class="d-flex mb-1">
+                                <div class="fw-semibold text-danger" style="width: 70px;">Sebelum</div>
+                                <div class="text-danger">: {{ $hist->old_value ?: '-' }}</div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="fw-semibold text-success" style="width: 70px;">Sesudah</div>
+                                <div class="text-success">: {{ $hist->new_value ?: '-' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @else
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="bi bi-clock-history me-2 text-sipsr-primary"></i>Riwayat Perubahan
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info border-0 mb-0 small">
+                    <i class="bi bi-info-circle me-2"></i>Belum ada riwayat perubahan.
                 </div>
             </div>
         </div>

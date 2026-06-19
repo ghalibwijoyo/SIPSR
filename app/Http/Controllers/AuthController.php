@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ActivityLog;
 
 class AuthController extends Controller
 {
@@ -38,6 +39,17 @@ class AuthController extends Controller
             }
 
             $request->session()->regenerate();
+
+            // Activity log
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'role_saat_itu' => Auth::user()->role,
+                'jenis_aktivitas' => 'LOGIN_BERHASIL',
+                'detail' => 'User berhasil login ke sistem',
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'created_at' => now(),
+            ]);
 
             return redirect()->intended('/dashboard');
         }

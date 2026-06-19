@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\RecycleBinController;
 use App\Http\Controllers\ShareLinkController;
 use App\Http\Controllers\ShareViewController;
@@ -55,6 +56,9 @@ Route::middleware('auth')->group(function () {
     // ── Recycle Bin ──────────────────────────────────────
     Route::get('/recycle-bin', [RecycleBinController::class, 'index'])->name('recycle-bin.index');
     Route::post('/recycle-bin/{id}/restore', [RecycleBinController::class, 'restore'])->name('recycle-bin.restore');
+
+    // ── Activity Log ─────────────────────────────────────
+    Route::get('/aktivitas', [ActivityLogController::class, 'index'])->name('aktivitas.index');
 
     // Placeholder routes for future features
     // Route::get('/laporan', ...)
