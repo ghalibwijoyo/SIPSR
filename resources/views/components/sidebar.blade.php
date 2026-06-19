@@ -30,7 +30,7 @@
             {{-- Dokumen --}}
             <li class="nav-item">
                 <a class="nav-link sidebar-link {{ request()->is('dokumen*') ? 'active' : '' }}"
-                   href="#" id="nav-dokumen">
+                   href="{{ route('dokumen.index') }}" id="nav-dokumen">
                     <i class="bi bi-file-earmark-text me-2"></i>Dokumen
                 </a>
             </li>
