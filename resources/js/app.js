@@ -31,4 +31,22 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     overlay?.addEventListener('click', closeSidebar);
+
+    // ─── Global Form Submit Loading State ──────────────────
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            // Jika form valid, disable tombol submit dan tampilkan loading
+            if (this.checkValidity()) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    // Prevent double submit on btn
+                    if (submitBtn.classList.contains('is-loading')) {
+                        e.preventDefault();
+                        return;
+                    }
+                    submitBtn.classList.add('is-loading');
+                }
+            }
+        });
+    });
 });

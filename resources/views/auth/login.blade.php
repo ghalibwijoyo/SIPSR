@@ -31,13 +31,10 @@
             <form method="POST" action="{{ route('login') }}" id="login-form">
                 @csrf
 
-                <div class="mb-3">
-                    <label for="username" class="form-label fw-semibold">
-                        <i class="bi bi-person-fill me-1"></i>Username
-                    </label>
+                <div class="form-floating mb-3">
                     <input
                         type="text"
-                        class="form-control form-control-lg @error('username') is-invalid @enderror"
+                        class="form-control @error('username') is-invalid @enderror"
                         id="username"
                         name="username"
                         value="{{ old('username') }}"
@@ -45,28 +42,30 @@
                         autofocus
                         required
                     >
+                    <label for="username">
+                        <i class="bi bi-person-fill me-1"></i>Username
+                    </label>
                 </div>
 
-                <div class="mb-4">
-                    <label for="password" class="form-label fw-semibold">
+                <div class="form-floating mb-4 position-relative">
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        placeholder="Masukkan password"
+                        required
+                    >
+                    <label for="password">
                         <i class="bi bi-lock-fill me-1"></i>Password
                     </label>
-                    <div class="input-group">
-                        <input
-                            type="password"
-                            class="form-control form-control-lg"
-                            id="password"
-                            name="password"
-                            placeholder="Masukkan password"
-                            required
-                        >
-                        <button class="btn btn-outline-secondary" type="button" id="toggle-password" title="Tampilkan password">
-                            <i class="bi bi-eye-fill" id="toggle-password-icon"></i>
-                        </button>
-                    </div>
+                    <button class="btn btn-link text-secondary position-absolute end-0 top-50 translate-middle-y text-decoration-none shadow-none" 
+                        type="button" id="toggle-password" title="Tampilkan password" style="z-index: 5;">
+                        <i class="bi bi-eye-fill" id="toggle-password-icon"></i>
+                    </button>
                 </div>
 
-                <button type="submit" class="btn btn-success btn-lg w-100 fw-semibold" id="btn-login">
+                <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold" id="btn-login">
                     <i class="bi bi-box-arrow-in-right me-1"></i>Masuk
                 </button>
             </form>

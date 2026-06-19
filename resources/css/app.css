@@ -35,6 +35,22 @@ body {
 .text-sipsr-primary { color: var(--sipsr-primary) !important; }
 .border-sipsr       { border-color: var(--sipsr-primary) !important; }
 
+/* Override Bootstrap Primary to SIPSR Green */
+.btn-primary {
+    background-color: var(--sipsr-primary);
+    border-color: var(--sipsr-primary);
+    color: #fff;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--sipsr-primary-dark);
+    border-color: var(--sipsr-primary-dark);
+    color: #fff;
+}
+.text-primary { color: var(--sipsr-primary) !important; }
+.bg-primary { background-color: var(--sipsr-primary) !important; }
+.bg-primary.bg-opacity-10 { background-color: rgba(var(--sipsr-primary-rgb), 0.1) !important; }
+
 .bg-sipsr-gradient {
     background: linear-gradient(135deg, #1a2e0a 0%, #3B6D11 50%, #4a8a15 100%);
     min-height: 100vh;
@@ -280,3 +296,29 @@ body {
 .card:nth-child(2) { animation-delay: 0.05s; }
 .card:nth-child(3) { animation-delay: 0.1s; }
 .card:nth-child(4) { animation-delay: 0.15s; }
+
+/* ─── Loading State ─────────────────────────────────────── */
+.btn.is-loading {
+    position: relative;
+    pointer-events: none;
+    color: transparent !important;
+}
+
+.btn.is-loading::after {
+    content: "";
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    top: calc(50% - 0.5rem);
+    left: calc(50% - 0.5rem);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spinner-border .75s linear infinite;
+}
+
+.btn-light.is-loading::after,
+.btn-outline-secondary.is-loading::after {
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-top-color: #333;
+}

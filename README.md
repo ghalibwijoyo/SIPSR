@@ -143,6 +143,14 @@ storage/app/uploads/
 | document_share_links   | Link sharing dengan token       |
 | activity_logs          | Log aktivitas pengguna          |
 
+## Backup Database
+
+Untuk melakukan pencadangan (backup) seluruh data sistem, buka terminal Laragon dan jalankan perintah berikut:
+
+```bash
+mysqldump -u root sipsr > backup_sipsr.sql
+```
+
 ## License
 
 Internal use only — PTPN IV Regional IV
