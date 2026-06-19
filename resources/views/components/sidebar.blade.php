@@ -46,7 +46,7 @@
             {{-- Laporan --}}
             <li class="nav-item">
                 <a class="nav-link sidebar-link {{ request()->is('laporan*') ? 'active' : '' }}"
-                   href="#" id="nav-laporan">
+                   href="{{ route('laporan.index') }}" id="nav-laporan">
                     <i class="bi bi-bar-chart-line me-2"></i>Laporan
                 </a>
             </li>
@@ -65,14 +65,14 @@
                 <small class="sidebar-label text-uppercase px-3">Admin</small>
             </li>
             <li class="nav-item">
-                <a class="nav-link sidebar-link {{ request()->is('users*') ? 'active' : '' }}"
-                   href="#" id="nav-users">
+                <a class="nav-link sidebar-link {{ request()->is('admin/users*') ? 'active' : '' }}"
+                   href="{{ route('users.index') }}" id="nav-users">
                     <i class="bi bi-people me-2"></i>Manajemen User
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link sidebar-link {{ request()->is('kategori*') ? 'active' : '' }}"
-                   href="#" id="nav-kategori">
+                <a class="nav-link sidebar-link {{ request()->is('admin/categories*') ? 'active' : '' }}"
+                   href="{{ route('categories.index') }}" id="nav-kategori">
                     <i class="bi bi-tags me-2"></i>Kategori
                 </a>
             </li>

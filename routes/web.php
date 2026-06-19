@@ -4,9 +4,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\RecycleBinController;
 use App\Http\Controllers\ShareLinkController;
 use App\Http\Controllers\ShareViewController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -60,9 +63,14 @@ Route::middleware('auth')->group(function () {
     // ── Activity Log ─────────────────────────────────────
     Route::get('/aktivitas', [ActivityLogController::class, 'index'])->name('aktivitas.index');
 
+    // ── Laporan ──────────────────────────────────────────
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.export.excel');
+    Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export.pdf');
+    Route::get('/laporan/print-pdf', [LaporanController::class, 'printPdf'])->name('laporan.print.pdf');
+
     // Placeholder routes for future features
-    // Route::get('/laporan', ...)
-    // Route::get('/aktivitas', ...)
+    // Route::get('/profil', ...)
     // Route::get('/profil', ...)
 });
 
@@ -72,7 +80,11 @@ Route::middleware(['auth', 'role:ADMIN'])->group(function () {
     Route::delete('/recycle-bin/empty', [RecycleBinController::class, 'empty'])->name('recycle-bin.empty');
     Route::delete('/recycle-bin/{id}', [RecycleBinController::class, 'destroy'])->name('recycle-bin.destroy');
 
-    // Placeholder routes for admin features
-    // Route::resource('/users', UserController::class)
-    // Route::resource('/kategori', CategoryController::class)
+    // User Management
+    Route::resource('/admin/users', UserController::class)->names('users')->except(['create', 'show', 'edit']);
+    Route::patch('/admin/users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
+    Route::patch('/admin/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+
+    // Category Management
+    Route::resource('/admin/categories', CategoryController::class)->names('categories')->except(['create', 'show', 'edit']);
 });
