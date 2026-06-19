@@ -84,7 +84,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link sidebar-link {{ request()->is('profil*') ? 'active' : '' }}"
-                   href="#" id="nav-profil">
+                   href="{{ route('profil.show') }}" id="nav-profil">
                     <i class="bi bi-person-circle me-2"></i>Profil
                 </a>
             </li>

@@ -69,9 +69,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export.pdf');
     Route::get('/laporan/print-pdf', [LaporanController::class, 'printPdf'])->name('laporan.print.pdf');
 
-    // Placeholder routes for future features
-    // Route::get('/profil', ...)
-    // Route::get('/profil', ...)
+    // ── Profil ───────────────────────────────────────────
+    Route::get('/profil', [\App\Http\Controllers\ProfilController::class, 'show'])->name('profil.show');
+    Route::put('/profil/nama', [\App\Http\Controllers\ProfilController::class, 'updateNama'])->name('profil.update-nama');
+    Route::put('/profil/password', [\App\Http\Controllers\ProfilController::class, 'updatePassword'])->name('profil.update-password');
 });
 
 // Admin-only routes

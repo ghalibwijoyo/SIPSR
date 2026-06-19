@@ -5,112 +5,272 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="h3 fw-bold text-dark mb-1">Dashboard</h1>
-        <p class="text-muted mb-0">Selamat datang, {{ auth()->user()->nama_lengkap }}!</p>
+        <h4 class="mb-0 fw-bold">Selamat datang, {{ auth()->user()->nama_lengkap }}! 👋</h4>
+        <p class="text-muted mb-0">Ringkasan sistem pengarsipan Anda saat ini.</p>
     </div>
-    <span class="badge bg-sipsr-primary fs-6 px-3 py-2">
-        <i class="bi bi-calendar3 me-1"></i>{{ now()->translatedFormat('l, d F Y') }}
-    </span>
 </div>
 
-{{-- Stats Cards --}}
+{{-- 4 Cards Statistik --}}
 <div class="row g-3 mb-4">
-    <div class="col-md-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100 bg-white">
             <div class="card-body d-flex align-items-center">
-                <div class="stats-icon bg-sipsr-primary bg-opacity-10 text-sipsr-primary me-3">
-                    <i class="bi bi-file-earmark-text-fill fs-4"></i>
+                <div class="flex-shrink-0 me-3">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-file-earmark-text fs-4"></i>
+                    </div>
                 </div>
                 <div>
-                    <p class="text-muted small mb-0">Total Dokumen</p>
-                    <h3 class="fw-bold mb-0">{{ \App\Models\Document::count() }}</h3>
+                    <p class="text-muted mb-1 small text-uppercase">Total Dokumen</p>
+                    <h4 class="mb-0 fw-bold">{{ number_format($totalDokumen, 0, ',', '.') }}</h4>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100 bg-white">
             <div class="card-body d-flex align-items-center">
-                <div class="stats-icon bg-warning bg-opacity-10 text-warning me-3">
-                    <i class="bi bi-folder-fill fs-4"></i>
+                <div class="flex-shrink-0 me-3">
+                    <div class="bg-success bg-opacity-10 text-success rounded d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-cloud-arrow-up fs-4"></i>
+                    </div>
                 </div>
                 <div>
-                    <p class="text-muted small mb-0">Kategori</p>
-                    <h3 class="fw-bold mb-0">{{ \App\Models\Category::count() }}</h3>
+                    <p class="text-muted mb-1 small text-uppercase">Upload Bulan Ini</p>
+                    <h4 class="mb-0 fw-bold">{{ number_format($uploadBulanIni, 0, ',', '.') }}</h4>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100 bg-white">
             <div class="card-body d-flex align-items-center">
-                <div class="stats-icon bg-info bg-opacity-10 text-info me-3">
-                    <i class="bi bi-people-fill fs-4"></i>
+                <div class="flex-shrink-0 me-3">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-people fs-4"></i>
+                    </div>
                 </div>
                 <div>
-                    <p class="text-muted small mb-0">Pengguna Aktif</p>
-                    <h3 class="fw-bold mb-0">{{ \App\Models\User::where('is_active', true)->count() }}</h3>
+                    <p class="text-muted mb-1 small text-uppercase">Total User</p>
+                    <h4 class="mb-0 fw-bold">{{ number_format($totalUserAktif, 0, ',', '.') }}</h4>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100 bg-white">
             <div class="card-body d-flex align-items-center">
-                <div class="stats-icon bg-danger bg-opacity-10 text-danger me-3">
-                    <i class="bi bi-trash3-fill fs-4"></i>
+                <div class="flex-shrink-0 me-3">
+                    <div class="bg-info bg-opacity-10 text-info rounded d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-tags fs-4"></i>
+                    </div>
                 </div>
                 <div>
-                    <p class="text-muted small mb-0">Recycle Bin</p>
-                    <h3 class="fw-bold mb-0">{{ \App\Models\Document::onlyTrashed()->count() }}</h3>
+                    <p class="text-muted mb-1 small text-uppercase">Kategori Top</p>
+                    <h5 class="mb-0 fw-bold text-truncate" style="max-width: 120px;" title="{{ $kategoriTerbanyak }}">{{ $kategoriTerbanyak }}</h5>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- Recent Activity --}}
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white border-bottom py-3">
-        <h5 class="card-title mb-0 fw-semibold">
-            <i class="bi bi-clock-history me-2 text-sipsr-primary"></i>Aktivitas Terbaru
-        </h5>
+{{-- Grafik --}}
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 border-bottom-0">
+                <h6 class="mb-0 fw-bold">Dokumen per Kategori</h6>
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <canvas id="categoryChart" style="max-height: 250px;"></canvas>
+            </div>
+        </div>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="ps-3">Waktu</th>
-                        <th>Pengguna</th>
-                        <th>Aktivitas</th>
-                        <th>Detail</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse(\App\Models\ActivityLog::with('user')->latest('created_at')->take(10)->get() as $log)
-                    <tr>
-                        <td class="ps-3 text-muted small">
-                            {{ $log->created_at?->diffForHumans() ?? '-' }}
-                        </td>
-                        <td>
-                            <span class="fw-semibold">{{ $log->user->nama_lengkap ?? '-' }}</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-sipsr-primary bg-opacity-10 text-sipsr-primary">
-                                {{ $log->jenis_aktivitas }}
-                            </span>
-                        </td>
-                        <td class="text-muted small">{{ Str::limit($log->detail, 50) }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4" class="text-center text-muted py-4">Belum ada aktivitas tercatat.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 border-bottom-0">
+                <h6 class="mb-0 fw-bold">Tren Upload ({{ date('Y') }})</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="uploadChart" style="max-height: 250px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Tabel Ringkasan --}}
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 border-bottom-0 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold">Dokumen Terbaru</h6>
+                <a href="{{ route('dokumen.index') }}" class="btn btn-sm btn-light">Lihat Semua</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Nama Dokumen</th>
+                                <th>Kategori</th>
+                                <th class="pe-4 text-end">Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($latestDocuments as $doc)
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-file-earmark-text text-primary me-2"></i>
+                                            <a href="{{ route('dokumen.show', $doc->id) }}" class="text-decoration-none text-dark fw-medium">{{ Str::limit($doc->nama_dokumen, 30) }}</a>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-secondary">{{ $doc->category->nama ?? '-' }}</span></td>
+                                    <td class="pe-4 text-end text-muted small">{{ $doc->created_at->diffForHumans() }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted">Belum ada dokumen.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 border-bottom-0 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold">Aktivitas Terbaru</h6>
+                <a href="{{ route('aktivitas.index') }}" class="btn btn-sm btn-light">Lihat Semua</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">User</th>
+                                <th>Aktivitas</th>
+                                <th class="pe-4 text-end">Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($latestActivities as $log)
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-medium text-truncate" style="max-width: 150px;">{{ $log->user->nama_lengkap ?? 'Sistem' }}</div>
+                                    </td>
+                                    <td><span class="text-muted small">{{ Str::limit($log->deskripsi, 40) }}</span></td>
+                                    <td class="pe-4 text-end text-muted small">{{ $log->created_at->diffForHumans() }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted">Belum ada aktivitas.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+{{-- Chart.js CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Data Kategori
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    const categoryLabels = {!! json_encode($chartKategoriLabels) !!};
+    const categoryData = {!! json_encode($chartKategoriData) !!};
+    
+    // Warna tema
+    const backgroundColors = [
+        '#0d6efd', '#198754', '#ffc107', '#dc3545', '#0dcaf0',
+        '#6610f2', '#fd7e14', '#20c997', '#052c65', '#d63384'
+    ];
+
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: categoryLabels.length > 0 ? categoryLabels : ['Belum ada data'],
+            datasets: [{
+                data: categoryData.length > 0 ? categoryData : [1],
+                backgroundColor: categoryData.length > 0 ? backgroundColors : ['#e9ecef'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 15,
+                        font: { size: 11 }
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // Data Upload
+    const uploadCtx = document.getElementById('uploadChart').getContext('2d');
+    new Chart(uploadCtx, {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($chartUploadLabels) !!},
+            datasets: [{
+                label: 'Jumlah Upload',
+                data: {!! json_encode($chartUploadData) !!},
+                borderColor: '#198754',
+                backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#198754',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 10,
+                    displayColors: false,
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0,
+                        font: { size: 11 }
+                    },
+                    grid: { borderDash: [2, 4], color: '#f0f0f0' }
+                },
+                x: {
+                    ticks: { font: { size: 11 } },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+});
+</script>
+@endpush
