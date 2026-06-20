@@ -57,7 +57,7 @@
                         <th>Kategori</th>
                         <th>Dihapus Oleh</th>
                         <th>Tanggal Dihapus</th>
-                        <th class="text-end">Aksi</th>
+                        <th class="text-end text-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,7 +72,7 @@
                         </td>
                         <td>{{ $doc->deletedBy->nama_lengkap ?? 'Sistem' }}</td>
                         <td>{{ $doc->deleted_at->format('d M Y H:i') }}</td>
-                        <td class="text-end">
+                        <td class="text-end text-nowrap">
                             <form action="{{ route('recycle-bin.restore', $doc->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-success" title="Restore">
@@ -125,10 +125,12 @@
             </table>
         </div>
         
-        <div class="mt-3">
-            {{ $documents->links() }}
-        </div>
     </div>
+    @if($documents->hasPages())
+    <div class="card-footer bg-white border-top py-3 d-flex justify-content-center align-items-center w-100">
+        {{ $documents->links('vendor.pagination.bootstrap-5') }}
+    </div>
+    @endif
 </div>
 
 <!-- Empty Modal -->

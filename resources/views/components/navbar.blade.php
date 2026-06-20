@@ -2,12 +2,12 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm px-3 py-2" id="top-navbar">
     <div class="d-flex align-items-center w-100">
         {{-- Mobile Sidebar Toggle --}}
-        <button class="btn btn-link text-dark d-md-none me-2 p-0" type="button" id="sidebar-toggler" title="Toggle sidebar">
+        <button class="btn btn-link text-dark d-lg-none me-2 p-0" type="button" id="sidebar-toggler" title="Toggle sidebar">
             <i class="bi bi-list fs-4"></i>
         </button>
 
         {{-- Brand (mobile) --}}
-        <span class="navbar-brand fw-bold text-sipsr-primary d-md-none mb-0">SIPSR</span>
+        <span class="navbar-brand fw-bold text-sipsr-primary d-lg-none mb-0">SIPSR</span>
 
         {{-- Spacer --}}
         <div class="flex-grow-1"></div>

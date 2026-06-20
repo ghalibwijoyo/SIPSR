@@ -42,23 +42,19 @@
                         autofocus
                         required
                     >
-                    <label for="username">
-                        <i class="bi bi-person-fill me-1"></i>Username
-                    </label>
+                    <label for="username">Username</label>
                 </div>
 
                 <div class="form-floating mb-4 position-relative">
                     <input
                         type="password"
-                        class="form-control"
+                        class="form-control pe-5"
                         id="password"
                         name="password"
                         placeholder="Masukkan password"
                         required
                     >
-                    <label for="password">
-                        <i class="bi bi-lock-fill me-1"></i>Password
-                    </label>
+                    <label for="password">Password</label>
                     <button class="btn btn-link text-secondary position-absolute end-0 top-50 translate-middle-y text-decoration-none shadow-none" 
                         type="button" id="toggle-password" title="Tampilkan password" style="z-index: 5;">
                         <i class="bi bi-eye-fill" id="toggle-password-icon"></i>

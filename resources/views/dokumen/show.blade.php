@@ -43,7 +43,7 @@
                         <tr>
                             <td class="ps-3 text-muted fw-semibold">Kategori</td>
                             <td>
-                                <span class="badge bg-sipsr-primary bg-opacity-10 text-sipsr-primary">
+                                <span class="badge bg-sipsr-primary bg-opacity-10 text-sipsr-light">
                                     {{ $dokumen->category->nama ?? '-' }}
                                 </span>
                             </td>
@@ -120,7 +120,7 @@
                                 <th class="ps-3">URL</th>
                                 <th>Kedaluwarsa</th>
                                 <th>Status</th>
-                                <th class="text-end pe-3">Aksi</th>
+                                <th class="text-end pe-3 text-nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="share-links-table-body">
@@ -144,7 +144,7 @@
                                         <span class="badge bg-success">Aktif</span>
                                     @endif
                                 </td>
-                                <td class="text-end pe-3">
+                                <td class="text-end pe-3 text-nowrap">
                                     @if(!$link->revoked_at && $link->expired_at >= now())
                                     <form method="POST" action="{{ route('share.revoke', $link->id) }}" class="d-inline" onsubmit="return confirm('Cabut tautan ini?')">
                                         @csrf @method('DELETE')

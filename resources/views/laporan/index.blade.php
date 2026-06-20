@@ -16,13 +16,13 @@
             </div>
             <div class="card-body">
                 <form action="{{ route('laporan.index') }}" method="GET" id="form-laporan" class="d-flex flex-wrap gap-2 align-items-center">
-                    <div class="btn-group" role="group" aria-label="Filter Periode">
-                        <button type="submit" name="periode" value="1_hari" class="btn {{ $periode === '1_hari' ? 'btn-primary' : 'btn-outline-secondary' }}">1 Hari</button>
-                        <button type="submit" name="periode" value="1_minggu" class="btn {{ $periode === '1_minggu' ? 'btn-primary' : 'btn-outline-secondary' }}">1 Minggu</button>
-                        <button type="submit" name="periode" value="1_bulan" class="btn {{ $periode === '1_bulan' ? 'btn-primary' : 'btn-outline-secondary' }}">1 Bulan</button>
-                        <button type="submit" name="periode" value="1_tahun" class="btn {{ $periode === '1_tahun' ? 'btn-primary' : 'btn-outline-secondary' }}">1 Tahun</button>
-                        <button type="submit" name="periode" value="5_tahun" class="btn {{ $periode === '5_tahun' ? 'btn-primary' : 'btn-outline-secondary' }}">5 Tahun</button>
-                        <button type="submit" name="periode" value="semua" class="btn {{ $periode === 'semua' ? 'btn-primary' : 'btn-outline-secondary' }}">Semua</button>
+                    <div class="d-flex flex-wrap gap-2" role="group" aria-label="Filter Periode">
+                        <button type="submit" name="periode" value="1_hari" class="btn rounded {{ $periode === '1_hari' ? 'btn-primary' : 'btn-outline-secondary' }}">1 Hari</button>
+                        <button type="submit" name="periode" value="1_minggu" class="btn rounded {{ $periode === '1_minggu' ? 'btn-primary' : 'btn-outline-secondary' }}">1 Minggu</button>
+                        <button type="submit" name="periode" value="1_bulan" class="btn rounded {{ $periode === '1_bulan' ? 'btn-primary' : 'btn-outline-secondary' }}">1 Bulan</button>
+                        <button type="submit" name="periode" value="1_tahun" class="btn rounded {{ $periode === '1_tahun' ? 'btn-primary' : 'btn-outline-secondary' }}">1 Tahun</button>
+                        <button type="submit" name="periode" value="5_tahun" class="btn rounded {{ $periode === '5_tahun' ? 'btn-primary' : 'btn-outline-secondary' }}">5 Tahun</button>
+                        <button type="submit" name="periode" value="semua" class="btn rounded {{ $periode === 'semua' ? 'btn-primary' : 'btn-outline-secondary' }}">Semua</button>
                     </div>
                 </form>
             </div>

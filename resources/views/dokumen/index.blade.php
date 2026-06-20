@@ -88,8 +88,8 @@
             <label for="per-page" class="form-label mb-0 small text-muted">Tampilkan:</label>
             <select class="form-select form-select-sm" id="per-page" style="width: auto;"
                     onchange="updatePerPage(this.value)">
-                @foreach([10, 20, 50] as $pp)
-                    <option value="{{ $pp }}" {{ request('per_page', 20) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
+                @foreach([100, 250, 500] as $pp)
+                    <option value="{{ $pp }}" {{ request('per_page', 100) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
                 @endforeach
             </select>
         </div>
@@ -100,8 +100,8 @@
             <table class="table table-striped table-hover align-middle mb-0" id="dokumen-table">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-3" style="width: 50px;">No</th>
-                        <th>
+                        <th class="ps-3 d-mobile-none" style="width: 50px;">No</th>
+                        <th class="d-mobile-none">
                             <a href="{{ route('dokumen.index', array_merge(request()->all(), ['sort' => 'nomor_dokumen', 'dir' => request('sort') == 'nomor_dokumen' && request('dir') == 'asc' ? 'desc' : 'asc'])) }}"
                                class="text-decoration-none text-muted">
                                 Nomor
@@ -129,15 +129,15 @@
                                 @endif
                             </a>
                         </th>
-                        <th>Uploader</th>
-                        <th class="text-center" style="width: 140px;">Aksi</th>
+                        <th class="d-mobile-none">Uploader</th>
+                        <th class="text-center text-nowrap" style="width: 140px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($documents as $i => $doc)
                     <tr>
-                        <td class="ps-3 text-muted">{{ $documents->firstItem() + $i }}</td>
-                        <td>
+                        <td class="ps-3 text-muted d-mobile-none">{{ $documents->firstItem() + $i }}</td>
+                        <td class="d-mobile-none">
                             <code class="text-sipsr-primary fw-semibold">{{ $doc->nomor_dokumen }}</code>
                         </td>
                         <td>
@@ -146,13 +146,13 @@
                             </a>
                         </td>
                         <td>
-                            <span class="badge bg-sipsr-primary bg-opacity-10 text-sipsr-primary">
+                            <span class="badge bg-sipsr-primary bg-opacity-10 text-sipsr-light">
                                 {{ $doc->category->nama ?? '-' }}
                             </span>
                         </td>
                         <td class="text-muted small">{{ $doc->tanggal_dokumen?->format('d/m/Y') }}</td>
-                        <td class="small">{{ $doc->uploader->nama_lengkap ?? '-' }}</td>
-                        <td class="text-center">
+                        <td class="small d-mobile-none">{{ $doc->uploader->nama_lengkap ?? '-' }}</td>
+                        <td class="text-center text-nowrap">
                             <div class="btn-group btn-group-sm" role="group">
                                 <a href="{{ route('dokumen.show', $doc) }}"
                                    class="btn btn-outline-secondary" title="Lihat Detail">
@@ -186,16 +186,21 @@
         </div>
     </div>
 
-    {{-- Pagination --}}
-    @if($documents->hasPages())
-    <div class="card-footer bg-white border-top py-3 d-flex justify-content-between align-items-center">
-        <small class="text-muted">
-            Menampilkan {{ $documents->firstItem() }}–{{ $documents->lastItem() }}
-            dari {{ $documents->total() }} dokumen
-        </small>
-        {{ $documents->links('vendor.pagination.bootstrap-5') }}
+    {{-- Footer Actions / Pagination --}}
+    <div class="card-footer bg-white border-top py-3 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 60px;">
+        @if($documents->hasPages())
+            {{ $documents->links('vendor.pagination.bootstrap-5') }}
+        @endif
+
+        {{-- Scroll to Top Button --}}
+        <button type="button" onclick="document.querySelector('main').scrollTo({top: 0, behavior: 'smooth'})" 
+                class="btn btn-light btn-sm rounded-circle border shadow-sm d-flex align-items-center justify-content-center text-muted position-absolute" 
+                title="Kembali ke atas" style="width: 38px; height: 38px; right: 1.5rem; transition: all 0.2s ease;" 
+                onmouseover="this.style.transform='translateY(-3px)'; this.classList.remove('text-muted'); this.classList.add('text-sipsr-primary', 'border-sipsr');" 
+                onmouseout="this.style.transform='translateY(0)'; this.classList.add('text-muted'); this.classList.remove('text-sipsr-primary', 'border-sipsr');">
+            <i class="bi bi-arrow-up fs-5"></i>
+        </button>
     </div>
-    @endif
 </div>
 @endsection
 

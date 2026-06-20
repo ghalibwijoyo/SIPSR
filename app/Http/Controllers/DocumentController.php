@@ -60,7 +60,7 @@ class DocumentController extends Controller
         $query->orderBy($sortCol, $sortDir);
 
         // ── Pagination ──────────────────────────────────────
-        $perPage = in_array($request->input('per_page'), [10, 20, 50]) ? (int) $request->per_page : 20;
+        $perPage = in_array($request->input('per_page'), [100, 250, 500]) ? (int) $request->per_page : 100;
 
         $documents  = $query->paginate($perPage)->withQueryString();
         $categories = Category::orderBy('nama')->get();
@@ -89,7 +89,7 @@ class DocumentController extends Controller
             'category_id'     => 'required|exists:categories,id',
             'tanggal_dokumen' => 'required|date',
             'deskripsi'       => 'nullable|string',
-            'file'            => 'required|mimes:pdf,doc,docx|max:20480',
+            'file'            => 'required|mimes:pdf,doc,docx|max:512000',
         ]);
 
         // ── Cek nomor duplikat ──────────────────────────────

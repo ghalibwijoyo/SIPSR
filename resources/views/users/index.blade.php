@@ -37,7 +37,7 @@
                         <th class="px-4 py-3">Username</th>
                         <th class="px-4 py-3">Role</th>
                         <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3 text-end">Aksi</th>
+                        <th class="px-4 py-3 text-end text-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,7 +59,7 @@
                                     <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">Nonaktif</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-end">
+                            <td class="px-4 py-3 text-end text-nowrap">
                                 <button type="button" class="btn btn-sm btn-light btn-icon text-primary me-1" 
                                     data-bs-toggle="modal" data-bs-target="#editUserModal{{ $user->id }}" title="Edit Pengguna">
                                     <i class="bi bi-pencil"></i>
@@ -189,8 +189,8 @@
             </table>
         </div>
         @if($users->hasPages())
-            <div class="card-footer bg-white px-4 py-3 border-top-0">
-                {{ $users->links() }}
+            <div class="card-footer bg-white border-top py-3 d-flex justify-content-center align-items-center w-100">
+                {{ $users->links('vendor.pagination.bootstrap-5') }}
             </div>
         @endif
     </div>

@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // ─── Global Form Submit Loading State ──────────────────
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function (e) {
+            // Jangan jalankan loading jika aksi sudah dibatalkan (misal oleh confirm dialog)
+            if (e.defaultPrevented) return;
+
             // Jika form valid, disable tombol submit dan tampilkan loading
             if (this.checkValidity()) {
                 const submitBtn = this.querySelector('button[type="submit"]');

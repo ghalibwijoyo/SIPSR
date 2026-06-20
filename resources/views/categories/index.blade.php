@@ -18,7 +18,7 @@
                     <tr>
                         <th class="px-4 py-3">Nama Kategori</th>
                         <th class="px-4 py-3 text-center">Jumlah Dokumen</th>
-                        <th class="px-4 py-3 text-end">Aksi</th>
+                        <th class="px-4 py-3 text-end text-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,7 +28,7 @@
                             <td class="px-4 py-3 text-center">
                                 <span class="badge bg-secondary rounded-pill">{{ $category->documents_count }}</span>
                             </td>
-                            <td class="px-4 py-3 text-end">
+                            <td class="px-4 py-3 text-end text-nowrap">
                                 <button type="button" class="btn btn-sm btn-light btn-icon text-primary me-1" 
                                     data-bs-toggle="modal" data-bs-target="#editCategoryModal{{ $category->id }}" title="Edit Kategori">
                                     <i class="bi bi-pencil"></i>
@@ -108,8 +108,8 @@
             </table>
         </div>
         @if($categories->hasPages())
-            <div class="card-footer bg-white px-4 py-3 border-top-0">
-                {{ $categories->links() }}
+            <div class="card-footer bg-white border-top py-3 d-flex justify-content-center align-items-center w-100">
+                {{ $categories->links('vendor.pagination.bootstrap-5') }}
             </div>
         @endif
     </div>

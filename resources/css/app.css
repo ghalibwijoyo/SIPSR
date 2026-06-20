@@ -30,10 +30,51 @@ body {
     color: #333;
 }
 
+/* ─── Badges ────────────────────────────────────────────── */
+.badge.bg-sipsr-primary {
+    background-color: var(--sipsr-primary) !important;
+}
+
+.badge-soft-primary {
+    background-color: rgba(var(--sipsr-primary-rgb), 0.12) !important;
+    color: var(--sipsr-primary) !important;
+    border: 1px solid rgba(var(--sipsr-primary-rgb), 0.2);
+}
+
+/* ─── Pagination ────────────────────────────────────────── */
+.pagination .page-link {
+    color: var(--sipsr-primary);
+}
+
+.pagination .page-link:hover {
+    color: var(--sipsr-primary-dark);
+    background-color: rgba(var(--sipsr-primary-rgb), 0.08);
+}
+
+.pagination .page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: var(--sipsr-primary);
+    border-color: var(--sipsr-primary);
+}
+
+.pagination .page-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--sipsr-primary-rgb), 0.25);
+    color: var(--sipsr-primary-dark);
+}
+
 /* ─── Utility Classes ───────────────────────────────────── */
-.bg-sipsr-primary   { background-color: var(--sipsr-primary) !important; }
-.text-sipsr-primary { color: var(--sipsr-primary) !important; }
-.border-sipsr       { border-color: var(--sipsr-primary) !important; }
+.bg-sipsr-primary {
+    background-color: var(--sipsr-primary) !important;
+}
+
+.text-sipsr-primary {
+    color: var(--sipsr-primary) !important;
+}
+
+.border-sipsr {
+    border-color: var(--sipsr-primary) !important;
+}
 
 /* Override Bootstrap Primary to SIPSR Green */
 .btn-primary {
@@ -41,15 +82,25 @@ body {
     border-color: var(--sipsr-primary);
     color: #fff;
 }
+
 .btn-primary:hover,
 .btn-primary:focus {
     background-color: var(--sipsr-primary-dark);
     border-color: var(--sipsr-primary-dark);
     color: #fff;
 }
-.text-primary { color: var(--sipsr-primary) !important; }
-.bg-primary { background-color: var(--sipsr-primary) !important; }
-.bg-primary.bg-opacity-10 { background-color: rgba(var(--sipsr-primary-rgb), 0.1) !important; }
+
+.text-primary {
+    color: var(--sipsr-primary) !important;
+}
+
+.bg-primary {
+    background-color: var(--sipsr-primary) !important;
+}
+
+.bg-primary.bg-opacity-10 {
+    background-color: rgba(var(--sipsr-primary-rgb), 0.1) !important;
+}
 
 .bg-sipsr-gradient {
     background: linear-gradient(135deg, #1a2e0a 0%, #3B6D11 50%, #4a8a15 100%);
@@ -263,7 +314,10 @@ body {
 }
 
 /* ─── Responsive ────────────────────────────────────────── */
-@media (max-width: 767.98px) {
+
+/* --- Tablet & below (≤991px) --- */
+@media (max-width: 991.98px) {
+    /* Sidebar: off-canvas on tablets */
     .sidebar {
         position: fixed;
         top: 0;
@@ -275,6 +329,209 @@ body {
     .sidebar.show {
         transform: translateX(0);
     }
+
+    /* Dashboard: 2 cards per row instead of 4 */
+    .row.g-3 > .col-md-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    /* Charts: stack vertically */
+    .row.g-4 > .col-md-4,
+    .row.g-4 > .col-md-8 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Dashboard summary tables: stack */
+    .row.g-4 > .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* --- Mobile / Small screens (≤767px) --- */
+@media (max-width: 767.98px) {
+    /* Reduce main padding on mobile */
+    .container-fluid.p-4 {
+        padding: 1rem !important;
+    }
+
+    /* Page headers: stack title and button */
+    .d-flex.flex-wrap.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .d-flex.flex-wrap.justify-content-between > a.btn,
+    .d-flex.flex-wrap.justify-content-between > .btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    /* Card headers: stack on mobile */
+    .card-header.d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start !important;
+    }
+
+    /* Dashboard stat cards: 1 per row on phones */
+    .row.g-3 > .col-md-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Table font size reduction */
+    .table {
+        font-size: 0.8rem;
+    }
+
+    .table thead th {
+        font-size: 0.7rem;
+        padding: 0.5rem 0.4rem;
+    }
+
+    .table tbody td {
+        padding: 0.5rem 0.4rem;
+    }
+
+    /* Hide less important table columns on mobile */
+    .table .d-mobile-none {
+        display: none !important;
+    }
+
+    /* Action buttons: smaller on mobile */
+    .btn-group-sm .btn {
+        padding: 0.2rem 0.35rem;
+        font-size: 0.75rem;
+    }
+
+    /* Filter form: stack nicely */
+    .card-body .row.g-3 > [class*="col-md-"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Filter buttons: full width */
+    .card-body .row.g-3 > .col-md-2.d-flex {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Pagination: compact on mobile */
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.15rem;
+    }
+
+    .pagination .page-link {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    /* Badge text: smaller on mobile */
+    .badge {
+        font-size: 0.65rem;
+        padding: 0.3em 0.5em;
+    }
+
+    /* Chart containers: reduce min-height on mobile */
+    .card-body[style*="min-height: 350px"] {
+        min-height: 280px !important;
+    }
+
+    /* Login page: full width */
+    .login-container {
+        max-width: 100%;
+        padding: 0.75rem;
+    }
+
+    /* Detail page metadata: stack */
+    .row.g-3 > .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* --- Extra Small (≤575px) --- */
+@media (max-width: 575.98px) {
+    /* Even more compact */
+    .container-fluid.p-4 {
+        padding: 0.75rem !important;
+    }
+
+    /* Page titles smaller */
+    h1.h3, .h3 {
+        font-size: 1.15rem;
+    }
+
+    h4.fw-bold {
+        font-size: 1.1rem;
+    }
+
+    /* Navbar: compact */
+    #top-navbar {
+        padding: 0.4rem 0.75rem !important;
+    }
+
+    /* Role badge: smaller */
+    #top-navbar .badge {
+        font-size: 0.65rem;
+        padding: 0.25em 0.5em;
+    }
+
+    /* Card body padding */
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    /* Stat card numbers */
+    .card-body h4 {
+        font-size: 1.25rem;
+    }
+
+    /* Hide "Tampilkan:" label on very small screens */
+    .card-header label[for="per-page"] {
+        display: none;
+    }
+}
+
+/* --- Landscape phones / small tablets (height-constrained) --- */
+@media (max-height: 500px) and (orientation: landscape) {
+    .sidebar {
+        overflow-y: auto;
+    }
+
+    .sidebar-header {
+        padding: 0.5rem 0.75rem !important;
+    }
+
+    .sidebar-link {
+        padding: 0.35rem 0.85rem;
+        font-size: 0.8rem;
+    }
+
+    .sidebar-footer {
+        padding: 0.5rem 0.75rem !important;
+    }
+}
+
+/* --- Print styles --- */
+@media print {
+    .sidebar, #top-navbar, .sidebar-overlay, .btn, .pagination, .card-header .d-flex {
+        display: none !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+
+    .container-fluid {
+        padding: 0 !important;
+    }
 }
 
 /* ─── Animations ────────────────────────────────────────── */
@@ -283,6 +540,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -293,9 +551,17 @@ body {
     animation: fadeInUp 0.4s ease forwards;
 }
 
-.card:nth-child(2) { animation-delay: 0.05s; }
-.card:nth-child(3) { animation-delay: 0.1s; }
-.card:nth-child(4) { animation-delay: 0.15s; }
+.card:nth-child(2) {
+    animation-delay: 0.05s;
+}
+
+.card:nth-child(3) {
+    animation-delay: 0.1s;
+}
+
+.card:nth-child(4) {
+    animation-delay: 0.15s;
+}
 
 /* ─── Loading State ─────────────────────────────────────── */
 .btn.is-loading {

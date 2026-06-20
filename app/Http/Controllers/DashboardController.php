@@ -40,7 +40,7 @@ class DashboardController extends Controller
 
         // Tabel Terbaru
         $latestDocuments = Document::with(['category', 'uploader'])->latest()->take(5)->get();
-        $latestActivities = ActivityLog::with('user')->latest()->take(10)->get();
+        $latestActivities = ActivityLog::with('user')->latest()->take(5)->get();
 
         return view('dashboard.index', compact(
             'totalDokumen', 'uploadBulanIni', 'totalUserAktif', 'kategoriTerbanyak',

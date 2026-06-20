@@ -136,7 +136,7 @@
                             <input type="file" class="form-control @error('file') is-invalid @enderror"
                                    id="file" name="file"
                                    accept=".pdf,.doc,.docx" required>
-                            <div class="form-text">Format: PDF, DOC, DOCX · Maks: 20MB</div>
+                            <div class="form-text">Format: PDF, DOC, DOCX · Maks: 500 MB</div>
                             @error('file')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

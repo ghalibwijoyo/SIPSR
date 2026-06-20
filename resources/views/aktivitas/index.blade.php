@@ -70,8 +70,8 @@
                     @forelse($logs as $log)
                     <tr>
                         <td class="ps-4 small text-muted text-nowrap">
-                            {{ $log->created_at->format('d M Y') }}<br>
-                            <span class="fw-semibold text-dark">{{ $log->created_at->format('H:i:s') }}</span>
+                            {{ $log->created_at?->format('d M Y') ?? '-' }}<br>
+                            <span class="fw-semibold text-dark">{{ $log->created_at?->format('H:i:s') ?? '' }}</span>
                         </td>
                         <td>
                             <div class="fw-bold">{{ $log->user->nama_lengkap ?? '-' }}</div>
@@ -108,8 +108,8 @@
         </div>
     </div>
     @if($logs->hasPages())
-    <div class="card-footer bg-white py-3 border-top-0">
-        {{ $logs->links() }}
+    <div class="card-footer bg-white border-top py-3 d-flex justify-content-center align-items-center w-100">
+        {{ $logs->links('vendor.pagination.bootstrap-5') }}
     </div>
     @endif
 </div>

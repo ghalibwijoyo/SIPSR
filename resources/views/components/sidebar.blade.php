@@ -1,5 +1,5 @@
 {{-- Sidebar Overlay for Mobile --}}
-<div class="sidebar-overlay d-md-none" id="sidebar-overlay"></div>
+<div class="sidebar-overlay d-lg-none" id="sidebar-overlay"></div>
 
 {{-- Sidebar --}}
 <aside class="sidebar d-flex flex-column" id="sidebar">

@@ -26,19 +26,9 @@
             </ul>
         </div>
 
-        <div class="d-none flex-sm-fill d-sm-flex align-items-sm-center justify-content-sm-between">
-            <div class="small text-muted">
-                {!! __('Showing') !!}
-                <span class="fw-semibold">{{ $paginator->firstItem() }}</span>
-                {!! __('to') !!}
-                <span class="fw-semibold">{{ $paginator->lastItem() }}</span>
-                {!! __('of') !!}
-                <span class="fw-semibold">{{ $paginator->total() }}</span>
-                {!! __('results') !!}
-            </div>
-
-            <div>
-                <ul class="pagination">
+        <div class="d-none flex-sm-fill d-sm-flex flex-column align-items-center justify-content-center">
+            <div class="mb-2">
+                <ul class="pagination mb-0 ">
                     {{-- Previous Page Link --}}
                     @if ($paginator->onFirstPage())
                         <li class="page-item disabled" aria-disabled="true" aria-label="@lang('pagination.previous')">
@@ -80,6 +70,16 @@
                         </li>
                     @endif
                 </ul>
+            </div>
+
+            <div class="small text-muted text-center mt-1">
+                Menampilkan
+                <span class="fw-semibold">{{ $paginator->firstItem() }}</span>
+                –
+                <span class="fw-semibold">{{ $paginator->lastItem() }}</span>
+                dari
+                <span class="fw-semibold">{{ $paginator->total() }}</span>
+                data
             </div>
         </div>
     </nav>
