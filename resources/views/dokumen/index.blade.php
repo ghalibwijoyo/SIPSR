@@ -83,15 +83,29 @@
             <span class="badge bg-secondary ms-1">{{ $documents->total() }}</span>
         </h5>
 
-        {{-- Per page selector --}}
-        <div class="d-flex align-items-center gap-2">
-            <label for="per-page" class="form-label mb-0 small text-muted">Tampilkan:</label>
-            <select class="form-select form-select-sm" id="per-page" style="width: auto;"
-                    onchange="updatePerPage(this.value)">
-                @foreach([100, 250, 500] as $pp)
-                    <option value="{{ $pp }}" {{ request('per_page', 100) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
-                @endforeach
-            </select>
+        {{-- Per page selector & Bulk Actions --}}
+        <div class="d-flex align-items-center gap-3">
+            {{-- Bulk Actions (Hidden by default) --}}
+            <div id="bulk-actions" class="d-none align-items-center gap-2">
+                <span class="small text-muted me-2"><span id="selected-count">0</span> terpilih</span>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="submitBulkDelete()" title="Hapus Terpilih">
+                    <i class="bi bi-trash"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" onclick="submitBulkDownload()" title="Download Terpilih">
+                    <i class="bi bi-download"></i>
+                </button>
+            </div>
+
+            {{-- Per page selector --}}
+            <div class="d-flex align-items-center gap-2">
+                <label for="per-page" class="form-label mb-0 small text-muted">Tampilkan:</label>
+                <select class="form-select form-select-sm" id="per-page" style="width: auto;"
+                        onchange="updatePerPage(this.value)">
+                    @foreach([100, 250, 500] as $pp)
+                        <option value="{{ $pp }}" {{ request('per_page', 100) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
     </div>
 
@@ -100,7 +114,12 @@
             <table class="table table-striped table-hover align-middle mb-0" id="dokumen-table">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-3 d-mobile-none" style="width: 50px;">No</th>
+                        <th class="ps-3" style="width: 40px;">
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
+                            </div>
+                        </th>
+                        <th class="d-mobile-none" style="width: 50px;">No</th>
                         <th class="d-mobile-none">
                             <a href="{{ route('dokumen.index', array_merge(request()->all(), ['sort' => 'nomor_dokumen', 'dir' => request('sort') == 'nomor_dokumen' && request('dir') == 'asc' ? 'desc' : 'asc'])) }}"
                                class="text-decoration-none text-muted">
@@ -136,7 +155,12 @@
                 <tbody>
                     @forelse($documents as $i => $doc)
                     <tr>
-                        <td class="ps-3 text-muted d-mobile-none">{{ $documents->firstItem() + $i }}</td>
+                        <td class="ps-3">
+                            <div class="form-check m-0">
+                                <input class="form-check-input row-checkbox" type="checkbox" value="{{ $doc->id }}">
+                            </div>
+                        </td>
+                        <td class="text-muted d-mobile-none">{{ $documents->firstItem() + $i }}</td>
                         <td class="d-mobile-none">
                             <code class="text-sipsr-primary fw-semibold">{{ $doc->nomor_dokumen }}</code>
                         </td>
@@ -194,11 +218,11 @@
 
         {{-- Scroll to Top Button --}}
         <button type="button" onclick="document.querySelector('main').scrollTo({top: 0, behavior: 'smooth'})" 
-                class="btn btn-light btn-sm rounded-circle border shadow-sm d-flex align-items-center justify-content-center text-muted position-absolute" 
+                class="btn btn-primary btn-sm rounded-circle border shadow-sm d-flex align-items-center justify-content-center text-muted position-absolute" 
                 title="Kembali ke atas" style="width: 38px; height: 38px; right: 1.5rem; transition: all 0.2s ease;" 
                 onmouseover="this.style.transform='translateY(-3px)'; this.classList.remove('text-muted'); this.classList.add('text-sipsr-primary', 'border-sipsr');" 
                 onmouseout="this.style.transform='translateY(0)'; this.classList.add('text-muted'); this.classList.remove('text-sipsr-primary', 'border-sipsr');">
-            <i class="bi bi-arrow-up fs-5"></i>
+            <i class="bi bi-arrow-up fs-5 text-white"></i>
         </button>
     </div>
 </div>
@@ -206,6 +230,108 @@
 
 @push('scripts')
 <script>
+// Bulk Actions Logic
+const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+const bulkActions = document.getElementById('bulk-actions');
+const selectedCount = document.getElementById('selected-count');
+
+function updateBulkActions() {
+    const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
+    selectedCount.textContent = checkedCount;
+    if (checkedCount > 0) {
+        bulkActions.classList.remove('d-none');
+        bulkActions.classList.add('d-flex');
+    } else {
+        bulkActions.classList.remove('d-flex');
+        bulkActions.classList.add('d-none');
+    }
+}
+
+if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+        rowCheckboxes.forEach(cb => cb.checked = this.checked);
+        updateBulkActions();
+    });
+}
+
+rowCheckboxes.forEach(cb => {
+    cb.addEventListener('change', function() {
+        if (!this.checked && selectAllCheckbox.checked) {
+            selectAllCheckbox.checked = false;
+        }
+        const allChecked = document.querySelectorAll('.row-checkbox:checked').length === rowCheckboxes.length;
+        if (allChecked && rowCheckboxes.length > 0) {
+            selectAllCheckbox.checked = true;
+        }
+        updateBulkActions();
+    });
+});
+
+function getSelectedIds() {
+    return Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value);
+}
+
+function submitBulkDelete() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) return;
+    
+    if (confirm(`Apakah Anda yakin ingin menghapus ${ids.length} dokumen yang dipilih ke Recycle Bin?`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("dokumen.bulk-delete") }}';
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+        
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        form.appendChild(methodField);
+        
+        ids.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'ids[]';
+            input.value = id;
+            form.appendChild(input);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function submitBulkDownload() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) return;
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ route("dokumen.bulk-download") }}';
+    
+    const csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = '_token';
+    csrfToken.value = '{{ csrf_token() }}';
+    form.appendChild(csrfToken);
+    
+    ids.forEach(id => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'ids[]';
+        input.value = id;
+        form.appendChild(input);
+    });
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
 function updatePerPage(val) {
     const url = new URL(window.location.href);
     url.searchParams.set('per_page', val);

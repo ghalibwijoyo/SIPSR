@@ -42,6 +42,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // ── Dokumen ─────────────────────────────────────────
+    Route::post('/dokumen/bulk-download', [DocumentController::class, 'bulkDownload'])->name('dokumen.bulk-download');
+    Route::delete('/dokumen/bulk-delete', [DocumentController::class, 'bulkDestroy'])->name('dokumen.bulk-delete');
     Route::get('/dokumen', [DocumentController::class, 'index'])->name('dokumen.index');
     Route::get('/dokumen/create', [DocumentController::class, 'create'])->name('dokumen.create');
     Route::post('/dokumen', [DocumentController::class, 'store'])->name('dokumen.store');

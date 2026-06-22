@@ -250,6 +250,67 @@ class DocumentController extends Controller
     }
 
     /**
+     * Bulk Soft delete → Recycle Bin.
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:documents,id'
+        ]);
+
+        $documents = Document::whereIn('id', $request->ids)->get();
+        foreach ($documents as $dokumen) {
+            $dokumen->update([
+                'deleted_by_id' => auth()->id(),
+            ]);
+            $dokumen->delete();
+            $this->logActivity('HAPUS_DOKUMEN', 'Menghapus dokumen massal: ' . $dokumen->nama_dokumen, $dokumen->id);
+        }
+
+        return redirect()->route('dokumen.index')
+            ->with('success', count($documents) . ' dokumen berhasil dipindahkan ke Recycle Bin.');
+    }
+
+    /**
+     * Bulk Download file as ZIP.
+     */
+    public function bulkDownload(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:documents,id'
+        ]);
+
+        $documents = Document::whereIn('id', $request->ids)->get();
+        if ($documents->isEmpty()) {
+            return back()->with('error', 'Tidak ada dokumen yang dipilih.');
+        }
+
+        $zip = new \ZipArchive();
+        $zipFileName = 'SIPSR_Bulk_Download_' . now()->format('Ymd_His') . '.zip';
+        // Simpan sementara di storage/app/public
+        $zipFilePath = storage_path('app/public/' . $zipFileName);
+
+        if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+            foreach ($documents as $dokumen) {
+                if (\Storage::disk('local')->exists($dokumen->file_path)) {
+                    $absolutePath = \Storage::disk('local')->path($dokumen->file_path);
+                    $safeName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $dokumen->nomor_dokumen) . '_' . $dokumen->file_name;
+                    $zip->addFile($absolutePath, $safeName);
+                    
+                    $this->logActivity('DOWNLOAD_DOKUMEN', 'Mengunduh dokumen massal (ZIP): ' . $dokumen->nama_dokumen, $dokumen->id);
+                }
+            }
+            $zip->close();
+        } else {
+            return back()->with('error', 'Gagal membuat file ZIP.');
+        }
+
+        return response()->download($zipFilePath)->deleteFileAfterSend(true);
+    }
+
+    /**
      * Download file (auth check via middleware).
      */
     public function download(Document $dokumen)
