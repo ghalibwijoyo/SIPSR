@@ -101,7 +101,7 @@
                 <label for="per-page" class="form-label mb-0 small text-muted">Tampilkan:</label>
                 <select class="form-select form-select-sm" id="per-page" style="width: auto;"
                         onchange="updatePerPage(this.value)">
-                    @foreach([100, 250, 500] as $pp)
+                    @foreach([50, 100, 250, 500] as $pp)
                         <option value="{{ $pp }}" {{ request('per_page', 100) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
                     @endforeach
                 </select>

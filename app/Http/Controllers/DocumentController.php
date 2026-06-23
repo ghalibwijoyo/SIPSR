@@ -59,7 +59,7 @@ class DocumentController extends Controller
         $query->orderBy($sortCol, $sortDir);
 
         // ── Pagination ──────────────────────────────────────
-        $perPage = in_array($request->input('per_page'), [100, 250, 500]) ? (int) $request->per_page : 100;
+        $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 100;
 
         $documents  = $query->paginate($perPage)->withQueryString();
         $categories = Category::orderBy('nama')->get();
