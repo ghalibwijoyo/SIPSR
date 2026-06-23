@@ -223,7 +223,7 @@
     </div>
 
     {{-- Footer Actions / Pagination --}}
-    <div class="card-footer bg-white border-0 pb-3 pt-2 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 60px;">
+    <div class="card-footer bg-white border-top-0 pb-3 pt-2 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 60px;">
         @if($documents->hasPages())
             {{ $documents->links('vendor.pagination.bootstrap-5') }}
         @endif

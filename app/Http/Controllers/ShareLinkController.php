@@ -16,11 +16,22 @@ class ShareLinkController extends Controller
      */
     public function store(Request $request, Document $dokumen)
     {
+        $request->validate([
+            'is_permanent' => 'nullable|boolean',
+            'duration_hours' => 'nullable|integer|min:1|max:168'
+        ]);
+
+        $expiredAt = null;
+        if (!$request->boolean('is_permanent')) {
+            $hours = $request->input('duration_hours', 168); // default 7 hari
+            $expiredAt = now()->addHours($hours);
+        }
+
         $link = DocumentShareLink::create([
             'document_id' => $dokumen->id,
             'token' => Str::uuid(),
             'created_by_id' => Auth::id(),
-            'expired_at' => now()->addDays(7),
+            'expired_at' => $expiredAt,
         ]);
 
         ActivityLog::create([
@@ -40,7 +51,7 @@ class ShareLinkController extends Controller
             'data' => [
                 'token' => $link->token,
                 'url' => route('share.show', $link->token),
-                'expired_at' => $link->expired_at->format('d M Y H:i'),
+                'expired_at' => $link->expired_at ? $link->expired_at->format('d M Y H:i') : 'Tanpa batas waktu',
                 'id' => $link->id
             ]
         ]);

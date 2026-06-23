@@ -134,18 +134,18 @@
                                         </button>
                                     </div>
                                 </td>
-                                <td class="small">{{ $link->expired_at->format('d/m/Y H:i') }}</td>
+                                <td class="small">{{ $link->expired_at ? $link->expired_at->format('d/m/Y H:i') : '-' }}</td>
                                 <td class="small">
                                     @if($link->revoked_at)
                                         <span class="badge bg-danger">Dicabut</span>
-                                    @elseif($link->expired_at < now())
+                                    @elseif($link->expired_at && $link->expired_at < now())
                                         <span class="badge bg-warning text-dark">Kedaluwarsa</span>
                                     @else
                                         <span class="badge bg-success">Aktif</span>
                                     @endif
                                 </td>
                                 <td class="text-end pe-3 text-nowrap">
-                                    @if(!$link->revoked_at && $link->expired_at >= now())
+                                    @if(!$link->revoked_at && (!$link->expired_at || $link->expired_at >= now()))
                                     <form method="POST" action="{{ route('share.revoke', $link->id) }}" class="d-inline" onsubmit="return confirm('Cabut tautan ini?')">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-1" title="Cabut Tautan">
@@ -255,7 +255,33 @@
             </div>
             <div class="modal-body">
                 <p>Buat tautan baru untuk membagikan dokumen <strong>{{ $dokumen->nama_dokumen }}</strong>.</p>
-                <p class="small text-muted mb-4"><i class="bi bi-info-circle me-1"></i> Tautan akan berlaku selama 7 hari sejak dibuat.</p>
+                
+                <div class="mb-4">
+                    <div class="form-check form-switch mb-3 pb-3 border-bottom">
+                        <input class="form-check-input" type="checkbox" role="switch" id="isPermanentLink">
+                        <label class="form-check-label fw-semibold small" for="isPermanentLink">Tautan Permanen (Selamanya)</label>
+                        <div class="form-text" style="font-size: 0.75rem;">Tautan tidak otomatis kedaluwarsa, namun akses tetap dapat dicabut manual kapan saja.</div>
+                    </div>
+
+                    <div class="duration-wrapper transition-all overflow-hidden" id="durationWrapper" style="max-height: 150px; opacity: 1; transform-origin: top;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="linkDuration" class="form-label fw-semibold mb-0 small text-muted">Atur Masa Berlaku:</label>
+                            <span id="durationValue" class="badge bg-sipsr-primary px-3 py-1 shadow-sm transition-all" style="font-size: 0.8rem;">7 Hari</span>
+                        </div>
+                        <div class="duration-control-container px-1 pt-1 pb-2">
+                            <input type="range" class="form-range custom-sipsr-range" id="linkDuration" min="1" max="168" step="1" value="168" list="magnetic-points">
+                            <datalist id="magnetic-points">
+                                <option value="24"></option>
+                                <option value="48"></option>
+                                <option value="72"></option>
+                                <option value="96"></option>
+                                <option value="120"></option>
+                                <option value="144"></option>
+                                <option value="168"></option>
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
                 
                 <div id="share-result" class="d-none">
                     <div class="mb-3">
@@ -281,6 +307,48 @@
     </div>
 </div>
 
+<style>
+/* SIPSR Custom Range Slider */
+.custom-sipsr-range {
+    height: 6px;
+    border-radius: 5px;
+    background: #e9ecef;
+    outline: none;
+    -webkit-appearance: none;
+}
+.custom-sipsr-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bs-green, #198754);
+    border: 3px solid white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.custom-sipsr-range::-webkit-slider-thumb:active {
+    transform: scale(1.3);
+}
+.custom-sipsr-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bs-green, #198754);
+    border: 3px solid white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.custom-sipsr-range::-moz-range-thumb:active {
+    transform: scale(1.3);
+}
+.transition-all {
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+</style>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Copy existing links
@@ -302,6 +370,58 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Duration Configuration Logic
+    const durationInput = document.getElementById('linkDuration');
+    const durationValue = document.getElementById('durationValue');
+    const isPermanentToggle = document.getElementById('isPermanentLink');
+    const sliderContainer = document.querySelector('.duration-control-container');
+    const durationLabel = document.querySelector('label[for="linkDuration"]');
+
+    function formatDuration(hours) {
+        if (hours < 24) {
+            return hours + ' Jam';
+        } else {
+            const days = Math.floor(hours / 24);
+            const remainder = hours % 24;
+            if (remainder === 0) {
+                return days + ' Hari';
+            } else {
+                return days + ' Hari ' + remainder + ' Jam';
+            }
+        }
+    }
+
+    if (durationInput && durationValue && isPermanentToggle) {
+        durationInput.addEventListener('input', function() {
+            durationValue.textContent = formatDuration(this.value);
+            // Bouncy text effect
+            durationValue.style.transform = 'scale(1.15)';
+            setTimeout(() => {
+                durationValue.style.transform = 'scale(1)';
+            }, 150);
+        });
+        
+        isPermanentToggle.addEventListener('change', function() {
+            if (this.checked) {
+                durationInput.disabled = true;
+                durationValue.textContent = 'Permanen';
+                durationValue.classList.replace('bg-sipsr-primary', 'bg-primary');
+                sliderContainer.style.opacity = '0.3';
+                sliderContainer.style.pointerEvents = 'none';
+                sliderContainer.style.filter = 'grayscale(100%)';
+                if (durationLabel) durationLabel.style.opacity = '0.3';
+            } else {
+                durationInput.disabled = false;
+                durationValue.textContent = formatDuration(durationInput.value);
+                durationValue.classList.replace('bg-primary', 'bg-sipsr-primary');
+                sliderContainer.style.opacity = '1';
+                sliderContainer.style.pointerEvents = 'auto';
+                sliderContainer.style.filter = 'grayscale(0%)';
+                if (durationLabel) durationLabel.style.opacity = '1';
+            }
+        });
+    }
+
     // Generate new link
     const btnGenerate = document.getElementById('btn-generate-link');
     const spinner = document.getElementById('generate-spinner');
@@ -319,12 +439,19 @@ document.addEventListener('DOMContentLoaded', function() {
             icon.classList.add('d-none');
             
             try {
+                const isPermanent = document.getElementById('isPermanentLink')?.checked || false;
+                const duration = document.getElementById('linkDuration')?.value || 168;
+
                 const response = await fetch(`{{ route('dokumen.share', $dokumen->id) }}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
+                    },
+                    body: JSON.stringify({
+                        is_permanent: isPermanent,
+                        duration_hours: parseInt(duration)
+                    })
                 });
                 
                 const result = await response.json();
