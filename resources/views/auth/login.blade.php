@@ -3,8 +3,12 @@
 @section('title', 'Login — SIPSR')
 
 @section('content')
-<div class="login-container">
-    <div class="card login-card shadow-lg border-0">
+{{-- Antigravity Blob --}}
+<div id="blob"></div>
+<div id="blur"></div>
+
+<div class="login-container position-relative" style="z-index: 2;">
+    <div class="card login-card shadow-lg border-0" style="background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);">
         <div class="card-body p-4 p-md-5">
             {{-- Logo --}}
             <div class="text-center mb-4">
@@ -87,5 +91,52 @@
             icon.classList.replace('bi-eye-slash-fill', 'bi-eye-fill');
         }
     });
+
+    // Antigravity Mouse Follower
+    const blob = document.getElementById("blob");
+    window.addEventListener('pointermove', event => { 
+        const { clientX, clientY } = event;
+        blob.animate({
+            left: `${clientX}px`,
+            top: `${clientY}px`
+        }, { duration: 3000, fill: "forwards" });
+    });
 </script>
+
+<style>
+/* Antigravity Blob Styles */
+body.bg-sipsr-gradient {
+    /* Make the base background a bit darker so the glowing blob pops out */
+    background: #0f1c05 !important; 
+    margin: 0;
+    overflow: hidden;
+}
+
+#blob {
+    background: linear-gradient(to right, #4a8a15, #8bc34a); /* SIPSR Greens */
+    height: 400px;
+    aspect-ratio: 1;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    border-radius: 50%;
+    animation: rotateBlob 20s infinite;
+    opacity: 0.6;
+    z-index: 0;
+    filter: blur(80px);
+}
+
+@keyframes rotateBlob {
+    from {
+        rotate: 0deg;
+    }
+    50% {
+        scale: 1 1.5;
+    }
+    to {
+        rotate: 360deg;
+    }
+}
+</style>
 @endpush
