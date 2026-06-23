@@ -109,8 +109,8 @@
         </div>
     </div>
 
-    <div class="card-body p-0">
-        <div class="table-responsive">
+    <div class="card-body p-0 border-bottom">
+        <div class="table-responsive" style="min-height: 400px;">
             <table class="table table-striped table-hover align-middle mb-0" id="dokumen-table">
                 <thead class="table-light">
                     <tr>
@@ -210,26 +210,48 @@
         </div>
     </div>
 
+    {{-- Scroll to Top Button (Floating & Confined to Card) --}}
+    <div class="w-100 d-flex justify-content-center scroll-top-wrapper" id="scrollTopBtn">
+        <button type="button" onclick="document.querySelector('main').scrollTo({top: 0, behavior: 'smooth'})" 
+                class="btn bg-sipsr-primary text-white btn-sm rounded-circle shadow d-flex align-items-center justify-content-center p-0" 
+                title="Kembali ke atas" 
+                style="width: 32px; height: 32px; pointer-events: auto; transition: all 0.3s ease;" 
+                onmouseover="this.style.transform='translateY(-3px)';" 
+                onmouseout="this.style.transform='translateY(0)';">
+            <i class="bi bi-arrow-up fs-6"></i>
+        </button>
+    </div>
+
     {{-- Footer Actions / Pagination --}}
-    <div class="card-footer bg-white border-top py-3 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 60px;">
+    <div class="card-footer bg-white border-0 pb-3 pt-2 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 60px;">
         @if($documents->hasPages())
             {{ $documents->links('vendor.pagination.bootstrap-5') }}
         @endif
-
-        {{-- Scroll to Top Button --}}
-        <button type="button" onclick="document.querySelector('main').scrollTo({top: 0, behavior: 'smooth'})" 
-                class="btn bg-sipsr-primary text-white btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center position-absolute" 
-                title="Kembali ke atas" 
-                style="width: 38px; height: 38px; right: 1.5rem; transition: all 0.2s ease;" 
-                onmouseover="this.style.transform='translateY(-3px)';" 
-                onmouseout="this.style.transform='translateY(0)';">
-            <i class="bi bi-arrow-up fs-5"></i>
-        </button>
     </div>
 </div>
+
 @endsection
 
 @push('scripts')
+<style>
+.scroll-top-wrapper {
+    position: sticky; 
+    bottom: 30px; /* Jarak melayang dari bawah viewport */
+    z-index: 1050; 
+    pointer-events: none;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(30px);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Efek memantul khas SIPSR */
+}
+.scroll-top-wrapper.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+</style>
 <script>
 // Bulk Actions Logic
 const selectAllCheckbox = document.getElementById('selectAllCheckbox');
@@ -338,6 +360,24 @@ function updatePerPage(val) {
     url.searchParams.set('per_page', val);
     url.searchParams.delete('page');
     window.location.href = url.toString();
+}
+
+// Scroll to top visibility
+const filterCard = document.getElementById('filter-card');
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+if (filterCard && scrollTopBtn) {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) {
+                scrollTopBtn.classList.add('show');
+            } else {
+                scrollTopBtn.classList.remove('show');
+            }
+        });
+    }, { root: document.querySelector('main'), threshold: 0 });
+    
+    observer.observe(filterCard);
 }
 </script>
 @endpush
