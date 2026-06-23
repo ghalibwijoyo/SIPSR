@@ -22,6 +22,14 @@ class RecycleBinController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
+        // ── Filter: search ──────────────────────────────────
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('nama_dokumen', 'like', '%' . $request->search . '%')
+                  ->orWhere('nomor_dokumen', 'like', '%' . $request->search . '%');
+            });
+        }
+
         // ── Filter: date range ──────────────────────────────
         if ($request->filled('tanggal_dari')) {
             $query->whereDate('deleted_at', '>=', $request->tanggal_dari);
@@ -30,7 +38,10 @@ class RecycleBinController extends Controller
             $query->whereDate('deleted_at', '<=', $request->tanggal_sampai);
         }
 
-        $documents = $query->orderBy('deleted_at', 'desc')->paginate(20)->withQueryString();
+        // ── Pagination ──────────────────────────────────────
+        $perPage = in_array($request->input('per_page'), [100, 250, 500]) ? (int) $request->per_page : 100;
+
+        $documents = $query->orderBy('deleted_at', 'desc')->paginate($perPage)->withQueryString();
         $categories = Category::orderBy('nama')->get();
 
         return view('recycle-bin.index', compact('documents', 'categories'));

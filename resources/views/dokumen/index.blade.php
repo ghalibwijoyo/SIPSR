@@ -218,11 +218,12 @@
 
         {{-- Scroll to Top Button --}}
         <button type="button" onclick="document.querySelector('main').scrollTo({top: 0, behavior: 'smooth'})" 
-                class="btn btn-primary btn-sm rounded-circle border shadow-sm d-flex align-items-center justify-content-center text-muted position-absolute" 
-                title="Kembali ke atas" style="width: 38px; height: 38px; right: 1.5rem; transition: all 0.2s ease;" 
-                onmouseover="this.style.transform='translateY(-3px)'; this.classList.remove('text-muted'); this.classList.add('text-sipsr-primary', 'border-sipsr');" 
-                onmouseout="this.style.transform='translateY(0)'; this.classList.add('text-muted'); this.classList.remove('text-sipsr-primary', 'border-sipsr');">
-            <i class="bi bi-arrow-up fs-5 text-white"></i>
+                class="btn bg-sipsr-primary text-white btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center position-absolute" 
+                title="Kembali ke atas" 
+                style="width: 38px; height: 38px; right: 1.5rem; transition: all 0.2s ease;" 
+                onmouseover="this.style.transform='translateY(-3px)';" 
+                onmouseout="this.style.transform='translateY(0)';">
+            <i class="bi bi-arrow-up fs-5"></i>
         </button>
     </div>
 </div>

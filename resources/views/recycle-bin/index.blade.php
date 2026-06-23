@@ -8,32 +8,60 @@
 </div>
 
 <!-- Filter Section -->
-<div class="card mb-4 shadow-sm border-0">
+<div class="card border-0 shadow-sm mb-4" id="filter-card">
     <div class="card-body">
-        <form action="{{ route('recycle-bin.index') }}" method="GET" class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label for="category_id" class="form-label text-muted small fw-bold">Kategori</label>
-                <select name="category_id" id="category_id" class="form-select">
-                    <option value="">Semua Kategori</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                            {{ $category->nama }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="tanggal_dari" class="form-label text-muted small fw-bold">Dihapus Dari</label>
-                <input type="date" class="form-control" id="tanggal_dari" name="tanggal_dari" value="{{ request('tanggal_dari') }}">
-            </div>
-            <div class="col-md-3">
-                <label for="tanggal_sampai" class="form-label text-muted small fw-bold">Dihapus Sampai</label>
-                <input type="date" class="form-control" id="tanggal_sampai" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}">
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-funnel me-1"></i> Filter
-                </button>
+        <form method="GET" action="{{ route('recycle-bin.index') }}" id="filter-form">
+            <div class="row g-3 align-items-end">
+                {{-- Search --}}
+                <div class="col-md-4">
+                    <label for="filter-search" class="form-label small fw-semibold">
+                        <i class="bi bi-search me-1"></i>Pencarian
+                    </label>
+                    <input type="text" class="form-control" id="filter-search" name="search"
+                           value="{{ request('search') }}"
+                           placeholder="Nomor atau nama dokumen…">
+                </div>
+
+                {{-- Category --}}
+                <div class="col-md-2">
+                    <label for="filter-category" class="form-label small fw-semibold">
+                        <i class="bi bi-folder me-1"></i>Kategori
+                    </label>
+                    <select class="form-select" id="filter-category" name="category_id">
+                        <option value="">Semua Kategori</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Date Range --}}
+                <div class="col-md-2">
+                    <label for="filter-tanggal-dari" class="form-label small fw-semibold">
+                        <i class="bi bi-calendar-event me-1"></i>Dari Tanggal
+                    </label>
+                    <input type="date" class="form-control" id="filter-tanggal-dari" name="tanggal_dari"
+                           value="{{ request('tanggal_dari') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="filter-tanggal-sampai" class="form-label small fw-semibold">
+                        Sampai Tanggal
+                    </label>
+                    <input type="date" class="form-control" id="filter-tanggal-sampai" name="tanggal_sampai"
+                           value="{{ request('tanggal_sampai') }}">
+                </div>
+
+                {{-- Buttons --}}
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-success flex-grow-1" id="btn-filter">
+                        <i class="bi bi-funnel me-1"></i>Filter
+                    </button>
+                    <a href="{{ route('recycle-bin.index') }}" class="btn btn-secondary" id="btn-reset" title="Reset filter">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </div>
             </div>
         </form>
     </div>
@@ -41,12 +69,30 @@
 
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">Dokumen Terhapus</h6>
-        @if(auth()->user()->role === 'ADMIN' && $documents->count() > 0)
-        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#emptyModal">
-            <i class="bi bi-trash3 me-1"></i> Kosongkan Recycle Bin
-        </button>
-        @endif
+        <h5 class="card-title mb-0 fw-semibold">
+            <i class="bi bi-trash3 me-2 text-sipsr-primary"></i>
+            Dokumen Terhapus
+            <span class="badge bg-secondary ms-1">{{ $documents->total() }}</span>
+        </h5>
+        
+        <div class="d-flex align-items-center gap-3">
+            {{-- Per page selector --}}
+            <div class="d-flex align-items-center gap-2">
+                <label for="per-page" class="form-label mb-0 small text-muted">Tampilkan:</label>
+                <select class="form-select form-select-sm" id="per-page" style="width: auto;"
+                        onchange="updatePerPage(this.value)">
+                    @foreach([100, 250, 500] as $pp)
+                        <option value="{{ $pp }}" {{ request('per_page', 100) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            @if(auth()->user()->role === 'ADMIN' && $documents->count() > 0)
+            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#emptyModal">
+                <i class="bi bi-trash3 me-1"></i> Kosongkan Recycle Bin
+            </button>
+            @endif
+        </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -126,11 +172,22 @@
         </div>
         
     </div>
-    @if($documents->hasPages())
-    <div class="card-footer bg-white border-top py-3 d-flex justify-content-center align-items-center w-100">
-        {{ $documents->links('vendor.pagination.bootstrap-5') }}
+    
+    <div class="card-footer bg-white border-top py-3 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 60px;">
+        @if($documents->hasPages())
+            {{ $documents->links('vendor.pagination.bootstrap-5') }}
+        @endif
+        
+        {{-- Scroll to Top Button --}}
+        <button type="button" onclick="document.querySelector('main').scrollTo({top: 0, behavior: 'smooth'})" 
+                class="btn bg-sipsr-primary text-white btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center position-absolute" 
+                title="Kembali ke atas" 
+                style="width: 38px; height: 38px; right: 1.5rem; transition: all 0.2s ease;" 
+                onmouseover="this.style.transform='translateY(-3px)';" 
+                onmouseout="this.style.transform='translateY(0)';">
+            <i class="bi bi-arrow-up fs-5"></i>
+        </button>
     </div>
-    @endif
 </div>
 
 <!-- Empty Modal -->
@@ -162,3 +219,14 @@
 @endif
 
 @endsection
+
+@push('scripts')
+<script>
+function updatePerPage(val) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', val);
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
+}
+</script>
+@endpush
