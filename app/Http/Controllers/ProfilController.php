@@ -28,10 +28,12 @@ class ProfilController extends Controller
         if ($oldName !== $user->nama_lengkap) {
             ActivityLog::create([
                 'user_id' => $user->id,
+                'role_saat_itu' => $user->role,
                 'jenis_aktivitas' => 'EDIT_USER',
-                'deskripsi' => "Memperbarui nama profil dari $oldName menjadi " . $user->nama_lengkap,
+                'detail' => "Memperbarui nama profil dari $oldName menjadi " . $user->nama_lengkap,
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
+                'created_at' => now(),
             ]);
         }
 
@@ -59,10 +61,12 @@ class ProfilController extends Controller
 
         ActivityLog::create([
             'user_id' => $user->id,
+            'role_saat_itu' => $user->role,
             'jenis_aktivitas' => 'EDIT_USER',
-            'deskripsi' => 'Memperbarui password akun sendiri.',
+            'detail' => 'Memperbarui password akun sendiri.',
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
+            'created_at' => now(),
         ]);
 
         return redirect()->route('profil.show')->with('success', 'Password berhasil diperbarui.');

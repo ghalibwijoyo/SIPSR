@@ -18,8 +18,10 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Share Link Public Route
+// Share Link Public Routes (no auth required)
 Route::get('/share/{token}', [ShareViewController::class, 'show'])->name('share.show');
+Route::get('/share/{token}/download', [ShareViewController::class, 'download'])->name('share.download');
+Route::get('/share/{token}/preview', [ShareViewController::class, 'preview'])->name('share.preview');
 
 // Redirect root to dashboard or login
 Route::get('/', function () {

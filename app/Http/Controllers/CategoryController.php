@@ -26,10 +26,12 @@ class CategoryController extends Controller
 
         ActivityLog::create([
             'user_id' => request()->user()->id,
+            'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'TAMBAH_KATEGORI',
-            'deskripsi' => 'Menambahkan kategori baru: ' . $category->nama,
+            'detail' => 'Menambahkan kategori baru: ' . $category->nama,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
+            'created_at' => now(),
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
@@ -48,10 +50,12 @@ class CategoryController extends Controller
 
         ActivityLog::create([
             'user_id' => request()->user()->id,
+            'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'EDIT_KATEGORI',
-            'deskripsi' => "Memperbarui kategori: $oldName menjadi " . $category->nama,
+            'detail' => "Memperbarui kategori: $oldName menjadi " . $category->nama,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
+            'created_at' => now(),
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui.');
@@ -59,8 +63,8 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
-        if ($category->documents()->count() > 0) {
-            return redirect()->route('categories.index')->with('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh dokumen aktif.');
+        if ($category->documents()->withTrashed()->count() > 0) {
+            return redirect()->route('categories.index')->with('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh dokumen (termasuk di Recycle Bin).');
         }
 
         $name = $category->nama;
@@ -68,10 +72,12 @@ class CategoryController extends Controller
 
         ActivityLog::create([
             'user_id' => request()->user()->id,
+            'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'HAPUS_KATEGORI',
-            'deskripsi' => 'Menghapus kategori: ' . $name,
+            'detail' => 'Menghapus kategori: ' . $name,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
+            'created_at' => now(),
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus.');

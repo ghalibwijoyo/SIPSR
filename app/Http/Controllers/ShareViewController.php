@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DocumentShareLink;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ShareViewController extends Controller
 {
@@ -42,7 +43,78 @@ class ShareViewController extends Controller
             ]);
         }
 
-        // Jika valid, redirect ke halaman detail dokumen
-        return redirect()->route('dokumen.show', $link->document_id);
+        // Jika valid, tampilkan halaman share publik (tanpa auth)
+        $dokumen = $link->document->load('category');
+
+        return view('share.show', compact('dokumen', 'link'));
+    }
+
+    /**
+     * Download file via share link (public, tanpa auth)
+     */
+    public function download($token)
+    {
+        $link = $this->validateShareLink($token);
+        if ($link instanceof \Illuminate\View\View) {
+            return $link;
+        }
+
+        $dokumen = $link->document;
+
+        if (!Storage::disk('local')->exists($dokumen->file_path)) {
+            return view('share.invalid', [
+                'message' => 'File tidak ditemukan di server.'
+            ]);
+        }
+
+        return Storage::disk('local')->download($dokumen->file_path, $dokumen->file_name);
+    }
+
+    /**
+     * Preview / stream file via share link (public, tanpa auth)
+     */
+    public function preview($token)
+    {
+        $link = $this->validateShareLink($token);
+        if ($link instanceof \Illuminate\View\View) {
+            abort(404, 'Tautan tidak valid.');
+        }
+
+        $dokumen = $link->document;
+
+        if (!Storage::disk('local')->exists($dokumen->file_path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $mimeType = Storage::disk('local')->mimeType($dokumen->file_path);
+
+        return response()->file(
+            Storage::disk('local')->path($dokumen->file_path),
+            ['Content-Type' => $mimeType]
+        );
+    }
+
+    /**
+     * Validasi share link, return link model atau invalid view.
+     */
+    private function validateShareLink($token)
+    {
+        $link = DocumentShareLink::where('token', $token)->first();
+
+        if (!$link) {
+            return view('share.invalid', ['message' => 'Tautan tidak ditemukan.']);
+        }
+        if ($link->revoked_at !== null) {
+            return view('share.invalid', ['message' => 'Tautan ini telah dicabut oleh pemiliknya.']);
+        }
+        if ($link->expired_at < now()) {
+            return view('share.invalid', ['message' => 'Tautan ini telah kedaluwarsa.']);
+        }
+        if (!$link->document || $link->document->trashed()) {
+            return view('share.invalid', ['message' => 'Dokumen terkait tidak ditemukan atau telah dihapus.']);
+        }
+
+        return $link;
     }
 }
+

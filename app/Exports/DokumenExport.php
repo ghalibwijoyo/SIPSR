@@ -27,8 +27,7 @@ class DokumenExport implements FromQuery, WithHeadings, WithMapping, WithStyles,
     public function query()
     {
         $query = Document::query()
-            ->with(['category', 'uploader'])
-            ->whereNull('deleted_at');
+            ->with(['category', 'uploader']);
         
         $sekarang = Carbon::now();
         $tanggalDari = null;

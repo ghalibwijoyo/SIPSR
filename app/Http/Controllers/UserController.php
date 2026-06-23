@@ -38,10 +38,12 @@ class UserController extends Controller
 
         ActivityLog::create([
             'user_id' => request()->user()->id,
+            'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'TAMBAH_USER',
-            'deskripsi' => 'Menambahkan pengguna baru: ' . $user->username,
+            'detail' => 'Menambahkan pengguna baru: ' . $user->username,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
+            'created_at' => now(),
         ]);
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan.');
@@ -63,10 +65,12 @@ class UserController extends Controller
 
         ActivityLog::create([
             'user_id' => request()->user()->id,
+            'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'EDIT_USER',
-            'deskripsi' => 'Memperbarui data pengguna: ' . $user->username,
+            'detail' => 'Memperbarui data pengguna: ' . $user->username,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
+            'created_at' => now(),
         ]);
 
         return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui.');
@@ -87,10 +91,12 @@ class UserController extends Controller
 
         ActivityLog::create([
             'user_id' => request()->user()->id,
+            'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => $action,
-            'deskripsi' => ucfirst($statusText) . ' pengguna: ' . $user->username,
+            'detail' => ucfirst($statusText) . ' pengguna: ' . $user->username,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
+            'created_at' => now(),
         ]);
 
         return redirect()->route('users.index')->with('success', "Pengguna {$user->username} berhasil $statusText.");
@@ -110,10 +116,12 @@ class UserController extends Controller
 
         ActivityLog::create([
             'user_id' => request()->user()->id,
+            'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'RESET_PASSWORD',
-            'deskripsi' => 'Mereset password pengguna: ' . $user->username,
+            'detail' => 'Mereset password pengguna: ' . $user->username,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
+            'created_at' => now(),
         ]);
 
         return redirect()->route('users.index')

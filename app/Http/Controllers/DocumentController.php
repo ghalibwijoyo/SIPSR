@@ -17,8 +17,7 @@ class DocumentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Document::with(['category', 'uploader'])
-            ->whereNull('deleted_at');
+        $query = Document::with(['category', 'uploader']);
 
         // ── Filter: search ──────────────────────────────────
         if ($request->filled('search')) {
