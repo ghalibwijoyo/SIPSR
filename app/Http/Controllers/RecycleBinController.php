@@ -39,7 +39,7 @@ class RecycleBinController extends Controller
         }
 
         // ── Pagination ──────────────────────────────────────
-        $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 100;
+        $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
 
         $documents = $query->orderBy('deleted_at', 'desc')->paginate($perPage)->withQueryString();
         $categories = Category::orderBy('nama')->get();
@@ -127,5 +127,71 @@ class RecycleBinController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Recycle Bin berhasil dikosongkan.');
+    }
+
+    // BULK RESTORE
+    public function bulkRestore(Request $request)
+    {
+        $request->validate([
+            'document_ids' => 'required|array',
+            'document_ids.*' => 'exists:documents,id'
+        ]);
+
+        $documents = Document::onlyTrashed()->whereIn('id', $request->document_ids)->get();
+        $count = 0;
+
+        foreach ($documents as $doc) {
+            $doc->restore();
+            $doc->update(['deleted_by_id' => null]);
+            $count++;
+        }
+
+        if ($count > 0) {
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'role_saat_itu' => Auth::user()->role,
+                'jenis_aktivitas' => 'RESTORE_DOKUMEN',
+                'detail' => "Restore Massal: {$count} dokumen",
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'created_at' => now(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', "{$count} dokumen berhasil dipulihkan.");
+    }
+
+    // BULK HAPUS PERMANEN (Admin only)
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'document_ids' => 'required|array',
+            'document_ids.*' => 'exists:documents,id'
+        ]);
+
+        $documents = Document::onlyTrashed()->whereIn('id', $request->document_ids)->get();
+        $count = 0;
+
+        foreach ($documents as $doc) {
+            if (Storage::disk('local')->exists($doc->file_path)) {
+                Storage::disk('local')->delete($doc->file_path);
+            }
+            $doc->forceDelete();
+            $count++;
+        }
+
+        if ($count > 0) {
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'role_saat_itu' => Auth::user()->role,
+                'jenis_aktivitas' => 'HAPUS_PERMANEN',
+                'detail' => "Hapus Permanen Massal: {$count} dokumen",
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'created_at' => now(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', "{$count} dokumen berhasil dihapus permanen.");
     }
 }

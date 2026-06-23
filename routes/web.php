@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/share/{link}/revoke', [ShareLinkController::class, 'destroy'])->name('share.revoke');
 
     // ── Recycle Bin ──────────────────────────────────────
+    Route::post('/recycle-bin/bulk-restore', [RecycleBinController::class, 'bulkRestore'])->name('recycle-bin.bulk-restore');
     Route::get('/recycle-bin', [RecycleBinController::class, 'index'])->name('recycle-bin.index');
     Route::post('/recycle-bin/{id}/restore', [RecycleBinController::class, 'restore'])->name('recycle-bin.restore');
 
@@ -82,6 +83,7 @@ Route::middleware('auth')->group(function () {
 // Admin-only routes
 Route::middleware(['auth', 'role:ADMIN'])->group(function () {
     // Recycle Bin (Admin only actions)
+    Route::delete('/recycle-bin/bulk-delete', [RecycleBinController::class, 'bulkDestroy'])->name('recycle-bin.bulk-delete');
     Route::delete('/recycle-bin/empty', [RecycleBinController::class, 'empty'])->name('recycle-bin.empty');
     Route::delete('/recycle-bin/{id}', [RecycleBinController::class, 'destroy'])->name('recycle-bin.destroy');
 

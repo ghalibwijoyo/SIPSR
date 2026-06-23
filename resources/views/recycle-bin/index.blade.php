@@ -76,13 +76,26 @@
         </h5>
         
         <div class="d-flex align-items-center gap-3">
+            {{-- Bulk Actions (Hidden by default) --}}
+            <div id="bulk-actions" class="d-none align-items-center gap-2">
+                <span class="small text-muted me-2"><span id="selected-count">0</span> terpilih</span>
+                <button type="button" class="btn btn-sm btn-outline-success" onclick="submitBulkRestore()" title="Restore Terpilih">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+                @if(auth()->user()->role === 'ADMIN')
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="submitBulkDelete()" title="Hapus Permanen Terpilih">
+                    <i class="bi bi-trash"></i>
+                </button>
+                @endif
+            </div>
+
             {{-- Per page selector --}}
             <div class="d-flex align-items-center gap-2">
                 <label for="per-page" class="form-label mb-0 small text-muted">Tampilkan:</label>
                 <select class="form-select form-select-sm" id="per-page" style="width: auto;"
                         onchange="updatePerPage(this.value)">
                     @foreach([50, 100, 250, 500] as $pp)
-                        <option value="{{ $pp }}" {{ request('per_page', 100) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
+                        <option value="{{ $pp }}" {{ request('per_page', 50) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
                     @endforeach
                 </select>
             </div>
@@ -99,6 +112,9 @@
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
+                        <th style="width: 40px;">
+                            <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
+                        </th>
                         <th>Nama Dokumen</th>
                         <th>Kategori</th>
                         <th>Dihapus Oleh</th>
@@ -109,6 +125,9 @@
                 <tbody>
                     @forelse($documents as $doc)
                     <tr>
+                        <td>
+                            <input class="form-check-input row-checkbox" type="checkbox" value="{{ $doc->id }}">
+                        </td>
                         <td>
                             <div class="fw-bold">{{ $doc->nama_dokumen }}</div>
                             <div class="small text-muted">{{ $doc->nomor_dokumen }}</div>
@@ -161,7 +180,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center py-4 text-muted">
+                        <td colspan="6" class="text-center py-4 text-muted">
                             <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                             Recycle Bin kosong
                         </td>
@@ -222,6 +241,110 @@
 
 @push('scripts')
 <script>
+// Bulk Actions Logic
+const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+const bulkActions = document.getElementById('bulk-actions');
+const selectedCount = document.getElementById('selected-count');
+
+function updateBulkActions() {
+    const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
+    selectedCount.textContent = checkedCount;
+    if (checkedCount > 0) {
+        bulkActions.classList.remove('d-none');
+        bulkActions.classList.add('d-flex');
+    } else {
+        bulkActions.classList.remove('d-flex');
+        bulkActions.classList.add('d-none');
+    }
+}
+
+if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+        rowCheckboxes.forEach(cb => cb.checked = this.checked);
+        updateBulkActions();
+    });
+}
+
+rowCheckboxes.forEach(cb => {
+    cb.addEventListener('change', function() {
+        if (!this.checked && selectAllCheckbox.checked) {
+            selectAllCheckbox.checked = false;
+        }
+        const allChecked = document.querySelectorAll('.row-checkbox:checked').length === rowCheckboxes.length;
+        if (allChecked && rowCheckboxes.length > 0) {
+            selectAllCheckbox.checked = true;
+        }
+        updateBulkActions();
+    });
+});
+
+function getSelectedIds() {
+    return Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value);
+}
+
+function submitBulkRestore() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) return;
+    
+    if (confirm(`Apakah Anda yakin ingin memulihkan ${ids.length} dokumen yang dipilih?`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("recycle-bin.bulk-restore") }}';
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+        
+        ids.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'document_ids[]';
+            input.value = id;
+            form.appendChild(input);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function submitBulkDelete() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) return;
+    
+    if (confirm(`Peringatan!\n\nApakah Anda yakin ingin MENGHAPUS SECARA PERMANEN ${ids.length} dokumen yang dipilih?\nFile fisik juga akan dihapus dan tidak dapat dipulihkan!`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("recycle-bin.bulk-delete") }}';
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+        
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        form.appendChild(methodField);
+        
+        ids.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'document_ids[]';
+            input.value = id;
+            form.appendChild(input);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
 function updatePerPage(val) {
     const url = new URL(window.location.href);
     url.searchParams.set('per_page', val);
