@@ -8,8 +8,9 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\RecycleBinController;
 use App\Http\Controllers\ShareLinkController;
 use App\Http\Controllers\ShareViewController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,79 +20,85 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Share Link Public Routes (no auth required)
-Route::get('/share/{token}', [ShareViewController::class, 'show'])->name('share.show');
-Route::get('/share/{token}/download', [ShareViewController::class, 'download'])->name('share.download');
-Route::get('/share/{token}/preview', [ShareViewController::class, 'preview'])->name('share.preview');
-
-// Redirect root to dashboard or login
-Route::get('/', function () {
-    return redirect('/dashboard');
+Route::controller(ShareViewController::class)->prefix('share')->name('share.')->group(function () {
+    Route::get('/{token}', 'show')->name('show');
+    Route::get('/{token}/download', 'download')->name('download');
+    Route::get('/{token}/preview', 'preview')->name('preview');
 });
 
+// Redirect root to dashboard or login
+Route::redirect('/', '/dashboard');
+
 // Guest routes (unauthenticated users only)
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('guest')->controller(AuthController::class)->group(function () {
+    Route::get('/login', 'showLogin')->name('login');
+    Route::post('/login', 'login');
 });
 
 // Logout (authenticated only)
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->middleware('auth')
-    ->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // ── Dokumen ─────────────────────────────────────────
-    Route::post('/dokumen/bulk-download', [DocumentController::class, 'bulkDownload'])->name('dokumen.bulk-download');
-    Route::delete('/dokumen/bulk-delete', [DocumentController::class, 'bulkDestroy'])->name('dokumen.bulk-delete');
-    Route::get('/dokumen', [DocumentController::class, 'index'])->name('dokumen.index');
-    Route::get('/dokumen/create', [DocumentController::class, 'create'])->name('dokumen.create');
-    Route::post('/dokumen', [DocumentController::class, 'store'])->name('dokumen.store');
-    Route::get('/dokumen/{dokumen}', [DocumentController::class, 'show'])->name('dokumen.show');
-    Route::get('/dokumen/{dokumen}/edit', [DocumentController::class, 'edit'])->name('dokumen.edit');
-    Route::put('/dokumen/{dokumen}', [DocumentController::class, 'update'])->name('dokumen.update');
-    Route::delete('/dokumen/{dokumen}', [DocumentController::class, 'destroy'])->name('dokumen.destroy');
-    Route::get('/dokumen/{dokumen}/download', [DocumentController::class, 'download'])->name('dokumen.download');
-    Route::get('/dokumen/{dokumen}/preview', [DocumentController::class, 'preview'])->name('dokumen.preview');
+    Route::controller(DocumentController::class)->prefix('dokumen')->name('dokumen.')->group(function () {
+        Route::post('/bulk-download', 'bulkDownload')->name('bulk-download');
+        Route::delete('/bulk-delete', 'bulkDestroy')->name('bulk-delete');
+        Route::get('/{dokumen}/download', 'download')->name('download');
+        Route::get('/{dokumen}/preview', 'preview')->name('preview');
+    });
+    Route::resource('dokumen', DocumentController::class)->parameters([
+        'dokumen' => 'dokumen'
+    ]);
 
     // ── Share Link ──────────────────────────────────────
     Route::post('/dokumen/{dokumen}/share', [ShareLinkController::class, 'store'])->name('dokumen.share');
     Route::delete('/share/{link}/revoke', [ShareLinkController::class, 'destroy'])->name('share.revoke');
 
     // ── Recycle Bin ──────────────────────────────────────
-    Route::post('/recycle-bin/bulk-restore', [RecycleBinController::class, 'bulkRestore'])->name('recycle-bin.bulk-restore');
-    Route::get('/recycle-bin', [RecycleBinController::class, 'index'])->name('recycle-bin.index');
-    Route::post('/recycle-bin/{id}/restore', [RecycleBinController::class, 'restore'])->name('recycle-bin.restore');
+    Route::controller(RecycleBinController::class)->prefix('recycle-bin')->name('recycle-bin.')->group(function () {
+        Route::post('/bulk-restore', 'bulkRestore')->name('bulk-restore');
+        Route::post('/{id}/restore', 'restore')->name('restore');
+        Route::get('/', 'index')->name('index');
+    });
 
     // ── Activity Log ─────────────────────────────────────
     Route::get('/aktivitas', [ActivityLogController::class, 'index'])->name('aktivitas.index');
 
     // ── Laporan ──────────────────────────────────────────
-    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.export.excel');
-    Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export.pdf');
-    Route::get('/laporan/print-pdf', [LaporanController::class, 'printPdf'])->name('laporan.print.pdf');
+    Route::controller(LaporanController::class)->prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/export-excel', 'exportExcel')->name('export.excel');
+        Route::get('/export-pdf', 'exportPdf')->name('export.pdf');
+        Route::get('/print-pdf', 'printPdf')->name('print.pdf');
+        Route::get('/', 'index')->name('index');
+    });
 
     // ── Profil ───────────────────────────────────────────
-    Route::get('/profil', [\App\Http\Controllers\ProfilController::class, 'show'])->name('profil.show');
-    Route::put('/profil/nama', [\App\Http\Controllers\ProfilController::class, 'updateNama'])->name('profil.update-nama');
-    Route::put('/profil/password', [\App\Http\Controllers\ProfilController::class, 'updatePassword'])->name('profil.update-password');
+    Route::controller(ProfilController::class)->prefix('profil')->name('profil.')->group(function () {
+        Route::get('/', 'show')->name('show');
+        Route::put('/nama', 'updateNama')->name('update-nama');
+        Route::put('/password', 'updatePassword')->name('update-password');
+    });
 });
 
 // Admin-only routes
 Route::middleware(['auth', 'role:ADMIN'])->group(function () {
     // Recycle Bin (Admin only actions)
-    Route::delete('/recycle-bin/bulk-delete', [RecycleBinController::class, 'bulkDestroy'])->name('recycle-bin.bulk-delete');
-    Route::delete('/recycle-bin/empty', [RecycleBinController::class, 'empty'])->name('recycle-bin.empty');
-    Route::delete('/recycle-bin/{id}', [RecycleBinController::class, 'destroy'])->name('recycle-bin.destroy');
+    Route::controller(RecycleBinController::class)->prefix('recycle-bin')->name('recycle-bin.')->group(function () {
+        Route::delete('/bulk-delete', 'bulkDestroy')->name('bulk-delete');
+        Route::delete('/empty', 'empty')->name('empty');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+    });
 
     // User Management
-    Route::resource('/admin/users', UserController::class)->names('users')->except(['create', 'show', 'edit']);
-    Route::patch('/admin/users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
-    Route::patch('/admin/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+    Route::controller(UserController::class)->prefix('admin/users')->name('users.')->group(function () {
+        Route::patch('/{user}/toggle-active', 'toggleActive')->name('toggle-active');
+        Route::patch('/{user}/reset-password', 'resetPassword')->name('reset-password');
+    });
+    Route::resource('admin/users', UserController::class)->names('users')->except(['create', 'show', 'edit']);
 
     // Category Management
-    Route::resource('/admin/categories', CategoryController::class)->names('categories')->except(['create', 'show', 'edit']);
+    Route::resource('admin/categories', CategoryController::class)->names('categories')->except(['create', 'show', 'edit']);
 });

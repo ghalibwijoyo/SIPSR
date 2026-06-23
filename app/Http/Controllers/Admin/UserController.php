@@ -1,19 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     public function index()
     {
         $users = User::orderBy('nama_lengkap')->paginate(20);
-        return view('users.index', compact('users'));
+        return view('admin.users.index', compact('users'));
     }
 
     public function store(Request $request)

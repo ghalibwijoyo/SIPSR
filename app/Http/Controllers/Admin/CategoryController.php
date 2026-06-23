@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::withCount('documents')->orderBy('nama')->paginate(20);
-        return view('categories.index', compact('categories'));
+        return view('admin.categories.index', compact('categories'));
     }
 
     public function store(Request $request)
