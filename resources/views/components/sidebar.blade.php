@@ -35,14 +35,6 @@
                 </a>
             </li>
 
-            {{-- Recycle Bin --}}
-            <li class="nav-item">
-                <a class="nav-link sidebar-link {{ request()->is('recycle-bin*') ? 'active' : '' }}"
-                   href="{{ route('recycle-bin.index') }}" id="nav-recycle-bin">
-                    <i class="bi bi-trash3 me-2"></i>Recycle Bin
-                </a>
-            </li>
-
             {{-- Laporan --}}
             <li class="nav-item">
                 <a class="nav-link sidebar-link {{ request()->is('laporan*') ? 'active' : '' }}"
@@ -56,6 +48,14 @@
                 <a class="nav-link sidebar-link {{ request()->is('aktivitas*') ? 'active' : '' }}"
                    href="{{ route('aktivitas.index') }}" id="nav-aktivitas">
                     <i class="bi bi-clock-history me-2"></i>Aktivitas
+                </a>
+            </li>
+
+            {{-- Recycle Bin --}}
+            <li class="nav-item">
+                <a class="nav-link sidebar-link {{ request()->is('recycle-bin*') ? 'active' : '' }}"
+                   href="{{ route('recycle-bin.index') }}" id="nav-recycle-bin">
+                    <i class="bi bi-trash3 me-2"></i>Recycle Bin
                 </a>
             </li>
 
