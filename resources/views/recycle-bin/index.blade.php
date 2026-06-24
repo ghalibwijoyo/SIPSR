@@ -109,12 +109,13 @@
     </div>
     <div class="card-body border-bottom">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-striped table-hover align-middle">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 40px;">
                             <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
                         </th>
+                        <th style="width: 50px;">No</th>
                         <th>Nama Dokumen</th>
                         <th>Kategori</th>
                         <th>Dihapus Oleh</th>
@@ -123,11 +124,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($documents as $doc)
+                    @forelse($documents as $i => $doc)
                     <tr>
                         <td>
                             <input class="form-check-input row-checkbox" type="checkbox" value="{{ $doc->id }}">
                         </td>
+                        <td class="text-muted">{{ $documents->firstItem() + $i }}</td>
                         <td>
                             <div class="fw-bold">{{ $doc->nama_dokumen }}</div>
                             <div class="small text-muted">{{ $doc->nomor_dokumen }}</div>
@@ -179,10 +181,10 @@
                         </td>
                     </tr>
                     @empty
-                    <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">
-                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                            Recycle Bin kosong
+                    <tr id="empty-state">
+                        <td colspan="7" class="text-center py-5">
+                            <i class="bi bi-trash fs-1 text-muted mb-3 d-block"></i>
+                            <h6 class="text-muted">Recycle Bin kosong</h6>
                         </td>
                     </tr>
                     @endforelse
