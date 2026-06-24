@@ -31,5 +31,38 @@
     @include('components.toast')
 
     @stack('scripts')
+
+    @if(session('login_success'))
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var duration = 3000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#3B6D11', '#4a8a15', '#8bc34a', '#ffffff'],
+                    zIndex: 2000
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#3B6D11', '#4a8a15', '#8bc34a', '#ffffff'],
+                    zIndex: 2000
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        });
+    </script>
+    @endif
 </body>
 </html>

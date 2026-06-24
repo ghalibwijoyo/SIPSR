@@ -13,14 +13,54 @@
             {{ Str::limit($dokumen->nama_dokumen, 40) }}
         </p>
     </div>
-    <a href="{{ route('dokumen.index') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-1"></i>Kembali
-    </a>
+
 </div>
 
 <div class="row g-4">
-    {{-- Left: Metadata --}}
-    <div class="col-lg-5">
+    {{-- Right (Visually Left): File Preview --}}
+    <div class="col-lg-7 order-1 order-lg-1">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 1.5rem; z-index: 10;">
+            <div class="card-header bg-white border-bottom py-3">
+                <div class="d-flex align-items-center w-100">
+                    {{-- Toggle button, only visible on screens smaller than lg (vertical layout) --}}
+                    <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" id="previewToggleBtn" type="button" data-bs-toggle="collapse" data-bs-target="#previewCollapse" aria-expanded="true" aria-controls="previewCollapse" title="Tutup/Buka Preview">
+                        <i class="bi bi-chevron-right d-inline-block" id="previewToggleIcon" style="transition: transform 0.3s ease;"></i>
+                    </button>
+                    <h5 class="card-title mb-0 fw-semibold">
+                        <i class="bi bi-eye me-2 text-sipsr-primary"></i>Preview Dokumen
+                    </h5>
+                    <style>
+                        #previewToggleBtn[aria-expanded="true"] #previewToggleIcon {
+                            transform: rotate(90deg);
+                        }
+                    </style>
+                </div>
+            </div>
+            <div class="collapse show d-lg-block" id="previewCollapse">
+                <div class="card-body p-0">
+                @if(Str::endsWith($dokumen->file_name, '.pdf'))
+                    <iframe src="{{ route('dokumen.preview', $dokumen) }}"
+                            class="w-100 border-0" style="height: calc(100vh - 110px);"
+                            title="Preview {{ $dokumen->nama_dokumen }}" id="pdf-preview"></iframe>
+                @else
+                    <div class="text-center py-5 text-muted d-flex flex-column justify-content-center" style="height: calc(100vh - 110px);">
+                        <div>
+                            <i class="bi bi-file-earmark-word fs-1 text-primary d-block mb-3"></i>
+                            <p class="mb-1 fw-semibold">Preview tidak tersedia</p>
+                            <p class="small mb-3">Format DOC/DOCX tidak dapat ditampilkan langsung di browser.</p>
+                            <a href="{{ route('dokumen.download', $dokumen) }}" class="btn btn-success btn-sm">
+                                <i class="bi bi-download me-1"></i>Download untuk melihat
+                            </a>
+                        </div>
+                    </div>
+                @endif
+            </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Left (Visually Right): Metadata --}}
+    <div class="col-lg-5 order-2 order-lg-2">
         {{-- Document Info Card --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
@@ -217,31 +257,6 @@
         @endif
     </div>
 
-    {{-- Right: File Preview --}}
-    <div class="col-lg-7">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-bottom py-3">
-                <h5 class="card-title mb-0 fw-semibold">
-                    <i class="bi bi-eye me-2 text-sipsr-primary"></i>Preview Dokumen
-                </h5>
-            </div>
-            <div class="card-body p-0">
-                @if(Str::endsWith($dokumen->file_name, '.pdf'))
-                    <iframe src="{{ route('dokumen.preview', $dokumen) }}"
-                            class="w-100 border-0" style="height: 700px;"
-                            title="Preview {{ $dokumen->nama_dokumen }}" id="pdf-preview"></iframe>
-                @else
-                    <div class="text-center py-5 text-muted">
-                        <i class="bi bi-file-earmark-word fs-1 text-primary d-block mb-3"></i>
-                        <p class="mb-1 fw-semibold">Preview tidak tersedia</p>
-                        <p class="small mb-3">Format DOC/DOCX tidak dapat ditampilkan langsung di browser.</p>
-                        <a href="{{ route('dokumen.download', $dokumen) }}" class="btn btn-success btn-sm">
-                            <i class="bi bi-download me-1"></i>Download untuk melihat
-                        </a>
-                    </div>
-                @endif
-            </div>
-        </div>
     </div>
 </div>
 
@@ -258,7 +273,7 @@
                 
                 <div class="mb-4">
                     <div class="form-check form-switch mb-3 pb-3 border-bottom">
-                        <input class="form-check-input" type="checkbox" role="switch" id="isPermanentLink">
+                        <input class="form-check-input" type="checkbox" role="switch" id="isPermanentLink" checked>
                         <label class="form-check-label fw-semibold small" for="isPermanentLink">Tautan Permanen (Selamanya)</label>
                         <div class="form-text" style="font-size: 0.75rem;">Tautan tidak otomatis kedaluwarsa, namun akses tetap dapat dicabut manual kapan saja.</div>
                     </div>
@@ -420,6 +435,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (durationLabel) durationLabel.style.opacity = '1';
             }
         });
+        
+        // Trigger initial state
+        isPermanentToggle.dispatchEvent(new Event('change'));
     }
 
     // Generate new link

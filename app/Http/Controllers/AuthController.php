@@ -51,7 +51,7 @@ class AuthController extends Controller
                 'created_at' => now(),
             ]);
 
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/dashboard')->with('login_success', true);
         }
 
         return back()->withErrors([
