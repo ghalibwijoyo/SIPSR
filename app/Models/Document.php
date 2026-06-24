@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Document extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasUuids, SoftDeletes, Prunable;
 
     protected $fillable = [
         'nomor_dokumen',
@@ -32,6 +33,15 @@ class Document extends Model
             'tanggal_dokumen' => 'date',
             'deleted_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Get the prunable model query.
+     * Documents that have been in the recycle bin for more than 30 days will be permanently deleted.
+     */
+    public function prunable()
+    {
+        return static::onlyTrashed()->where('deleted_at', '<=', now()->subDays(30));
     }
 
     // ─── Relationships ─────────────────────────────────────
