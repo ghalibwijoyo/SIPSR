@@ -14,65 +14,200 @@
     </a>
 </div>
 
-{{-- Filter Card --}}
-<div class="card border-0 shadow-sm mb-4" id="filter-card">
+{{-- Smart Search Bar & Quick Filters --}}
+<div class="card mb-3 border-0 shadow-sm" id="filter-card">
     <div class="card-body">
-        <form method="GET" action="{{ route('dokumen.index') }}" id="filter-form">
-            <div class="row g-3 align-items-end">
-                {{-- Search --}}
-                <div class="col-md-4">
-                    <label for="filter-search" class="form-label small fw-semibold">
-                        <i class="bi bi-search me-1"></i>Pencarian
-                    </label>
-                    <input type="text" class="form-control" id="filter-search" name="search"
+        <form method="GET" action="{{ route('dokumen.index') }}" class="row g-3" id="mainFilterForm">
+            <!-- Smart Search Bar -->
+            <div class="col-12">
+                <div class="input-group input-group-lg shadow-sm rounded overflow-hidden border">
+                    <span class="input-group-text bg-white border-0 text-muted">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" 
+                           name="search" 
+                           class="form-control form-control-lg border-0 bg-white shadow-none"
+                           placeholder="Cari nomor, nama dokumen, atau uploader..."
                            value="{{ request('search') }}"
-                           placeholder="Nomor, nama dokumen, atau uploader…">
-                </div>
-
-                {{-- Category --}}
-                <div class="col-md-2">
-                    <label for="filter-category" class="form-label small fw-semibold">
-                        <i class="bi bi-folder me-1"></i>Kategori
-                    </label>
-                    <select class="form-select" id="filter-category" name="category_id">
-                        <option value="">Semua Kategori</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
-                                {{ $cat->nama }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Date Range --}}
-                <div class="col-md-2">
-                    <label for="filter-tanggal-dari" class="form-label small fw-semibold">
-                        <i class="bi bi-calendar-event me-1"></i>Dari Tanggal
-                    </label>
-                    <input type="date" class="form-control" id="filter-tanggal-dari" name="tanggal_dari"
-                           value="{{ request('tanggal_dari') }}">
-                </div>
-                <div class="col-md-2">
-                    <label for="filter-tanggal-sampai" class="form-label small fw-semibold">
-                        Sampai Tanggal
-                    </label>
-                    <input type="date" class="form-control" id="filter-tanggal-sampai" name="tanggal_sampai"
-                           value="{{ request('tanggal_sampai') }}">
-                </div>
-
-                {{-- Buttons --}}
-                <div class="col-md-2 d-flex gap-2">
-                    <button type="submit" class="btn btn-success flex-grow-1" id="btn-filter">
-                        <i class="bi bi-funnel me-1"></i>Filter
+                           aria-label="Cari dokumen">
+                    <button type="button" class="btn btn-light border-0 px-4" data-bs-toggle="offcanvas" data-bs-target="#advancedFilter" aria-controls="advancedFilter" aria-label="Buka panel filter lanjutan" title="Filter Lanjutan">
+                        <i class="bi bi-sliders text-sipsr-primary"></i>
                     </button>
-                    <a href="{{ route('dokumen.index') }}" class="btn btn-secondary" id="btn-reset" title="Reset filter">
-                        <i class="bi bi-x-lg"></i>
+                </div>
+                <small class="text-muted d-block mt-2 px-1">
+                    Contoh: "PSR-2026-001" atau "laporan bulanan"
+                </small>
+            </div>
+            
+            <!-- Quick Filter Badges -->
+            <div class="col-12 mt-2">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ route('dokumen.index') }}" 
+                       class="btn btn-sm {{ !request()->has('search') && !request()->has('category_id') && !request()->has('quick_filter') && !request()->has('format') && !request()->has('uploader_id') && !request()->has('tanggal_dari') ? 'btn-success' : 'btn-outline-success' }}"
+                       aria-label="Lihat semua dokumen">
+                        Semua Dokumen
                     </a>
+                    
+                    <button type="submit" 
+                            name="quick_filter" 
+                            value="pdf" 
+                            class="btn btn-sm {{ request('quick_filter') === 'pdf' ? 'btn-success' : 'btn-outline-success' }}"
+                            aria-label="Filter hanya dokumen PDF">
+                        📄 Hanya PDF
+                    </button>
+                    
+                    <button type="submit" 
+                            name="quick_filter" 
+                            value="my_upload" 
+                            class="btn btn-sm {{ request('quick_filter') === 'my_upload' ? 'btn-success' : 'btn-outline-success' }}"
+                            aria-label="Filter dokumen yang saya upload">
+                        👤 Unggahan Saya
+                    </button>
+                    
+                    <button type="submit" 
+                            name="quick_filter" 
+                            value="today" 
+                            class="btn btn-sm {{ request('quick_filter') === 'today' ? 'btn-success' : 'btn-outline-success' }}"
+                            aria-label="Filter dokumen yang diupload hari ini">
+                        📅 Hari Ini
+                    </button>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+{{-- Filter Status & Result Counter --}}
+@php
+    $activeFilters = array_filter([
+        request('search'),
+        request('category_id'),
+        request('uploader_id'),
+        request('tanggal_dari'),
+        request('tanggal_sampai'),
+        request('format'),
+        request('quick_filter')
+    ]);
+@endphp
+
+@if(!empty($activeFilters))
+<div class="alert alert-secondary py-2 px-3 mb-3 d-flex justify-content-between align-items-center shadow-sm border-0">
+    <span>
+        <i class="bi bi-funnel-fill text-sipsr-primary me-2"></i> 
+        <strong>{{ count($activeFilters) }} filter aktif</strong> diterapkan.
+    </span>
+    <a href="{{ route('dokumen.index') }}" class="btn btn-sm btn-danger rounded-pill px-3">
+        <i class="bi bi-x-circle me-1"></i>Clear All
+    </a>
+</div>
+@endif
+
+@if($documents->count() > 0)
+<div class="alert alert-info py-2 px-3 mb-4 d-flex align-items-center gap-2 shadow-sm border-0">
+    <i class="bi bi-info-circle-fill"></i>
+    <span>
+        Ditemukan <strong>{{ $documents->total() }}</strong> dokumen
+        @if(!empty($activeFilters))
+            ({{ $documents->count() }} ditampilkan di halaman ini)
+        @endif
+    </span>
+</div>
+@else
+<div class="alert alert-warning mb-4 shadow-sm border-0">
+    <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+        <h6 class="mb-0 fw-bold">Tidak ada dokumen ditemukan</h6>
+    </div>
+    <p class="mb-0 small">Coba ubah filter di atas atau periksa kembali kata kunci pencarian Anda.</p>
+</div>
+@endif
+
+{{-- Offcanvas Advanced Filter Panel --}}
+<div class="offcanvas offcanvas-end" tabindex="-1" id="advancedFilter" aria-labelledby="advancedFilterLabel">
+    <div class="offcanvas-header bg-light border-bottom">
+        <h5 class="offcanvas-title fw-bold" id="advancedFilterLabel">
+            <i class="bi bi-sliders me-2 text-sipsr-primary"></i>Filter Lanjutan
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Tutup filter lanjutan"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form method="GET" action="{{ route('dokumen.index') }}" id="advancedFilterForm">
+            <!-- Preserve search if any -->
+            <input type="hidden" name="search" value="{{ request('search') }}">
+            
+            <!-- Category -->
+            <div class="mb-4">
+                <label for="category_filter" class="form-label small fw-bold">Kategori Dokumen</label>
+                <select name="category_id" id="category_filter" class="form-select" aria-label="Filter berdasarkan kategori dokumen">
+                    <option value="">-- Semua Kategori --</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                            {{ $cat->nama }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Uploader -->
+            <div class="mb-4">
+                <label for="uploader_filter" class="form-label small fw-bold">Pengunggah (Uploader)</label>
+                <select name="uploader_id" id="uploader_filter" class="form-select" aria-label="Filter berdasarkan pengunggah dokumen">
+                    <option value="">-- Semua Pengguna --</option>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}" {{ request('uploader_id') == $user->id ? 'selected' : '' }}>
+                            {{ $user->nama_lengkap }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Format File -->
+            <div class="mb-4">
+                <label class="form-label small fw-bold">Format File</label>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="format[]" value="pdf" id="format_pdf" {{ in_array('pdf', (array)request('format', [])) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="format_pdf">PDF (Bisa di-preview)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="format[]" value="doc" id="format_doc" {{ in_array('doc', (array)request('format', [])) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="format_doc">DOC / DOCX (Unduh)</label>
+                </div>
+            </div>
+
+            <!-- Date Range -->
+            <div class="mb-4">
+                <label class="form-label small fw-bold mb-3">Rentang Waktu</label>
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label for="tanggal_dari" class="form-label small text-muted mb-1">Dari Tanggal</label>
+                        <input type="date" name="tanggal_dari" id="tanggal_dari" class="form-control form-control-sm" value="{{ request('tanggal_dari') }}" aria-label="Filter dokumen dari tanggal">
+                    </div>
+                    <div class="col-6">
+                        <label for="tanggal_sampai" class="form-label small text-muted mb-1">Sampai Tanggal</label>
+                        <input type="date" name="tanggal_sampai" id="tanggal_sampai" class="form-control form-control-sm" value="{{ request('tanggal_sampai') }}" aria-label="Filter dokumen sampai tanggal">
+                    </div>
+                </div>
+                
+                <small class="text-muted d-block mb-2">Quick preset:</small>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="setDateRange(0, 0); return false;" aria-label="Filter dokumen hari ini">Hari Ini</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="setDateRange(7, 0); return false;" aria-label="Filter dokumen 1 minggu terakhir">1 Minggu</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="setDateRange(30, 0); return false;" aria-label="Filter dokumen 1 bulan terakhir">1 Bulan</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="setDateRange(365, 0); return false;" aria-label="Filter dokumen 1 tahun terakhir">1 Tahun</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="offcanvas-footer p-3 border-top bg-light d-flex gap-2">
+        <a href="{{ route('dokumen.index') }}" class="btn btn-light flex-grow-1 border">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+        </a>
+        <button type="submit" form="advancedFilterForm" class="btn btn-success flex-grow-1">
+            <i class="bi bi-check2 me-1"></i>Terapkan
+        </button>
+    </div>
+</div>
+
 
 {{-- Documents Table --}}
 <div class="card border-0 shadow-sm">
@@ -210,38 +345,20 @@
         </div>
     </div>
 
-    <x-scroll-to-top />
-
     {{-- Footer Actions / Pagination --}}
-    <div class="card-footer bg-white border-top-0 pb-3 pt-2 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 60px;">
+    <div class="card-footer bg-white border-top-0 py-4 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 80px;">
         @if($documents->hasPages())
             {{ $documents->links('vendor.pagination.bootstrap-5') }}
         @endif
     </div>
+
+    <x-scroll-to-top />
 </div>
 
 @endsection
 
 @push('scripts')
-<style>
-.scroll-top-wrapper {
-    position: sticky; 
-    bottom: 30px; /* Jarak melayang dari bawah viewport */
-    z-index: 1050; 
-    pointer-events: none;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(30px);
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Efek memantul khas SIPSR */
-}
-.scroll-top-wrapper.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-</style>
+
 <script>
 // Bulk Actions Logic
 const selectAllCheckbox = document.getElementById('selectAllCheckbox');
@@ -345,29 +462,49 @@ function submitBulkDownload() {
     form.submit();
 }
 
-function updatePerPage(val) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('per_page', val);
-    url.searchParams.delete('page');
-    window.location.href = url.toString();
-}
-
-// Scroll to top visibility
-const filterCard = document.getElementById('filter-card');
-const scrollTopBtn = document.getElementById('scrollTopBtn');
-
-if (filterCard && scrollTopBtn) {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) {
-                scrollTopBtn.classList.add('show');
-            } else {
-                scrollTopBtn.classList.remove('show');
-            }
-        });
-    }, { root: document.querySelector('main'), threshold: 0 });
+document.addEventListener('DOMContentLoaded', function() {
+    window.updatePerPage = function(val) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('per_page', val);
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
+    };
     
-    observer.observe(filterCard);
-}
+    // Real-Time Search Debounce (300ms)
+    let searchTimeout;
+    const searchInput = document.querySelector('input[name="search"]');
+    const searchForm = document.getElementById('mainFilterForm');
+    
+    if (searchInput && searchForm) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            // Submit jika input ada isinya atau kosong (untuk mereset)
+            searchTimeout = setTimeout(() => {
+                searchForm.submit();
+            }, 300);
+        });
+        
+        // Auto-focus search (optional, we check if it has value to place cursor at end)
+        if(searchInput.value) {
+            const length = searchInput.value.length;
+            searchInput.setSelectionRange(length, length);
+        }
+    }
+
+    // Date Preset Logic
+    window.setDateRange = function(daysBack, daysForward) {
+        const today = new Date();
+        const fromDate = new Date(today);
+        fromDate.setDate(fromDate.getDate() - daysBack);
+        
+        const toDate = new Date(today);
+        toDate.setDate(toDate.getDate() + daysForward);
+        
+        document.getElementById('tanggal_dari').value = fromDate.toISOString().split('T')[0];
+        document.getElementById('tanggal_sampai').value = toDate.toISOString().split('T')[0];
+    };
+});
+
+
 </script>
 @endpush

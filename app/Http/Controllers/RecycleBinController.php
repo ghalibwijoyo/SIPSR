@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use App\Models\ActivityLog;
 use App\Models\Category;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class RecycleBinController extends Controller
@@ -17,20 +20,24 @@ class RecycleBinController extends Controller
         $query = Document::with(['category', 'deletedBy'])
             ->onlyTrashed();
 
-        // ── Filter: category ────────────────────────────────
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-
         // ── Filter: search ──────────────────────────────────
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('nama_dokumen', 'like', '%' . $request->search . '%')
-                  ->orWhere('nomor_dokumen', 'like', '%' . $request->search . '%');
-            });
+            $query->search($request->search);
+        }
+
+        // ── Filter: category ────────────────────────────────
+        if ($request->filled('category_id')) {
+            $query->byCategory($request->category_id);
         }
 
         // ── Filter: date range ──────────────────────────────
+        if ($request->filled('tanggal_dari') && $request->filled('tanggal_sampai')) {
+            if ($request->tanggal_dari > $request->tanggal_sampai) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+            }
+        }
         if ($request->filled('tanggal_dari')) {
             $query->whereDate('deleted_at', '>=', $request->tanggal_dari);
         }
@@ -38,13 +45,35 @@ class RecycleBinController extends Controller
             $query->whereDate('deleted_at', '<=', $request->tanggal_sampai);
         }
 
+        // ── Filter: trash_age ───────────────────────────────
+        if ($request->filled('trash_age')) {
+            $now = Carbon::now();
+            if ($request->trash_age === 'new') {
+                $query->where('deleted_at', '>=', $now->subDays(7));
+            } elseif ($request->trash_age === 'medium') {
+                $query->whereBetween('deleted_at', [
+                    $now->subDays(20),
+                    $now->subDays(7)
+                ]);
+            } elseif ($request->trash_age === 'old') {
+                $query->where('deleted_at', '<', $now->subDays(20));
+            }
+        }
+        
+        // ── Filter: deleted_by ──────────────────────────────
+        if ($request->filled('deleted_by') && $request->deleted_by) {
+            $query->where('deleted_by_id', $request->deleted_by);
+        }
+
         // ── Pagination ──────────────────────────────────────
         $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
 
         $documents = $query->orderBy('deleted_at', 'desc')->paginate($perPage)->withQueryString();
+        
         $categories = Category::orderBy('nama')->get();
+        $users = User::where('is_active', true)->orderBy('nama_lengkap')->get();
 
-        return view('recycle-bin.index', compact('documents', 'categories'));
+        return view('recycle-bin.index', compact('documents', 'categories', 'users'));
     }
 
     // RESTORE dokumen

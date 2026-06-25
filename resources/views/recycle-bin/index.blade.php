@@ -7,13 +7,25 @@
     <h1 class="h3 mb-0 text-gray-800">Recycle Bin</h1>
 </div>
 
+<!-- Warning untuk dokumen akan auto-prune -->
+@if($documents->where('deleted_at', '<', \Carbon\Carbon::now()->subDays(20))->count() > 0)
+<div class="alert alert-danger shadow-sm border-0 d-flex align-items-center">
+    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+    <div>
+        <strong>Perhatian!</strong> Terdapat 
+        {{ $documents->where('deleted_at', '<', \Carbon\Carbon::now()->subDays(20))->count() }} dokumen 
+        yang akan dihapus secara permanen secara otomatis dalam waktu kurang dari 10 hari. Hubungi Admin jika ada yang perlu dipulihkan.
+    </div>
+</div>
+@endif
+
 <!-- Filter Section -->
 <div class="card border-0 shadow-sm mb-4" id="filter-card">
     <div class="card-body">
         <form method="GET" action="{{ route('recycle-bin.index') }}" id="filter-form">
             <div class="row g-3 align-items-end">
                 {{-- Search --}}
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="filter-search" class="form-label small fw-semibold">
                         <i class="bi bi-search me-1"></i>Pencarian
                     </label>
@@ -28,7 +40,7 @@
                         <i class="bi bi-folder me-1"></i>Kategori
                     </label>
                     <select class="form-select" id="filter-category" name="category_id">
-                        <option value="">Semua Kategori</option>
+                        <option value="">Semua</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
                                 {{ $category->nama }}
@@ -37,24 +49,36 @@
                     </select>
                 </div>
 
-                {{-- Date Range --}}
+                {{-- Trash Age --}}
                 <div class="col-md-2">
-                    <label for="filter-tanggal-dari" class="form-label small fw-semibold">
-                        <i class="bi bi-calendar-event me-1"></i>Dari Tanggal
+                    <label for="filter-trash-age" class="form-label small fw-semibold">
+                        <i class="bi bi-hourglass-split me-1"></i>Usia Sampah
                     </label>
-                    <input type="date" class="form-control" id="filter-tanggal-dari" name="tanggal_dari"
-                           value="{{ request('tanggal_dari') }}">
+                    <select class="form-select" id="filter-trash-age" name="trash_age">
+                        <option value="">Semua Waktu</option>
+                        <option value="new" {{ request('trash_age') == 'new' ? 'selected' : '' }}>< 7 Hari</option>
+                        <option value="medium" {{ request('trash_age') == 'medium' ? 'selected' : '' }}>7 - 20 Hari</option>
+                        <option value="old" {{ request('trash_age') == 'old' ? 'selected' : '' }}>> 20 Hari (Kritis)</option>
+                    </select>
                 </div>
+                
+                {{-- Deleted By --}}
                 <div class="col-md-2">
-                    <label for="filter-tanggal-sampai" class="form-label small fw-semibold">
-                        Sampai Tanggal
+                    <label for="filter-deleted-by" class="form-label small fw-semibold">
+                        <i class="bi bi-person-x me-1"></i>Dihapus Oleh
                     </label>
-                    <input type="date" class="form-control" id="filter-tanggal-sampai" name="tanggal_sampai"
-                           value="{{ request('tanggal_sampai') }}">
+                    <select class="form-select" id="filter-deleted-by" name="deleted_by">
+                        <option value="">Semua User</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" {{ request('deleted_by') == $user->id ? 'selected' : '' }}>
+                                {{ $user->nama_lengkap }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 {{-- Buttons --}}
-                <div class="col-md-2 d-flex gap-2">
+                <div class="col-md-3 d-flex gap-2">
                     <button type="submit" class="btn btn-success flex-grow-1" id="btn-filter">
                         <i class="bi bi-funnel me-1"></i>Filter
                     </button>
@@ -63,6 +87,8 @@
                     </a>
                 </div>
             </div>
+            
+            {{-- Optional Date Range inside a collapse or just below if needed --}}
         </form>
     </div>
 </div>
@@ -193,13 +219,13 @@
         </div>
         
     </div>
-    <x-scroll-to-top />
-
-    <div class="card-footer bg-white border-top-0 pb-3 pt-2 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 60px;">
+    <div class="card-footer bg-white border-top-0 py-4 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 80px;">
         @if($documents->hasPages())
             {{ $documents->links('vendor.pagination.bootstrap-5') }}
         @endif
     </div>
+
+    <x-scroll-to-top />
 </div>
 
 <!-- Empty Modal -->
@@ -233,25 +259,7 @@
 @endsection
 
 @push('scripts')
-<style>
-.scroll-top-wrapper {
-    position: sticky; 
-    bottom: 30px; /* Jarak melayang dari bawah viewport */
-    z-index: 1050; 
-    pointer-events: none;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(30px);
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Efek memantul khas SIPSR */
-}
-.scroll-top-wrapper.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-</style>
+
 <script>
 // Bulk Actions Logic
 const selectAllCheckbox = document.getElementById('selectAllCheckbox');
@@ -364,22 +372,5 @@ function updatePerPage(val) {
     window.location.href = url.toString();
 }
 
-// Scroll to top visibility
-const filterCard = document.getElementById('filter-card');
-const scrollTopBtn = document.getElementById('scrollTopBtn');
-
-if (filterCard && scrollTopBtn) {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) {
-                scrollTopBtn.classList.add('show');
-            } else {
-                scrollTopBtn.classList.remove('show');
-            }
-        });
-    }, { root: document.querySelector('main'), threshold: 0 });
-    
-    observer.observe(filterCard);
-}
 </script>
 @endpush

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ActivityLogController extends Controller
 {
@@ -26,6 +27,13 @@ class ActivityLogController extends Controller
         }
 
         // ── Filter: tanggal ────────────────────────────────
+        if ($request->filled('tanggal_dari') && $request->filled('tanggal_sampai')) {
+            if ($request->tanggal_dari > $request->tanggal_sampai) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+            }
+        }
         if ($request->filled('tanggal_dari')) {
             $query->whereDate('created_at', '>=', $request->tanggal_dari);
         }
@@ -33,11 +41,23 @@ class ActivityLogController extends Controller
             $query->whereDate('created_at', '<=', $request->tanggal_sampai);
         }
 
+        // ── Filter: ip_address ─────────────────────────────
+        if ($request->filled('ip_address')) {
+            $query->where('ip_address', $request->ip_address);
+        }
+
+        // ── Filter: user_agent ─────────────────────────────
+        if ($request->filled('user_agent')) {
+            $query->where('user_agent', 'LIKE', "%{$request->user_agent}%");
+        }
+
         // ── Sorting & Pagination ───────────────────────────
-        $logs = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
+        $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
+        $logs = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
 
         // ── Data untuk dropdown filter ─────────────────────
-        $users = User::orderBy('nama_lengkap')->get();
+        $users = User::where('is_active', true)->orderBy('nama_lengkap')->get();
+        
         // Ambil jenis_aktivitas unik dari tabel
         $jenisAktivitasList = ActivityLog::select('jenis_aktivitas')
             ->distinct()

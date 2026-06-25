@@ -7,7 +7,9 @@ use App\Models\Category;
 use App\Models\Document;
 use App\Models\DocumentHistory;
 use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
@@ -19,30 +21,32 @@ class DocumentController extends Controller
     {
         $query = Document::with(['category', 'uploader']);
 
-        // ── Filter: search ──────────────────────────────────
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('nomor_dokumen', 'LIKE', "%{$search}%")
-                  ->orWhere('nama_dokumen', 'LIKE', "%{$search}%")
-                  ->orWhereHas('uploader', function ($q2) use ($search) {
-                      $q2->where('nama_lengkap', 'LIKE', "%{$search}%");
-                  });
-            });
+        // ── Validasi Date Range ─────────────────────────────
+        if ($request->filled('tanggal_dari') && $request->filled('tanggal_sampai')) {
+            if ($request->tanggal_dari > $request->tanggal_sampai) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+            }
         }
 
-        // ── Filter: category ────────────────────────────────
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
+        // ── Quick filters ───────────────────────────────────
+        if ($request->filled('quick_filter')) {
+            if ($request->quick_filter === 'pdf') {
+                $query->where('file_name', 'LIKE', '%.pdf');
+            } elseif ($request->quick_filter === 'my_upload') {
+                $query->where('uploader_id', auth()->id());
+            } elseif ($request->quick_filter === 'today') {
+                $query->whereDate('created_at', Carbon::today());
+            }
         }
 
-        // ── Filter: date range ──────────────────────────────
-        if ($request->filled('tanggal_dari')) {
-            $query->whereDate('tanggal_dokumen', '>=', $request->tanggal_dari);
-        }
-        if ($request->filled('tanggal_sampai')) {
-            $query->whereDate('tanggal_dokumen', '<=', $request->tanggal_sampai);
-        }
+        // ── Smart Filters via Scopes ────────────────────────
+        $query->search($request->search)
+              ->byCategory($request->category_id)
+              ->byUploader($request->uploader_id)
+              ->dateRange($request->tanggal_dari, $request->tanggal_sampai)
+              ->byFormat($request->format);
 
         // ── Sorting ─────────────────────────────────────────
         $sortCol = $request->input('sort', 'created_at');
@@ -62,9 +66,11 @@ class DocumentController extends Controller
         $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
 
         $documents  = $query->paginate($perPage)->withQueryString();
+        
         $categories = Category::orderBy('nama')->get();
+        $users = User::where('is_active', true)->orderBy('nama_lengkap')->get();
 
-        return view('dokumen.index', compact('documents', 'categories'));
+        return view('dokumen.index', compact('documents', 'categories', 'users'));
     }
 
     /**
