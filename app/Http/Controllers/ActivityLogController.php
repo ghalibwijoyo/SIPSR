@@ -14,7 +14,7 @@ class ActivityLogController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ActivityLog::with('user');
+        $query = ActivityLog::withEagerLoading();
 
         // ── Filter: jenis_aktivitas ────────────────────────
         if ($request->filled('jenis_aktivitas')) {

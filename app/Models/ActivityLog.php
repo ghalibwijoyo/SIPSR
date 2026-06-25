@@ -30,6 +30,13 @@ class ActivityLog extends Model
         ];
     }
 
+    // ─── Scopes ────────────────────────────────────────────
+
+    public function scopeWithEagerLoading($query)
+    {
+        return $query->with('user');
+    }
+
     // ─── Relationships ─────────────────────────────────────
 
     public function user(): BelongsTo

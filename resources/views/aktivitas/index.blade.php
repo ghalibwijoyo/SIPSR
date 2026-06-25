@@ -46,7 +46,7 @@
                     <button type="submit" class="btn btn-primary flex-grow-1">
                         <i class="bi bi-funnel me-1"></i> Filter
                     </button>
-                    <a href="{{ route('aktivitas.index') }}" class="btn btn-secondary" title="Reset filter">
+                    <a href="{{ route('aktivitas.index') }}" class="btn btn-secondary" title="Reset filter" aria-label="Reset semua filter">
                         <i class="bi bi-x-lg"></i>
                     </a>
                 </div>
@@ -132,9 +132,17 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">
-                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                            Belum ada log aktivitas yang sesuai.
+                        <td colspan="7" class="p-4">
+                            <div class="alert alert-warning text-start mb-0">
+                                <h5 class="alert-heading">
+                                    <i class="bi bi-search me-2"></i> Tidak ada hasil
+                                </h5>
+                                <p>Log aktivitas dengan filter Anda tidak ditemukan.</p>
+                                <ul class="mb-0">
+                                    <li>Coba filter jenis aktivitas atau rentang waktu yang lebih umum</li>
+                                    <li><a href="{{ route('aktivitas.index') }}" class="alert-link">Reset semua filter</a></li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
@@ -161,5 +169,37 @@ window.updatePerPage = function(val) {
     url.searchParams.delete('page');
     window.location.href = url.toString();
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter form loading state
+    const filterForm = document.querySelector("form[action='{{ route('aktivitas.index') }}']");
+    if (filterForm) {
+        filterForm.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sedang memproses...';
+            }
+        });
+    }
+
+    // Date range validation
+    const dateFrom = document.getElementById('tanggal_dari');
+    const dateTo = document.getElementById('tanggal_sampai');
+    
+    if (dateFrom && dateTo) {
+        const validateDateRange = () => {
+            if (dateFrom.value && dateTo.value && dateFrom.value > dateTo.value) {
+                dateTo.setCustomValidity('Tanggal akhir tidak boleh sebelum tanggal awal');
+                dateTo.classList.add('is-invalid');
+            } else {
+                dateTo.setCustomValidity('');
+                dateTo.classList.remove('is-invalid');
+            }
+        };
+        dateFrom.addEventListener('change', validateDateRange);
+        dateTo.addEventListener('change', validateDateRange);
+    }
+});
 </script>
 @endpush

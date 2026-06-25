@@ -31,7 +31,8 @@
                     </label>
                     <input type="text" class="form-control" id="filter-search" name="search"
                            value="{{ request('search') }}"
-                           placeholder="Nomor atau nama dokumen…">
+                           placeholder="Nomor atau nama dokumen…"
+                           aria-label="Cari dokumen di Recycle Bin">
                 </div>
 
                 {{-- Category --}}
@@ -82,7 +83,7 @@
                     <button type="submit" class="btn btn-success flex-grow-1" id="btn-filter">
                         <i class="bi bi-funnel me-1"></i>Filter
                     </button>
-                    <a href="{{ route('recycle-bin.index') }}" class="btn btn-secondary" id="btn-reset" title="Reset filter">
+                    <a href="{{ route('recycle-bin.index') }}" class="btn btn-secondary" id="btn-reset" title="Reset filter" aria-label="Reset semua filter">
                         <i class="bi bi-x-lg"></i>
                     </a>
                 </div>
@@ -208,9 +209,17 @@
                     </tr>
                     @empty
                     <tr id="empty-state">
-                        <td colspan="7" class="text-center py-5">
-                            <i class="bi bi-trash fs-1 text-muted mb-3 d-block"></i>
-                            <h6 class="text-muted">Recycle Bin kosong</h6>
+                        <td colspan="7" class="p-4">
+                            <div class="alert alert-warning text-start mb-0">
+                                <h5 class="alert-heading">
+                                    <i class="bi bi-search me-2"></i> Tidak ada hasil
+                                </h5>
+                                <p>Recycle Bin kosong atau dokumen dengan filter Anda tidak ditemukan.</p>
+                                <ul class="mb-0">
+                                    <li>Coba periksa kata kunci pencarian</li>
+                                    <li><a href="{{ route('recycle-bin.index') }}" class="alert-link">Reset semua filter</a></li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
@@ -371,6 +380,38 @@ function updatePerPage(val) {
     url.searchParams.delete('page');
     window.location.href = url.toString();
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter form loading state
+    const filterForm = document.querySelector("form[action='{{ route('recycle-bin.index') }}']");
+    if (filterForm) {
+        filterForm.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sedang memproses...';
+            }
+        });
+    }
+
+    // Date range validation
+    const dateFrom = document.getElementById('tanggal_dari');
+    const dateTo = document.getElementById('tanggal_sampai');
+    
+    if (dateFrom && dateTo) {
+        const validateDateRange = () => {
+            if (dateFrom.value && dateTo.value && dateFrom.value > dateTo.value) {
+                dateTo.setCustomValidity('Tanggal akhir tidak boleh sebelum tanggal awal');
+                dateTo.classList.add('is-invalid');
+            } else {
+                dateTo.setCustomValidity('');
+                dateTo.classList.remove('is-invalid');
+            }
+        };
+        dateFrom.addEventListener('change', validateDateRange);
+        dateTo.addEventListener('change', validateDateRange);
+    }
+});
 
 </script>
 @endpush

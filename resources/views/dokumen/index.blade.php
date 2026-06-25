@@ -20,21 +20,24 @@
         <form method="GET" action="{{ route('dokumen.index') }}" class="row g-3" id="mainFilterForm">
             <!-- Smart Search Bar -->
             <div class="col-12">
+                <label for="search_input" class="form-label visually-hidden">Cari Dokumen</label>
                 <div class="input-group input-group-lg shadow-sm rounded overflow-hidden border">
                     <span class="input-group-text bg-white border-0 text-muted">
                         <i class="bi bi-search"></i>
                     </span>
                     <input type="text" 
+                           id="search_input"
                            name="search" 
                            class="form-control form-control-lg border-0 bg-white shadow-none"
                            placeholder="Cari nomor, nama dokumen, atau uploader..."
                            value="{{ request('search') }}"
-                           aria-label="Cari dokumen">
+                           aria-label="Cari dokumen"
+                           aria-describedby="search_hint">
                     <button type="button" class="btn btn-light border-0 px-4" data-bs-toggle="offcanvas" data-bs-target="#advancedFilter" aria-controls="advancedFilter" aria-label="Buka panel filter lanjutan" title="Filter Lanjutan">
                         <i class="bi bi-sliders text-sipsr-primary"></i>
                     </button>
                 </div>
-                <small class="text-muted d-block mt-2 px-1">
+                <small id="search_hint" class="text-muted d-block mt-2 px-1">
                     Contoh: "PSR-2026-001" atau "laporan bulanan"
                 </small>
             </div>
@@ -333,10 +336,18 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-5">
-                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                            Belum ada dokumen.
-                            <a href="{{ route('dokumen.create') }}">Upload sekarang</a>
+                        <td colspan="7" class="p-4">
+                            <div class="alert alert-warning text-start mb-0">
+                                <h5 class="alert-heading">
+                                    <i class="bi bi-search me-2"></i> Tidak ada hasil pencarian
+                                </h5>
+                                <p>Dokumen dengan filter atau pencarian Anda tidak ditemukan. Coba:</p>
+                                <ul class="mb-0">
+                                    <li>Periksa kembali ejaan kata kunci pencarian</li>
+                                    <li>Coba filter kategori atau rentang waktu yang lebih umum</li>
+                                    <li><a href="{{ route('dokumen.index') }}" class="alert-link">Reset semua filter</a></li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
@@ -503,6 +514,36 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('tanggal_dari').value = fromDate.toISOString().split('T')[0];
         document.getElementById('tanggal_sampai').value = toDate.toISOString().split('T')[0];
     };
+
+    // Filter form loading state
+    const advancedFilterForm = document.querySelector("form[action='{{ route('dokumen.index') }}']");
+    if (advancedFilterForm) {
+        advancedFilterForm.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sedang memproses...';
+            }
+        });
+    }
+
+    // Date range validation
+    const dateFrom = document.getElementById('tanggal_dari');
+    const dateTo = document.getElementById('tanggal_sampai');
+    
+    if (dateFrom && dateTo) {
+        const validateDateRange = () => {
+            if (dateFrom.value && dateTo.value && dateFrom.value > dateTo.value) {
+                dateTo.setCustomValidity('Tanggal akhir tidak boleh sebelum tanggal awal');
+                dateTo.classList.add('is-invalid');
+            } else {
+                dateTo.setCustomValidity('');
+                dateTo.classList.remove('is-invalid');
+            }
+        };
+        dateFrom.addEventListener('change', validateDateRange);
+        dateTo.addEventListener('change', validateDateRange);
+    }
 });
 
 

@@ -34,11 +34,17 @@ class User extends Authenticatable
 
     protected static function booted()
     {
-        static::updated(function () {
-            Cache::forget('users_active');
+        static::updated(function ($user) {
+            if ($user->isDirty('is_active')) {
+                Cache::forget('users_active');
+            }
         });
         
         static::created(function () {
+            Cache::forget('users_active');
+        });
+        
+        static::deleted(function () {
             Cache::forget('users_active');
         });
     }
