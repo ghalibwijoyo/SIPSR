@@ -52,10 +52,7 @@ class Document extends Model
         
         return $query->where(function($q) use ($search) {
             $q->where('nomor_dokumen', 'LIKE', "%{$search}%")
-              ->orWhere('nama_dokumen', 'LIKE', "%{$search}%")
-              ->orWhereHas('uploader', function ($q2) use ($search) {
-                  $q2->where('nama_lengkap', 'LIKE', "%{$search}%");
-              });
+              ->orWhere('nama_dokumen', 'LIKE', "%{$search}%");
         });
     }
     

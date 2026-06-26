@@ -47,16 +47,15 @@ class RecycleBinController extends Controller
 
         // ── Filter: trash_age ───────────────────────────────
         if ($request->filled('trash_age')) {
-            $now = Carbon::now();
             if ($request->trash_age === 'new') {
-                $query->where('deleted_at', '>=', $now->subDays(7));
+                $query->where('deleted_at', '>=', now()->subDays(7));
             } elseif ($request->trash_age === 'medium') {
                 $query->whereBetween('deleted_at', [
-                    $now->subDays(20),
-                    $now->subDays(7)
+                    now()->subDays(20),
+                    now()->subDays(7)
                 ]);
             } elseif ($request->trash_age === 'old') {
-                $query->where('deleted_at', '<', $now->subDays(20));
+                $query->where('deleted_at', '<', now()->subDays(20));
             }
         }
         

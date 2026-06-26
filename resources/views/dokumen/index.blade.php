@@ -353,42 +353,41 @@
 @push('scripts')
 
 <script>
-// Bulk Actions Logic
-const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+// Bulk Actions Logic with Event Delegation
 const bulkActions = document.getElementById('bulk-actions');
 const selectedCount = document.getElementById('selected-count');
 
 function updateBulkActions() {
     const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-    selectedCount.textContent = checkedCount;
-    if (checkedCount > 0) {
-        bulkActions.classList.remove('d-none');
-        bulkActions.classList.add('d-flex');
-    } else {
-        bulkActions.classList.remove('d-flex');
-        bulkActions.classList.add('d-none');
+    if (selectedCount) selectedCount.textContent = checkedCount;
+    if (bulkActions) {
+        if (checkedCount > 0) {
+            bulkActions.classList.remove('d-none');
+            bulkActions.classList.add('d-flex');
+        } else {
+            bulkActions.classList.remove('d-flex');
+            bulkActions.classList.add('d-none');
+        }
     }
 }
 
-if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener('change', function() {
-        rowCheckboxes.forEach(cb => cb.checked = this.checked);
+document.addEventListener('change', function(e) {
+    if (e.target.id === 'selectAllCheckbox') {
+        const checkboxes = document.querySelectorAll('.row-checkbox');
+        checkboxes.forEach(cb => cb.checked = e.target.checked);
         updateBulkActions();
-    });
-}
-
-rowCheckboxes.forEach(cb => {
-    cb.addEventListener('change', function() {
-        if (!this.checked && selectAllCheckbox.checked) {
-            selectAllCheckbox.checked = false;
+    } else if (e.target.classList.contains('row-checkbox')) {
+        const selectAll = document.getElementById('selectAllCheckbox');
+        if (!e.target.checked && selectAll) {
+            selectAll.checked = false;
         }
-        const allChecked = document.querySelectorAll('.row-checkbox:checked').length === rowCheckboxes.length;
-        if (allChecked && rowCheckboxes.length > 0) {
-            selectAllCheckbox.checked = true;
+        const checkboxes = document.querySelectorAll('.row-checkbox');
+        const allChecked = document.querySelectorAll('.row-checkbox:checked').length === checkboxes.length;
+        if (allChecked && checkboxes.length > 0 && selectAll) {
+            selectAll.checked = true;
         }
         updateBulkActions();
-    });
+    }
 });
 
 function getSelectedIds() {
@@ -463,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = url.toString();
     };
     
-    // Real-Time Search Debounce (300ms)
+    // Real-Time Search with AJAX
     let searchTimeout;
     const searchInput = document.querySelector('input[name="search"]');
     const searchForm = document.getElementById('mainFilterForm');
@@ -471,14 +470,52 @@ document.addEventListener('DOMContentLoaded', function() {
     if (searchInput && searchForm) {
         searchInput.addEventListener('input', function() {
             clearTimeout(searchTimeout);
-            // Submit jika input ada isinya atau kosong (untuk mereset)
             searchTimeout = setTimeout(() => {
-                searchForm.submit();
-            }, 300);
+                const url = new URL(searchForm.action);
+                const formData = new FormData(searchForm);
+                const searchParams = new URLSearchParams();
+                for (const pair of formData) {
+                    if (pair[1]) searchParams.append(pair[0], pair[1]);
+                }
+                url.search = searchParams.toString();
+                
+                const tableContainer = document.querySelector('.table-responsive');
+                if (tableContainer) tableContainer.style.opacity = '0.5';
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        
+                        const newTable = doc.querySelector('#dokumen-table');
+                        if (newTable) {
+                            document.querySelector('#dokumen-table').innerHTML = newTable.innerHTML;
+                        }
+                        
+                        const newPagination = doc.querySelector('.card-footer');
+                        const currentPagination = document.querySelector('.card-footer');
+                        if (newPagination && currentPagination) {
+                            currentPagination.innerHTML = newPagination.innerHTML;
+                        }
+
+                        window.history.pushState({}, '', url);
+                        if (tableContainer) tableContainer.style.opacity = '1';
+                        
+                        // Reset checkboxes
+                        updateBulkActions();
+                        const selectAll = document.getElementById('selectAllCheckbox');
+                        if (selectAll) selectAll.checked = false;
+                    })
+                    .catch(() => {
+                        searchForm.submit(); // Fallback
+                    });
+            }, 400); // Delay 400ms is smooth
         });
         
-        // Auto-focus search (optional, we check if it has value to place cursor at end)
+        // Auto-focus search on initial load
         if(searchInput.value) {
+            searchInput.focus();
             const length = searchInput.value.length;
             searchInput.setSelectionRange(length, length);
         }
