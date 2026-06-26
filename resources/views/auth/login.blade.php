@@ -6,7 +6,6 @@
 {{-- Antigravity Blob --}}
 <div id="blob"></div>
 <div id="blur"></div>
-<div class="racing-car">🏎️💨</div>
 
 <div class="login-container position-relative" style="z-index: 2;">
     <div class="card login-card shadow-lg border-0" style="background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);">
@@ -139,35 +138,4 @@ body.bg-sipsr-gradient {
         rotate: 360deg;
     }
 }
-
-/* Racing Car Animation */
-.racing-car {
-    position: absolute;
-    bottom: 5vh;
-    left: -100px;
-    font-size: 4rem;
-    z-index: 10;
-    animation: raceAcross 7s linear infinite;
-    pointer-events: none; /* Prevent interacting with it */
-    filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
-}
-
-@keyframes raceAcross {
-    0% {
-        transform: translateX(-100px) scaleX(1);
-    }
-    48% {
-        transform: translateX(calc(100vw + 100px)) scaleX(1);
-    }
-    50% {
-        transform: translateX(calc(100vw + 100px)) scaleX(-1);
-    }
-    98% {
-        transform: translateX(-100px) scaleX(-1);
-    }
-    100% {
-        transform: translateX(-100px) scaleX(1);
-    }
-}
-</style>
 @endpush
