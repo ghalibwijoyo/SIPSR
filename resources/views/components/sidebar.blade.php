@@ -76,6 +76,12 @@
                     <i class="bi bi-tags me-2"></i>Kategori
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link sidebar-link {{ request()->is('admin/banks*') ? 'active' : '' }}"
+                   href="{{ route('banks.index') }}" id="nav-bank">
+                    <i class="bi bi-bank me-2"></i>Bank
+                </a>
+            </li>
             @endif
 
             {{-- Divider --}}

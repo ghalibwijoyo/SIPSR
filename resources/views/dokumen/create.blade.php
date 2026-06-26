@@ -85,6 +85,25 @@
                             @enderror
                         </div>
 
+                        {{-- Bank --}}
+                        <div class="col-md-6">
+                            <label for="bank_id" class="form-label fw-semibold">
+                                Nama Bank
+                            </label>
+                            <select class="form-select @error('bank_id') is-invalid @enderror"
+                                    id="bank_id" name="bank_id">
+                                <option value="">— Opsional —</option>
+                                @foreach($banks as $bank)
+                                    <option value="{{ $bank->id }}" {{ old('bank_id') == $bank->id ? 'selected' : '' }}>
+                                        {{ $bank->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('bank_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         {{-- Kategori --}}
                         <div class="col-md-6">
                             <label for="category_id" class="form-label fw-semibold">

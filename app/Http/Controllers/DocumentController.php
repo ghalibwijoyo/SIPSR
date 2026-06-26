@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
 use App\Models\Category;
+use App\Models\Bank;
 use App\Models\Document;
 use App\Models\DocumentHistory;
 use Carbon\Carbon;
@@ -44,6 +45,7 @@ class DocumentController extends Controller
         // ── Smart Filters via Scopes ────────────────────────
         $query->search($request->search)
               ->byCategory($request->category_id)
+              ->byBank($request->bank_id)
               ->byUploader($request->uploader_id)
               ->dateRange($request->tanggal_dari, $request->tanggal_sampai)
               ->byFormat($request->format);
@@ -65,12 +67,12 @@ class DocumentController extends Controller
         // ── Pagination ──────────────────────────────────────
         $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
 
-        $documents  = $query->paginate($perPage)->withQueryString();
-        
+        $documents = $query->paginate(50)->withQueryString();
         $categories = Category::orderBy('nama')->get();
+        $banks = Bank::orderBy('nama')->get();
         $users = User::where('is_active', true)->orderBy('nama_lengkap')->get();
 
-        return view('dokumen.index', compact('documents', 'categories', 'users'));
+        return view('dokumen.index', compact('documents', 'categories', 'banks', 'users'));
     }
 
     /**
@@ -79,8 +81,9 @@ class DocumentController extends Controller
     public function create()
     {
         $categories = Category::orderBy('nama')->get();
+        $banks = Bank::orderBy('nama')->get();
 
-        return view('dokumen.create', compact('categories'));
+        return view('dokumen.create', compact('categories', 'banks'));
     }
 
     /**
@@ -91,6 +94,7 @@ class DocumentController extends Controller
         $validated = $request->validate([
             'nomor_dokumen'   => 'required|string|max:255',
             'nama_dokumen'    => 'required|string|max:255',
+            'bank_id'         => 'nullable|exists:banks,id',
             'category_id'     => 'required|exists:categories,id',
             'tanggal_dokumen' => 'required|date',
             'deskripsi'       => 'nullable|string',
@@ -130,6 +134,7 @@ class DocumentController extends Controller
         $document = Document::create([
             'nomor_dokumen'   => $validated['nomor_dokumen'],
             'nama_dokumen'    => $validated['nama_dokumen'],
+            'bank_id'         => $validated['bank_id'] ?? null,
             'category_id'     => $validated['category_id'],
             'tanggal_dokumen' => $validated['tanggal_dokumen'],
             'deskripsi'       => $validated['deskripsi'] ?? null,
@@ -161,8 +166,9 @@ class DocumentController extends Controller
     public function edit(Document $dokumen)
     {
         $categories = Category::orderBy('nama')->get();
+        $banks = Bank::orderBy('nama')->get();
 
-        return view('dokumen.edit', compact('dokumen', 'categories'));
+        return view('dokumen.edit', compact('dokumen', 'categories', 'banks'));
     }
 
     /**
@@ -173,6 +179,7 @@ class DocumentController extends Controller
         $validated = $request->validate([
             'nomor_dokumen'   => 'required|string|max:255',
             'nama_dokumen'    => 'required|string|max:255',
+            'bank_id'         => 'nullable|exists:banks,id',
             'category_id'     => 'required|exists:categories,id',
             'tanggal_dokumen' => 'required|date',
             'deskripsi'       => 'nullable|string',
@@ -182,6 +189,7 @@ class DocumentController extends Controller
         $trackFields = [
             'nomor_dokumen'   => 'Nomor Dokumen',
             'nama_dokumen'    => 'Nama Dokumen',
+            'bank_id'         => 'Bank',
             'category_id'     => 'Kategori',
             'tanggal_dokumen' => 'Tanggal Dokumen',
             'deskripsi'       => 'Deskripsi',
@@ -208,6 +216,21 @@ class DocumentController extends Controller
                     'field_name'    => $label,
                     'old_value'     => $oldCat?->nama ?? $oldValue,
                     'new_value'     => $newCat?->nama ?? $newValue,
+                    'changed_by_id' => auth()->id(),
+                    'changed_at'    => now(),
+                ]);
+                continue;
+            }
+
+            // Normalize bank for display
+            if ($field === 'bank_id' && (string) $oldValue !== (string) $newValue) {
+                $oldBank = Bank::find($oldValue);
+                $newBank = Bank::find($newValue);
+                DocumentHistory::create([
+                    'document_id'   => $dokumen->id,
+                    'field_name'    => $label,
+                    'old_value'     => $oldBank?->nama ?? $oldValue,
+                    'new_value'     => $newBank?->nama ?? $newValue,
                     'changed_by_id' => auth()->id(),
                     'changed_at'    => now(),
                 ]);

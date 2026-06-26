@@ -16,6 +16,7 @@ class Document extends Model
     protected $fillable = [
         'nomor_dokumen',
         'nama_dokumen',
+        'bank_id',
         'category_id',
         'tanggal_dokumen',
         'deskripsi',
@@ -55,6 +56,12 @@ class Document extends Model
               ->orWhere('nama_dokumen', 'LIKE', "%{$search}%")
               ->orWhereHas('uploader', function ($q2) use ($search) {
                   $q2->where('nama_lengkap', 'LIKE', "%{$search}%");
+              })
+              ->orWhereHas('category', function ($q2) use ($search) {
+                  $q2->where('nama', 'LIKE', "%{$search}%");
+              })
+              ->orWhereHas('bank', function ($q2) use ($search) {
+                  $q2->where('nama', 'LIKE', "%{$search}%");
               });
         });
     }
@@ -62,6 +69,11 @@ class Document extends Model
     public function scopeByCategory($query, $categoryId)
     {
         return $categoryId ? $query->where('category_id', $categoryId) : $query;
+    }
+    
+    public function scopeByBank($query, $bankId)
+    {
+        return $bankId ? $query->where('bank_id', $bankId) : $query;
     }
     
     public function scopeByUploader($query, $uploaderId)
@@ -97,6 +109,11 @@ class Document extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function bank(): BelongsTo
+    {
+        return $this->belongsTo(Bank::class);
     }
 
     public function uploader(): BelongsTo

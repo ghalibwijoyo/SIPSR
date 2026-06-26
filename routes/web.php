@@ -11,6 +11,7 @@ use App\Http\Controllers\ShareViewController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\BankController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -101,4 +102,7 @@ Route::middleware(['auth', 'role:ADMIN'])->group(function () {
 
     // Category Management
     Route::resource('admin/categories', CategoryController::class)->names('categories')->except(['create', 'show', 'edit']);
+
+    // Bank Management
+    Route::resource('admin/banks', BankController::class)->names('banks')->except(['create', 'show', 'edit']);
 });

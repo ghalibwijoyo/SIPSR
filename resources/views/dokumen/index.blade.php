@@ -29,7 +29,7 @@
                            id="search_input"
                            name="search" 
                            class="form-control form-control-lg border-0 bg-white shadow-none"
-                           placeholder="Cari nomor, nama dokumen, atau uploader..."
+                           placeholder="Cari nomor, nama dokumen, kategori, bank, atau uploader..."
                            value="{{ request('search') }}"
                            aria-label="Cari dokumen"
                            aria-describedby="search_hint">
@@ -128,6 +128,19 @@
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
                             {{ $cat->nama }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Bank -->
+            <div class="mb-4">
+                <label for="bank_filter" class="form-label small fw-bold">Bank</label>
+                <select name="bank_id" id="bank_filter" class="form-select" aria-label="Filter berdasarkan bank">
+                    <option value="">-- Semua Bank --</option>
+                    @foreach($banks as $bank)
+                        <option value="{{ $bank->id }}" {{ request('bank_id') == $bank->id ? 'selected' : '' }}>
+                            {{ $bank->nama }}
                         </option>
                     @endforeach
                 </select>
@@ -258,6 +271,7 @@
                                 @endif
                             </a>
                         </th>
+                        <th>Nama Bank</th>
                         <th>Kategori</th>
                         <th>
                             <a href="{{ route('dokumen.index', array_merge(request()->all(), ['sort' => 'tanggal_dokumen', 'dir' => request('sort') == 'tanggal_dokumen' && request('dir') == 'asc' ? 'desc' : 'asc'])) }}"
@@ -289,6 +303,7 @@
                                 {{ Str::limit($doc->nama_dokumen, 45) }}
                             </a>
                         </td>
+                        <td class="small">{{ $doc->bank->nama ?? '-' }}</td>
                         <td>
                             <span class="badge bg-sipsr-primary bg-opacity-10 text-sipsr-light">
                                 {{ $doc->category->nama ?? '-' }}
@@ -318,7 +333,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="p-4">
+                        <td colspan="9" class="p-4">
                             <div class="alert alert-warning text-start mb-0">
                                 <h5 class="alert-heading">
                                     <i class="bi bi-search me-2"></i> Tidak ada hasil pencarian

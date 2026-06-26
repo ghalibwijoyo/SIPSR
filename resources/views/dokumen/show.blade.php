@@ -81,6 +81,10 @@
                             <td class="fw-medium">{{ $dokumen->nama_dokumen }}</td>
                         </tr>
                         <tr>
+                            <td class="ps-3 text-muted fw-semibold">Nama Bank</td>
+                            <td>{{ $dokumen->bank->nama ?? '-' }}</td>
+                        </tr>
+                        <tr>
                             <td class="ps-3 text-muted fw-semibold">Kategori</td>
                             <td>
                                 <span class="badge bg-sipsr-primary bg-opacity-10 text-sipsr-light">
