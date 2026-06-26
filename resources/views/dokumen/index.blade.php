@@ -47,14 +47,6 @@
                        aria-label="Lihat semua dokumen">
                         Semua Dokumen
                     </a>
-                    
-                    <button type="submit" 
-                            name="quick_filter" 
-                            value="my_upload" 
-                            class="btn btn-sm {{ request('quick_filter') === 'my_upload' ? 'btn-success' : 'btn-outline-success' }}"
-                            aria-label="Filter dokumen yang saya upload">
-                        👤 Unggahan Saya
-                    </button>
                 </div>
             </div>
         </form>
