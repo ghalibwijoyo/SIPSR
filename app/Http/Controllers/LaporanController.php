@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Models\Category;
+use App\Models\Bank;
+use App\Models\User;
 use App\Models\ActivityLog;
 use App\Exports\DokumenExport;
 use Carbon\Carbon;
@@ -17,41 +20,23 @@ class LaporanController extends Controller
      */
     public function index(Request $request)
     {
-        // Default filter ke 1 Bulan jika tidak ada request
-        $periode = $request->input('periode', '1_bulan');
-        
+        // ── Validasi Date Range ─────────────────────────────
+        if ($request->filled('tanggal_dari') && $request->filled('tanggal_sampai')) {
+            if ($request->tanggal_dari > $request->tanggal_sampai) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+            }
+        }
+
         $query = Document::with(['category', 'uploader', 'bank']);
 
-        // Rentang waktu
-        $sekarang = Carbon::now();
-        $tanggalDari = null;
-        
-        switch ($periode) {
-            case '1_hari':
-                $tanggalDari = $sekarang->copy()->subDay();
-                break;
-            case '1_minggu':
-                $tanggalDari = $sekarang->copy()->subWeek();
-                break;
-            case '1_bulan':
-                $tanggalDari = $sekarang->copy()->subMonth();
-                break;
-            case '1_tahun':
-                $tanggalDari = $sekarang->copy()->subYear();
-                break;
-            case '5_tahun':
-                $tanggalDari = $sekarang->copy()->subYears(5);
-                break;
-            case 'semua':
-                $tanggalDari = null;
-                break;
-            default:
-                $tanggalDari = $sekarang->copy()->subMonth();
-        }
-
-        if ($tanggalDari) {
-            $query->where('tanggal_dokumen', '>=', $tanggalDari);
-        }
+        // ── Smart Filters via Scopes ────────────────────────
+        $query->search($request->search)
+              ->byCategory($request->category_id)
+              ->byBank($request->bank_id)
+              ->byUploader($request->uploader_id)
+              ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
 
         $query->orderBy('tanggal_dokumen', 'desc');
 
@@ -59,7 +44,15 @@ class LaporanController extends Controller
         // Preview table maximum 10 rows
         $dokumenPreview = $query->take(10)->get();
 
-        return view('laporan.index', compact('periode', 'totalDokumen', 'dokumenPreview', 'tanggalDari'));
+        // Data untuk dropdown filter
+        $categories = Category::orderBy('nama')->get();
+        $banks = Bank::orderBy('nama')->get();
+        $users = User::where('is_active', true)->orderBy('nama_lengkap')->get();
+
+        return view('laporan.index', compact(
+            'totalDokumen', 'dokumenPreview',
+            'categories', 'banks', 'users'
+        ));
     }
 
     /**
@@ -67,13 +60,12 @@ class LaporanController extends Controller
      */
     public function exportExcel(Request $request)
     {
-        $periode = $request->input('periode', '1_bulan');
-        
-        $this->logActivity('EXPORT_EXCEL', "Export laporan dokumen ke Excel (Periode: {$periode})");
+        $filterDesc = $this->getFilterDescription($request);
+        $this->logActivity('EXPORT_EXCEL', "Export laporan dokumen ke Excel ({$filterDesc})");
 
         $fileName = 'Laporan_Dokumen_SIPSR_' . date('Y-m-d_His') . '.xlsx';
         
-        return Excel::download(new DokumenExport($periode), $fileName);
+        return Excel::download(new DokumenExport($request->all()), $fileName);
     }
 
     /**
@@ -81,11 +73,11 @@ class LaporanController extends Controller
      */
     public function exportPdf(Request $request)
     {
-        $periode = $request->input('periode', '1_bulan');
-        $dokumen = $this->getDokumenByPeriode($periode);
-        $rentangWaktu = $this->getTeksPeriode($periode);
+        $dokumen = $this->getDokumenByFilter($request);
+        $rentangWaktu = $this->getRentangWaktuText($request);
 
-        $this->logActivity('EXPORT_PDF', "Export laporan dokumen ke PDF (Periode: {$periode})");
+        $filterDesc = $this->getFilterDescription($request);
+        $this->logActivity('EXPORT_PDF', "Export laporan dokumen ke PDF ({$filterDesc})");
 
         $pdf = Pdf::loadView('laporan.pdf', compact('dokumen', 'rentangWaktu'))
                   ->setPaper('a4', 'landscape');
@@ -98,11 +90,11 @@ class LaporanController extends Controller
      */
     public function printPdf(Request $request)
     {
-        $periode = $request->input('periode', '1_bulan');
-        $dokumen = $this->getDokumenByPeriode($periode);
-        $rentangWaktu = $this->getTeksPeriode($periode);
+        $dokumen = $this->getDokumenByFilter($request);
+        $rentangWaktu = $this->getRentangWaktuText($request);
 
-        $this->logActivity('CETAK_PDF', "Mencetak laporan dokumen (Periode: {$periode})");
+        $filterDesc = $this->getFilterDescription($request);
+        $this->logActivity('CETAK_PDF', "Mencetak laporan dokumen ({$filterDesc})");
 
         $pdf = Pdf::loadView('laporan.pdf', compact('dokumen', 'rentangWaktu'))
                   ->setPaper('a4', 'landscape');
@@ -112,39 +104,58 @@ class LaporanController extends Controller
 
     // ─── Private Helpers ─────────────────────────────────────
 
-    private function getDokumenByPeriode($periode)
+    private function getDokumenByFilter(Request $request)
     {
         $query = Document::with(['category', 'uploader', 'bank']);
         
-        $sekarang = Carbon::now();
-        $tanggalDari = null;
-        
-        switch ($periode) {
-            case '1_hari':   $tanggalDari = $sekarang->copy()->subDay(); break;
-            case '1_minggu': $tanggalDari = $sekarang->copy()->subWeek(); break;
-            case '1_bulan':  $tanggalDari = $sekarang->copy()->subMonth(); break;
-            case '1_tahun':  $tanggalDari = $sekarang->copy()->subYear(); break;
-            case '5_tahun':  $tanggalDari = $sekarang->copy()->subYears(5); break;
-        }
-
-        if ($tanggalDari) {
-            $query->where('tanggal_dokumen', '>=', $tanggalDari);
-        }
+        $query->search($request->search)
+              ->byCategory($request->category_id)
+              ->byBank($request->bank_id)
+              ->byUploader($request->uploader_id)
+              ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
 
         return $query->orderBy('tanggal_dokumen', 'desc')->get();
     }
 
-    private function getTeksPeriode($periode)
+    /**
+     * Membuat teks deskriptif rentang waktu berdasarkan filter aktif.
+     */
+    private function getRentangWaktuText(Request $request): string
     {
-        switch ($periode) {
-            case '1_hari': return '1 Hari Terakhir';
-            case '1_minggu': return '1 Minggu Terakhir';
-            case '1_bulan': return '1 Bulan Terakhir';
-            case '1_tahun': return '1 Tahun Terakhir';
-            case '5_tahun': return '5 Tahun Terakhir';
-            case 'semua': return 'Semua Waktu';
-            default: return '1 Bulan Terakhir';
+        $parts = [];
+
+        if ($request->filled('tanggal_dari') && $request->filled('tanggal_sampai')) {
+            $parts[] = Carbon::parse($request->tanggal_dari)->format('d/m/Y') . ' — ' . Carbon::parse($request->tanggal_sampai)->format('d/m/Y');
+        } elseif ($request->filled('tanggal_dari')) {
+            $parts[] = 'Dari ' . Carbon::parse($request->tanggal_dari)->format('d/m/Y');
+        } elseif ($request->filled('tanggal_sampai')) {
+            $parts[] = 'Sampai ' . Carbon::parse($request->tanggal_sampai)->format('d/m/Y');
+        } else {
+            $parts[] = 'Semua Waktu';
         }
+
+        if ($request->filled('search')) {
+            $parts[] = 'Pencarian: "' . $request->search . '"';
+        }
+
+        return implode(' · ', $parts);
+    }
+
+    /**
+     * Membuat deskripsi singkat filter untuk Activity Log.
+     */
+    private function getFilterDescription(Request $request): string
+    {
+        $filters = [];
+
+        if ($request->filled('search'))       $filters[] = "search={$request->search}";
+        if ($request->filled('category_id'))  $filters[] = "category_id={$request->category_id}";
+        if ($request->filled('bank_id'))      $filters[] = "bank_id={$request->bank_id}";
+        if ($request->filled('uploader_id'))  $filters[] = "uploader_id={$request->uploader_id}";
+        if ($request->filled('tanggal_dari')) $filters[] = "dari={$request->tanggal_dari}";
+        if ($request->filled('tanggal_sampai')) $filters[] = "sampai={$request->tanggal_sampai}";
+
+        return empty($filters) ? 'Tanpa filter' : implode(', ', $filters);
     }
 
     private function logActivity(string $jenis, string $detail): void

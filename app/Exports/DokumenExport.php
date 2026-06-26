@@ -16,33 +16,28 @@ class DokumenExport implements FromQuery, WithHeadings, WithMapping, WithStyles,
 {
     use Exportable;
 
-    private $periode;
+    private $filters;
     private $rowNumber = 0;
 
-    public function __construct(string $periode = '1_bulan')
+    public function __construct(array $filters = [])
     {
-        $this->periode = $periode;
+        $this->filters = $filters;
     }
 
     public function query()
     {
         $query = Document::query()
             ->with(['category', 'uploader', 'bank']);
-        
-        $sekarang = Carbon::now();
-        $tanggalDari = null;
-        
-        switch ($this->periode) {
-            case '1_hari':   $tanggalDari = $sekarang->copy()->subDay(); break;
-            case '1_minggu': $tanggalDari = $sekarang->copy()->subWeek(); break;
-            case '1_bulan':  $tanggalDari = $sekarang->copy()->subMonth(); break;
-            case '1_tahun':  $tanggalDari = $sekarang->copy()->subYear(); break;
-            case '5_tahun':  $tanggalDari = $sekarang->copy()->subYears(5); break;
-        }
 
-        if ($tanggalDari) {
-            $query->where('tanggal_dokumen', '>=', $tanggalDari);
-        }
+        // ── Smart Filters via Scopes ────────────────────────
+        $query->search($this->filters['search'] ?? null)
+              ->byCategory($this->filters['category_id'] ?? null)
+              ->byBank($this->filters['bank_id'] ?? null)
+              ->byUploader($this->filters['uploader_id'] ?? null)
+              ->dateRange(
+                  $this->filters['tanggal_dari'] ?? null,
+                  $this->filters['tanggal_sampai'] ?? null
+              );
 
         return $query->orderBy('tanggal_dokumen', 'desc');
     }
