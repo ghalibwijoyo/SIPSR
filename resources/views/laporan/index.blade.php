@@ -76,6 +76,7 @@
                                     <th class="ps-3 text-center" style="width: 50px;">No</th>
                                     <th>Nomor Dokumen</th>
                                     <th>Nama Dokumen</th>
+                                    <th>Nama Bank</th>
                                     <th>Kategori</th>
                                     <th>Tanggal</th>
                                     <th class="pe-3">Uploader</th>
@@ -87,6 +88,7 @@
                                     <td class="ps-3 text-center text-muted small">{{ $index + 1 }}</td>
                                     <td class="small"><code class="text-dark fw-bold">{{ $doc->nomor_dokumen }}</code></td>
                                     <td class="small">{{ $doc->nama_dokumen }}</td>
+                                    <td class="small">{{ $doc->bank->nama ?? '-' }}</td>
                                     <td class="small"><span class="badge bg-secondary">{{ $doc->category->nama ?? '-' }}</span></td>
                                     <td class="small">{{ $doc->tanggal_dokumen?->format('d/m/Y') }}</td>
                                     <td class="pe-3 small">{{ $doc->uploader->nama_lengkap ?? '-' }}</td>

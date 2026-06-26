@@ -27,7 +27,7 @@ class DokumenExport implements FromQuery, WithHeadings, WithMapping, WithStyles,
     public function query()
     {
         $query = Document::query()
-            ->with(['category', 'uploader']);
+            ->with(['category', 'uploader', 'bank']);
         
         $sekarang = Carbon::now();
         $tanggalDari = null;
@@ -53,6 +53,7 @@ class DokumenExport implements FromQuery, WithHeadings, WithMapping, WithStyles,
             'No',
             'Nomor Dokumen',
             'Nama Dokumen',
+            'Nama Bank',
             'Kategori',
             'Tanggal Dokumen',
             'Uploader',
@@ -68,6 +69,7 @@ class DokumenExport implements FromQuery, WithHeadings, WithMapping, WithStyles,
             $this->rowNumber,
             $dokumen->nomor_dokumen,
             $dokumen->nama_dokumen,
+            $dokumen->bank->nama ?? '-',
             $dokumen->category->nama ?? '-',
             $dokumen->tanggal_dokumen ? $dokumen->tanggal_dokumen->format('Y-m-d') : '-',
             $dokumen->uploader->nama_lengkap ?? '-',

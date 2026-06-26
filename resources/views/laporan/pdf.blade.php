@@ -80,11 +80,12 @@
         <thead>
             <tr>
                 <th width="3%" class="text-center">No</th>
-                <th width="15%">Nomor Dokumen</th>
-                <th width="25%">Nama Dokumen</th>
-                <th width="12%">Kategori</th>
+                <th width="13%">Nomor Dokumen</th>
+                <th width="20%">Nama Dokumen</th>
+                <th width="12%">Nama Bank</th>
+                <th width="10%">Kategori</th>
                 <th width="10%">Tanggal Dokumen</th>
-                <th width="15%">Uploader</th>
+                <th width="12%">Uploader</th>
                 <th width="20%">Deskripsi</th>
             </tr>
         </thead>
@@ -94,6 +95,7 @@
                 <td class="text-center">{{ $index + 1 }}</td>
                 <td>{{ $doc->nomor_dokumen }}</td>
                 <td>{{ $doc->nama_dokumen }}</td>
+                <td>{{ $doc->bank->nama ?? '-' }}</td>
                 <td>{{ $doc->category->nama ?? '-' }}</td>
                 <td>{{ $doc->tanggal_dokumen?->format('d/m/Y') }}</td>
                 <td>{{ $doc->uploader->nama_lengkap ?? '-' }}</td>
@@ -101,7 +103,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="7" class="text-center">Tidak ada data dokumen pada periode ini.</td>
+                <td colspan="8" class="text-center">Tidak ada data dokumen pada periode ini.</td>
             </tr>
             @endforelse
         </tbody>

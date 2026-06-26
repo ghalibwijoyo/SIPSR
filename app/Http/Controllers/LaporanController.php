@@ -20,7 +20,7 @@ class LaporanController extends Controller
         // Default filter ke 1 Bulan jika tidak ada request
         $periode = $request->input('periode', '1_bulan');
         
-        $query = Document::with(['category', 'uploader']);
+        $query = Document::with(['category', 'uploader', 'bank']);
 
         // Rentang waktu
         $sekarang = Carbon::now();
@@ -114,7 +114,7 @@ class LaporanController extends Controller
 
     private function getDokumenByPeriode($periode)
     {
-        $query = Document::with(['category', 'uploader']);
+        $query = Document::with(['category', 'uploader', 'bank']);
         
         $sekarang = Carbon::now();
         $tanggalDari = null;
