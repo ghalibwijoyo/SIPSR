@@ -105,25 +105,7 @@
 </div>
 @endif
 
-@if($documents->count() > 0)
-<div class="alert alert-info py-2 px-3 mb-4 d-flex align-items-center gap-2 shadow-sm border-0">
-    <i class="bi bi-info-circle-fill"></i>
-    <span>
-        Ditemukan <strong>{{ $documents->total() }}</strong> dokumen
-        @if(!empty($activeFilters))
-            ({{ $documents->count() }} ditampilkan di halaman ini)
-        @endif
-    </span>
-</div>
-@else
-<div class="alert alert-warning mb-4 shadow-sm border-0">
-    <div class="d-flex align-items-center mb-2">
-        <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
-        <h6 class="mb-0 fw-bold">Tidak ada dokumen ditemukan</h6>
-    </div>
-    <p class="mb-0 small">Coba ubah filter di atas atau periksa kembali kata kunci pencarian Anda.</p>
-</div>
-@endif
+
 
 {{-- Offcanvas Advanced Filter Panel --}}
 <div class="offcanvas offcanvas-end" tabindex="-1" id="advancedFilter" aria-labelledby="advancedFilterLabel">

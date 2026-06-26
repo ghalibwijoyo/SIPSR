@@ -14,7 +14,7 @@
     <div>
         <strong>Perhatian!</strong> Terdapat 
         {{ $documents->where('deleted_at', '<', \Carbon\Carbon::now()->subDays(20))->count() }} dokumen 
-        yang akan dihapus secara permanen secara otomatis dalam waktu kurang dari 10 hari. Hubungi Admin jika ada yang perlu dipulihkan.
+        yang akan dihapus secara permanen secara otomatis dalam waktu kurang dari 10 hari.
     </div>
 </div>
 @endif
