@@ -37,9 +37,6 @@
                         <i class="bi bi-sliders text-sipsr-primary"></i>
                     </button>
                 </div>
-                <small id="search_hint" class="text-muted d-block mt-2 px-1">
-                    Contoh: "PSR-2026-001" atau "laporan bulanan"
-                </small>
             </div>
             
             <!-- Quick Filter Badges -->
@@ -53,26 +50,10 @@
                     
                     <button type="submit" 
                             name="quick_filter" 
-                            value="pdf" 
-                            class="btn btn-sm {{ request('quick_filter') === 'pdf' ? 'btn-success' : 'btn-outline-success' }}"
-                            aria-label="Filter hanya dokumen PDF">
-                        📄 Hanya PDF
-                    </button>
-                    
-                    <button type="submit" 
-                            name="quick_filter" 
                             value="my_upload" 
                             class="btn btn-sm {{ request('quick_filter') === 'my_upload' ? 'btn-success' : 'btn-outline-success' }}"
                             aria-label="Filter dokumen yang saya upload">
                         👤 Unggahan Saya
-                    </button>
-                    
-                    <button type="submit" 
-                            name="quick_filter" 
-                            value="today" 
-                            class="btn btn-sm {{ request('quick_filter') === 'today' ? 'btn-success' : 'btn-outline-success' }}"
-                            aria-label="Filter dokumen yang diupload hari ini">
-                        📅 Hari Ini
                     </button>
                 </div>
             </div>
