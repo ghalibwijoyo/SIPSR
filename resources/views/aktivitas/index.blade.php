@@ -15,9 +15,9 @@
             <div class="col-12">
                 <label for="search_input" class="form-label visually-hidden">Cari Aktivitas</label>
                 <div class="input-group input-group-lg shadow-sm rounded overflow-hidden border">
-                    <span class="input-group-text bg-white border-0 text-muted">
-                        <i class="bi bi-search"></i>
-                    </span>
+                    <button type="button" class="btn btn-light border-0 px-4" data-bs-toggle="offcanvas" data-bs-target="#advancedFilter" aria-controls="advancedFilter" aria-label="Buka panel filter lanjutan" title="Filter Lanjutan">
+                        <i class="bi bi-sliders text-sipsr-primary"></i>
+                    </button>
                     <input type="text" 
                            id="search_input"
                            name="search" 
@@ -25,8 +25,8 @@
                            placeholder="Cari aktivitas, pengguna, IP address, atau browser..."
                            value="{{ request('search') }}"
                            aria-label="Cari aktivitas">
-                    <button type="button" class="btn btn-light border-0 px-4" data-bs-toggle="offcanvas" data-bs-target="#advancedFilter" aria-controls="advancedFilter" aria-label="Buka panel filter lanjutan" title="Filter Lanjutan">
-                        <i class="bi bi-sliders text-sipsr-primary"></i>
+                    <button type="submit" class="input-group-text bg-white border-0 text-muted px-4 btn btn-link" aria-label="Cari">
+                        <i class="bi bi-search text-dark"></i>
                     </button>
                 </div>
             </div>

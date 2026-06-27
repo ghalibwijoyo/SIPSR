@@ -18,9 +18,9 @@
             <div class="col-12">
                 <label for="laporan_search_input" class="form-label visually-hidden">Cari Dokumen</label>
                 <div class="input-group input-group-lg shadow-sm rounded overflow-hidden border">
-                    <span class="input-group-text bg-white border-0 text-muted">
-                        <i class="bi bi-search"></i>
-                    </span>
+                    <button type="button" class="btn btn-light border-0 px-4" data-bs-toggle="offcanvas" data-bs-target="#laporanAdvancedFilter" aria-controls="laporanAdvancedFilter" aria-label="Buka panel filter lanjutan" title="Filter Lanjutan">
+                        <i class="bi bi-sliders text-sipsr-primary"></i>
+                    </button>
                     <input type="text" 
                            id="laporan_search_input"
                            name="search" 
@@ -28,8 +28,8 @@
                            placeholder="Cari nomor, nama dokumen, kategori, bank, atau uploader..."
                            value="{{ request('search') }}"
                            aria-label="Cari dokumen untuk laporan">
-                    <button type="button" class="btn btn-light border-0 px-4" data-bs-toggle="offcanvas" data-bs-target="#laporanAdvancedFilter" aria-controls="laporanAdvancedFilter" aria-label="Buka panel filter lanjutan" title="Filter Lanjutan">
-                        <i class="bi bi-sliders text-sipsr-primary"></i>
+                    <button type="submit" class="input-group-text bg-white border-0 text-muted px-4 btn btn-link" aria-label="Cari">
+                        <i class="bi bi-search text-dark"></i>
                     </button>
                 </div>
             </div>
