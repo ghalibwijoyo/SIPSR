@@ -169,78 +169,134 @@
         </div>
         
         @if($totalDokumen > 0)
-        <div class="d-flex gap-2">
-            <form action="{{ route('laporan.export.excel') }}" method="GET" class="d-inline">
-                <input type="hidden" name="search" value="{{ request('search') }}">
-                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-                <input type="hidden" name="bank_id" value="{{ request('bank_id') }}">
-                <input type="hidden" name="uploader_id" value="{{ request('uploader_id') }}">
-                <input type="hidden" name="tanggal_dari" value="{{ request('tanggal_dari') }}">
-                <input type="hidden" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}">
-                <button type="submit" class="btn btn-sm btn-success">
-                    <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
-                </button>
-            </form>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="d-flex align-items-center gap-2">
+                <label for="per-page" class="form-label mb-0 small text-muted">Tampilkan:</label>
+                <select class="form-select form-select-sm" id="per-page" style="width: auto;"
+                        onchange="updatePerPage(this.value)">
+                    @foreach([50, 100, 250, 500] as $pp)
+                        <option value="{{ $pp }}" {{ request('per_page', 50) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
+                    @endforeach
+                </select>
+            </div>
             
-            <form action="{{ route('laporan.export.pdf') }}" method="GET" class="d-inline">
-                <input type="hidden" name="search" value="{{ request('search') }}">
-                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-                <input type="hidden" name="bank_id" value="{{ request('bank_id') }}">
-                <input type="hidden" name="uploader_id" value="{{ request('uploader_id') }}">
-                <input type="hidden" name="tanggal_dari" value="{{ request('tanggal_dari') }}">
-                <input type="hidden" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}">
-                <button type="submit" class="btn btn-sm btn-danger">
-                    <i class="bi bi-file-earmark-pdf me-1"></i> Download PDF
-                </button>
-            </form>
-
-            <form action="{{ route('laporan.print.pdf') }}" method="GET" class="d-inline" target="_blank">
-                <input type="hidden" name="search" value="{{ request('search') }}">
-                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-                <input type="hidden" name="bank_id" value="{{ request('bank_id') }}">
-                <input type="hidden" name="uploader_id" value="{{ request('uploader_id') }}">
-                <input type="hidden" name="tanggal_dari" value="{{ request('tanggal_dari') }}">
-                <input type="hidden" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}">
-                <button type="submit" class="btn btn-sm btn-primary">
-                    <i class="bi bi-printer me-1"></i> Cetak PDF
-                </button>
-            </form>
+            <div class="d-flex gap-2">
+                <form action="{{ route('laporan.export.excel') }}" method="GET" class="d-inline">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                    <input type="hidden" name="bank_id" value="{{ request('bank_id') }}">
+                    <input type="hidden" name="uploader_id" value="{{ request('uploader_id') }}">
+                    <input type="hidden" name="tanggal_dari" value="{{ request('tanggal_dari') }}">
+                    <input type="hidden" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}">
+                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                    <input type="hidden" name="dir" value="{{ request('dir') }}">
+                    <button type="submit" class="btn btn-sm btn-success">
+                        <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+                    </button>
+                </form>
+                
+                <form action="{{ route('laporan.export.pdf') }}" method="GET" class="d-inline">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                    <input type="hidden" name="bank_id" value="{{ request('bank_id') }}">
+                    <input type="hidden" name="uploader_id" value="{{ request('uploader_id') }}">
+                    <input type="hidden" name="tanggal_dari" value="{{ request('tanggal_dari') }}">
+                    <input type="hidden" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}">
+                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                    <input type="hidden" name="dir" value="{{ request('dir') }}">
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Download PDF
+                    </button>
+                </form>
+    
+                <form action="{{ route('laporan.print.pdf') }}" method="GET" class="d-inline" target="_blank">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                    <input type="hidden" name="bank_id" value="{{ request('bank_id') }}">
+                    <input type="hidden" name="uploader_id" value="{{ request('uploader_id') }}">
+                    <input type="hidden" name="tanggal_dari" value="{{ request('tanggal_dari') }}">
+                    <input type="hidden" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}">
+                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                    <input type="hidden" name="dir" value="{{ request('dir') }}">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-printer me-1"></i> Cetak PDF
+                    </button>
+                </form>
+            </div>
         </div>
         @endif
     </div>
     
     <div class="card-body p-0">
         @if($totalDokumen > 0)
-            <div class="alert alert-info border-0 rounded-0 mb-0 py-2 small">
-                <i class="bi bi-info-circle me-1"></i> Menampilkan maksimal 10 baris pertama untuk pratinjau. Silakan <em>Export</em> atau <em>Cetak</em> untuk melihat seluruh data.
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" id="laporan-table">
+            <div class="table-responsive" style="min-height: 400px;">
+                <table class="table table-hover table-striped align-middle mb-0" id="laporan-table">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-3 text-center" style="width: 50px;">No</th>
-                            <th>Nomor Dokumen</th>
-                            <th>Nama Dokumen</th>
+                            <th class="d-mobile-none ps-3" style="width: 50px;">No</th>
+                            <th class="d-mobile-none">
+                                <a href="{{ route('laporan.index', array_merge(request()->all(), ['sort' => 'nomor_dokumen', 'dir' => request('sort') == 'nomor_dokumen' && request('dir') == 'asc' ? 'desc' : 'asc'])) }}"
+                                   class="text-decoration-none text-muted">
+                                    Nomor
+                                    @if(request('sort') == 'nomor_dokumen')
+                                        <i class="bi bi-caret-{{ request('dir') == 'asc' ? 'up' : 'down' }}-fill ms-1"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('laporan.index', array_merge(request()->all(), ['sort' => 'nama_dokumen', 'dir' => request('sort') == 'nama_dokumen' && request('dir') == 'asc' ? 'desc' : 'asc'])) }}"
+                                   class="text-decoration-none text-muted">
+                                    Nama Dokumen
+                                    @if(request('sort') == 'nama_dokumen')
+                                        <i class="bi bi-caret-{{ request('dir') == 'asc' ? 'up' : 'down' }}-fill ms-1"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th>Nama Bank</th>
                             <th>Kategori</th>
-                            <th>Tanggal</th>
-                            <th class="pe-3">Uploader</th>
+                            <th>
+                                <a href="{{ route('laporan.index', array_merge(request()->all(), ['sort' => 'tanggal_dokumen', 'dir' => request('sort') == 'tanggal_dokumen' && request('dir') == 'asc' ? 'desc' : 'asc'])) }}"
+                                   class="text-decoration-none text-muted">
+                                    Tanggal
+                                    @if(request('sort') == 'tanggal_dokumen' || !request()->has('sort'))
+                                        <i class="bi bi-caret-{{ request('dir') == 'asc' ? 'up' : 'down' }}-fill ms-1"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="d-mobile-none pe-3">Uploader</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($dokumenPreview as $index => $doc)
+                        @foreach($dokumenPreview as $i => $doc)
                         <tr>
-                            <td class="ps-3 text-center text-muted small">{{ $index + 1 }}</td>
-                            <td class="small"><code class="text-dark fw-bold">{{ $doc->nomor_dokumen }}</code></td>
-                            <td class="small">{{ $doc->nama_dokumen }}</td>
+                            <td class="text-muted d-mobile-none ps-3">{{ $dokumenPreview->firstItem() + $i }}</td>
+                            <td class="d-mobile-none">
+                                <code class="text-sipsr-primary fw-semibold">{{ $doc->nomor_dokumen }}</code>
+                            </td>
+                            <td>
+                                <a href="{{ route('dokumen.show', $doc) }}" class="text-dark text-decoration-none fw-medium" target="_blank">
+                                    {{ Str::limit($doc->nama_dokumen, 45) }}
+                                </a>
+                            </td>
                             <td class="small">{{ $doc->bank->nama ?? '-' }}</td>
-                            <td class="small"><span class="badge bg-secondary">{{ $doc->category->nama ?? '-' }}</span></td>
-                            <td class="small">{{ $doc->tanggal_dokumen?->format('d/m/Y') }}</td>
-                            <td class="pe-3 small">{{ $doc->uploader->nama_lengkap ?? '-' }}</td>
+                            <td>
+                                <span class="badge bg-sipsr-primary bg-opacity-10 text-sipsr-light">
+                                    {{ $doc->category->nama ?? '-' }}
+                                </span>
+                            </td>
+                            <td class="text-muted small">{{ $doc->tanggal_dokumen?->format('d/m/Y') }}</td>
+                            <td class="small d-mobile-none pe-3">{{ $doc->uploader->nama_lengkap ?? '-' }}</td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+            
+            {{-- Footer Actions / Pagination --}}
+            <div class="card-footer bg-white border-top-0 py-4 d-flex justify-content-center align-items-center w-100 position-relative" style="min-height: 80px;">
+                @if($dokumenPreview->hasPages())
+                    {{ $dokumenPreview->appends(request()->all())->links('vendor.pagination.bootstrap-5') }}
+                @endif
             </div>
         @else
             <div class="text-center py-5 text-muted">
@@ -255,6 +311,13 @@
 
 @push('scripts')
 <script>
+    window.updatePerPage = function(val) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('per_page', val);
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
+    };
+
     function setLaporanDateRange(daysBack, daysForward) {
         const today = new Date();
         const fromDate = new Date(today);

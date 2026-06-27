@@ -206,7 +206,7 @@
     </div>
     <div class="card-body border-bottom">
         <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle" id="recycle-bin-table">
+            <table class="table table-hover table-striped align-middle mb-0" id="recycle-bin-table">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 40px;">

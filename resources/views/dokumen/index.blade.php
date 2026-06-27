@@ -217,7 +217,7 @@
 
     <div class="card-body p-0 border-bottom">
         <div class="table-responsive" style="min-height: 400px;">
-            <table class="table table-striped table-hover align-middle mb-0" id="dokumen-table">
+            <table class="table table-hover table-striped align-middle mb-0" id="dokumen-table">
                 <thead class="table-light">
                     <tr>
                         <th class="ps-3" style="width: 40px;">

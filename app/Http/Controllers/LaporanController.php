@@ -38,11 +38,24 @@ class LaporanController extends Controller
               ->byUploader($request->uploader_id)
               ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
 
-        $query->orderBy('tanggal_dokumen', 'desc');
+        // ── Sorting ─────────────────────────────────────────
+        $sortCol = $request->input('sort', 'tanggal_dokumen');
+        $sortDir = $request->input('dir', 'desc');
+        $allowedSorts = ['nomor_dokumen', 'nama_dokumen', 'tanggal_dokumen', 'created_at'];
 
-        $totalDokumen = $query->count();
-        // Preview table maximum 10 rows
-        $dokumenPreview = $query->take(10)->get();
+        if (!in_array($sortCol, $allowedSorts)) {
+            $sortCol = 'tanggal_dokumen';
+        }
+        if (!in_array($sortDir, ['asc', 'desc'])) {
+            $sortDir = 'desc';
+        }
+
+        $query->orderBy($sortCol, $sortDir);
+
+        // ── Pagination ──────────────────────────────────────
+        $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
+        $dokumenPreview = $query->paginate($perPage)->withQueryString();
+        $totalDokumen = $dokumenPreview->total();
 
         // Data untuk dropdown filter
         $categories = Category::orderBy('nama')->get();
@@ -114,7 +127,18 @@ class LaporanController extends Controller
               ->byUploader($request->uploader_id)
               ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
 
-        return $query->orderBy('tanggal_dokumen', 'desc')->get();
+        $sortCol = $request->input('sort', 'tanggal_dokumen');
+        $sortDir = $request->input('dir', 'desc');
+        $allowedSorts = ['nomor_dokumen', 'nama_dokumen', 'tanggal_dokumen', 'created_at'];
+
+        if (!in_array($sortCol, $allowedSorts)) {
+            $sortCol = 'tanggal_dokumen';
+        }
+        if (!in_array($sortDir, ['asc', 'desc'])) {
+            $sortDir = 'desc';
+        }
+
+        return $query->orderBy($sortCol, $sortDir)->get();
     }
 
     /**
