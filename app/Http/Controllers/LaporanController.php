@@ -38,6 +38,17 @@ class LaporanController extends Controller
               ->byUploader($request->uploader_id)
               ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
 
+        // ── Quick filters ───────────────────────────────────
+        if ($request->filled('quick_filter')) {
+            if ($request->quick_filter === 'pdf') {
+                $query->where('file_name', 'LIKE', '%.pdf');
+            } elseif ($request->quick_filter === 'my_upload') {
+                $query->where('uploader_id', auth()->id());
+            } elseif ($request->quick_filter === 'today') {
+                $query->whereDate('created_at', Carbon::today());
+            }
+        }
+
         // ── Sorting ─────────────────────────────────────────
         $sortCol = $request->input('sort', 'tanggal_dokumen');
         $sortDir = $request->input('dir', 'desc');
@@ -127,6 +138,16 @@ class LaporanController extends Controller
               ->byUploader($request->uploader_id)
               ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
 
+        if ($request->filled('quick_filter')) {
+            if ($request->quick_filter === 'pdf') {
+                $query->where('file_name', 'LIKE', '%.pdf');
+            } elseif ($request->quick_filter === 'my_upload') {
+                $query->where('uploader_id', auth()->id());
+            } elseif ($request->quick_filter === 'today') {
+                $query->whereDate('created_at', Carbon::today());
+            }
+        }
+
         $sortCol = $request->input('sort', 'tanggal_dokumen');
         $sortDir = $request->input('dir', 'desc');
         $allowedSorts = ['nomor_dokumen', 'nama_dokumen', 'tanggal_dokumen', 'created_at'];
@@ -178,6 +199,7 @@ class LaporanController extends Controller
         if ($request->filled('uploader_id'))  $filters[] = "uploader_id={$request->uploader_id}";
         if ($request->filled('tanggal_dari')) $filters[] = "dari={$request->tanggal_dari}";
         if ($request->filled('tanggal_sampai')) $filters[] = "sampai={$request->tanggal_sampai}";
+        if ($request->filled('quick_filter')) $filters[] = "quick_filter={$request->quick_filter}";
 
         return empty($filters) ? 'Tanpa filter' : implode(', ', $filters);
     }

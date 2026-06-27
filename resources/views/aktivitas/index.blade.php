@@ -35,10 +35,32 @@
             <div class="col-12 mt-2">
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('aktivitas.index') }}" 
-                       class="btn btn-sm {{ !request()->has('search') && !request()->has('jenis_aktivitas') && !request()->has('user_id') && !request()->has('ip_address') && !request()->has('user_agent') && !request()->has('tanggal_dari') ? 'btn-success' : 'btn-outline-success' }}"
+                       class="btn btn-sm {{ !request()->has('search') && !request()->has('jenis_aktivitas') && !request()->has('user_id') && !request()->has('ip_address') && !request()->has('user_agent') && !request()->has('tanggal_dari') && !request()->has('quick_filter') ? 'btn-success' : 'btn-outline-success' }}"
                        aria-label="Lihat semua aktivitas">
                         Semua Aktivitas
                     </a>
+
+                    {{-- System Quick Filters --}}
+                    <a href="{{ route('aktivitas.index', array_merge(request()->except(['page']), ['quick_filter' => 'today'])) }}" 
+                       class="btn btn-sm {{ request('quick_filter') == 'today' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                        <i class="bi bi-calendar-event me-1"></i> Hari Ini
+                    </a>
+                    
+                    <a href="{{ route('aktivitas.index', array_merge(request()->except(['page']), ['quick_filter' => 'my_activity'])) }}" 
+                       class="btn btn-sm {{ request('quick_filter') == 'my_activity' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                        <i class="bi bi-person-fill me-1"></i> Aktivitas Saya
+                    </a>
+
+                    {{-- Separator --}}
+                    <div class="vr mx-1 d-none d-md-block" style="opacity: 0.1;"></div>
+
+                    {{-- Jenis Aktivitas Filters --}}
+                    @foreach($jenisAktivitasList as $jenis)
+                        <a href="{{ route('aktivitas.index', array_merge(request()->except(['page']), ['jenis_aktivitas' => $jenis])) }}" 
+                           class="btn btn-sm {{ request('jenis_aktivitas') == $jenis ? 'btn-info text-white' : 'btn-outline-info' }}">
+                            {{ str_replace('_', ' ', $jenis) }}
+                        </a>
+                    @endforeach
                 </div>
             </div>
         </form>

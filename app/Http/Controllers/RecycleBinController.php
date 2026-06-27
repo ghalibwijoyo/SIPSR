@@ -64,6 +64,15 @@ class RecycleBinController extends Controller
             $query->where('deleted_by_id', $request->deleted_by);
         }
 
+        // ── Filter: quick_filter ────────────────────────────
+        if ($request->filled('quick_filter')) {
+            if ($request->quick_filter === 'my_deleted') {
+                $query->where('deleted_by_id', auth()->id());
+            } elseif ($request->quick_filter === 'today') {
+                $query->whereDate('deleted_at', Carbon::today());
+            }
+        }
+
         // ── Pagination ──────────────────────────────────────
         $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
 

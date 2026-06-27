@@ -66,6 +66,15 @@ class ActivityLogController extends Controller
             $query->where('user_agent', 'LIKE', "%{$request->user_agent}%");
         }
 
+        // ── Filter: quick_filter ────────────────────────────
+        if ($request->filled('quick_filter')) {
+            if ($request->quick_filter === 'today') {
+                $query->whereDate('created_at', \Carbon\Carbon::today());
+            } elseif ($request->quick_filter === 'my_activity') {
+                $query->where('user_id', auth()->id());
+            }
+        }
+
         // ── Sorting & Pagination ───────────────────────────
         $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
         $logs = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
