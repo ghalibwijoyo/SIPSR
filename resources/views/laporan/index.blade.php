@@ -28,9 +28,6 @@
                            placeholder="Cari nomor, nama dokumen, kategori, bank, atau uploader..."
                            value="{{ request('search') }}"
                            aria-label="Cari dokumen untuk laporan">
-                    <button type="submit" class="btn btn-success border-0 px-4" aria-label="Cari dokumen">
-                        <i class="bi bi-search me-1"></i>Cari
-                    </button>
                     <button type="button" class="btn btn-light border-0 px-4" data-bs-toggle="offcanvas" data-bs-target="#laporanAdvancedFilter" aria-controls="laporanAdvancedFilter" aria-label="Buka panel filter lanjutan" title="Filter Lanjutan">
                         <i class="bi bi-sliders text-sipsr-primary"></i>
                     </button>
@@ -218,7 +215,7 @@
                 <i class="bi bi-info-circle me-1"></i> Menampilkan maksimal 10 baris pertama untuk pratinjau. Silakan <em>Export</em> atau <em>Cetak</em> untuk melihat seluruh data.
             </div>
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0" id="laporan-table">
                     <thead class="table-light">
                         <tr>
                             <th class="ps-3 text-center" style="width: 50px;">No</th>
@@ -269,5 +266,54 @@
         document.getElementById('laporan_tanggal_dari').value = fromDate.toISOString().split('T')[0];
         document.getElementById('laporan_tanggal_sampai').value = toDate.toISOString().split('T')[0];
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let searchTimeout;
+        const searchInput = document.getElementById('laporan_search_input');
+        const searchForm = document.getElementById('mainFilterForm');
+        
+        if (searchInput && searchForm) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const url = new URL(searchForm.action);
+                    const formData = new FormData(searchForm);
+                    const searchParams = new URLSearchParams();
+                    for (const pair of formData) {
+                        if (pair[1]) searchParams.append(pair[0], pair[1]);
+                    }
+                    url.search = searchParams.toString();
+                    
+                    const tableContainer = document.querySelector('.card-body.p-0');
+                    if (tableContainer) tableContainer.style.opacity = '0.5';
+
+                    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                        .then(response => response.text())
+                        .then(html => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            
+                            const newTable = doc.querySelector('.card-body.p-0');
+                            if (newTable && tableContainer) {
+                                tableContainer.innerHTML = newTable.innerHTML;
+                            }
+
+                            window.history.pushState({}, '', url);
+                            if (tableContainer) tableContainer.style.opacity = '1';
+                        })
+                        .catch(() => {
+                            searchForm.submit(); // Fallback
+                        });
+                }, 400); // Delay 400ms is smooth
+            });
+            
+            // Auto-focus search on initial load
+            if(searchInput.value) {
+                searchInput.focus();
+                const length = searchInput.value.length;
+                searchInput.setSelectionRange(length, length);
+            }
+        }
+    });
 </script>
 @endpush

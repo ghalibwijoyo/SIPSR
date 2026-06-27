@@ -19,78 +19,148 @@
 </div>
 @endif
 
-<!-- Filter Section -->
-<div class="card border-0 shadow-sm mb-4" id="filter-card">
+{{-- Smart Search Bar & Quick Filters --}}
+<div class="card mb-3 border-0 shadow-sm" id="filter-card">
     <div class="card-body">
-        <form method="GET" action="{{ route('recycle-bin.index') }}" id="filter-form">
-            <div class="row g-3 align-items-end">
-                {{-- Search --}}
-                <div class="col-md-3">
-                    <label for="filter-search" class="form-label small fw-semibold">
-                        <i class="bi bi-search me-1"></i>Pencarian
-                    </label>
-                    <input type="text" class="form-control" id="filter-search" name="search"
+        <form method="GET" action="{{ route('recycle-bin.index') }}" class="row g-3" id="mainFilterForm">
+            <!-- Smart Search Bar -->
+            <div class="col-12">
+                <label for="search_input" class="form-label visually-hidden">Cari Dokumen Terhapus</label>
+                <div class="input-group input-group-lg shadow-sm rounded overflow-hidden border">
+                    <span class="input-group-text bg-white border-0 text-muted">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" 
+                           id="search_input"
+                           name="search" 
+                           class="form-control form-control-lg border-0 bg-white shadow-none"
+                           placeholder="Cari nomor atau nama dokumen..."
                            value="{{ request('search') }}"
-                           placeholder="Nomor atau nama dokumen…"
                            aria-label="Cari dokumen di Recycle Bin">
-                </div>
-
-                {{-- Category --}}
-                <div class="col-md-2">
-                    <label for="filter-category" class="form-label small fw-semibold">
-                        <i class="bi bi-folder me-1"></i>Kategori
-                    </label>
-                    <select class="form-select" id="filter-category" name="category_id">
-                        <option value="">Semua</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                {{ $category->nama }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Trash Age --}}
-                <div class="col-md-2">
-                    <label for="filter-trash-age" class="form-label small fw-semibold">
-                        <i class="bi bi-hourglass-split me-1"></i>Usia Sampah
-                    </label>
-                    <select class="form-select" id="filter-trash-age" name="trash_age">
-                        <option value="">Semua Waktu</option>
-                        <option value="new" {{ request('trash_age') == 'new' ? 'selected' : '' }}>< 7 Hari</option>
-                        <option value="medium" {{ request('trash_age') == 'medium' ? 'selected' : '' }}>7 - 20 Hari</option>
-                        <option value="old" {{ request('trash_age') == 'old' ? 'selected' : '' }}>> 20 Hari (Kritis)</option>
-                    </select>
-                </div>
-                
-                {{-- Deleted By --}}
-                <div class="col-md-2">
-                    <label for="filter-deleted-by" class="form-label small fw-semibold">
-                        <i class="bi bi-person-x me-1"></i>Dihapus Oleh
-                    </label>
-                    <select class="form-select" id="filter-deleted-by" name="deleted_by">
-                        <option value="">Semua User</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ request('deleted_by') == $user->id ? 'selected' : '' }}>
-                                {{ $user->nama_lengkap }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Buttons --}}
-                <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-success flex-grow-1" id="btn-filter">
-                        <i class="bi bi-funnel me-1"></i>Filter
+                    <button type="button" class="btn btn-light border-0 px-4" data-bs-toggle="offcanvas" data-bs-target="#advancedFilter" aria-controls="advancedFilter" aria-label="Buka panel filter lanjutan" title="Filter Lanjutan">
+                        <i class="bi bi-sliders text-sipsr-primary"></i>
                     </button>
-                    <a href="{{ route('recycle-bin.index') }}" class="btn btn-secondary" id="btn-reset" title="Reset filter" aria-label="Reset semua filter">
-                        <i class="bi bi-x-lg"></i>
-                    </a>
                 </div>
             </div>
             
-            {{-- Optional Date Range inside a collapse or just below if needed --}}
+            <!-- Quick Filter Badges -->
+            <div class="col-12 mt-2">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ route('recycle-bin.index') }}" 
+                       class="btn btn-sm {{ !request()->has('search') && !request()->has('category_id') && !request()->has('trash_age') && !request()->has('deleted_by') && !request()->has('tanggal_dari') ? 'btn-success' : 'btn-outline-success' }}"
+                       aria-label="Lihat semua dokumen">
+                        Semua Dokumen
+                    </a>
+                </div>
+            </div>
         </form>
+    </div>
+</div>
+
+{{-- Filter Status & Result Counter --}}
+@php
+    $activeFilters = array_filter([
+        request('search'),
+        request('category_id'),
+        request('trash_age'),
+        request('deleted_by'),
+        request('tanggal_dari'),
+        request('tanggal_sampai')
+    ]);
+@endphp
+
+@if(!empty($activeFilters))
+<div class="alert alert-secondary py-2 px-3 mb-3 d-flex justify-content-between align-items-center shadow-sm border-0">
+    <span>
+        <i class="bi bi-funnel-fill text-sipsr-primary me-2"></i> 
+        <strong>{{ count($activeFilters) }} filter aktif</strong> diterapkan.
+    </span>
+    <a href="{{ route('recycle-bin.index') }}" class="btn btn-sm btn-danger rounded-pill px-3">
+        <i class="bi bi-x-circle me-1"></i>Clear All
+    </a>
+</div>
+@endif
+
+{{-- Offcanvas Advanced Filter Panel --}}
+<div class="offcanvas offcanvas-end" tabindex="-1" id="advancedFilter" aria-labelledby="advancedFilterLabel">
+    <div class="offcanvas-header bg-light border-bottom">
+        <h5 class="offcanvas-title fw-bold" id="advancedFilterLabel">
+            <i class="bi bi-sliders me-2 text-sipsr-primary"></i>Filter Lanjutan
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Tutup filter lanjutan"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form method="GET" action="{{ route('recycle-bin.index') }}" id="advancedFilterForm">
+            <!-- Preserve search if any -->
+            <input type="hidden" name="search" value="{{ request('search') }}">
+            
+            <!-- Category -->
+            <div class="mb-4">
+                <label for="filter-category" class="form-label small fw-bold">Kategori</label>
+                <select class="form-select" id="filter-category" name="category_id">
+                    <option value="">-- Semua Kategori --</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->nama }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Trash Age -->
+            <div class="mb-4">
+                <label for="filter-trash-age" class="form-label small fw-bold">Usia Sampah</label>
+                <select class="form-select" id="filter-trash-age" name="trash_age">
+                    <option value="">-- Semua Waktu --</option>
+                    <option value="new" {{ request('trash_age') == 'new' ? 'selected' : '' }}>< 7 Hari</option>
+                    <option value="medium" {{ request('trash_age') == 'medium' ? 'selected' : '' }}>7 - 20 Hari</option>
+                    <option value="old" {{ request('trash_age') == 'old' ? 'selected' : '' }}>> 20 Hari (Kritis)</option>
+                </select>
+            </div>
+            
+            <!-- Deleted By -->
+            <div class="mb-4">
+                <label for="filter-deleted-by" class="form-label small fw-bold">Dihapus Oleh</label>
+                <select class="form-select" id="filter-deleted-by" name="deleted_by">
+                    <option value="">-- Semua User --</option>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}" {{ request('deleted_by') == $user->id ? 'selected' : '' }}>
+                            {{ $user->nama_lengkap }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Date Range -->
+            <div class="mb-4">
+                <label class="form-label small fw-bold mb-3">Tanggal Dihapus</label>
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label for="tanggal_dari" class="form-label small text-muted mb-1">Dari Tanggal</label>
+                        <input type="date" name="tanggal_dari" id="tanggal_dari" class="form-control form-control-sm" value="{{ request('tanggal_dari') }}">
+                    </div>
+                    <div class="col-6">
+                        <label for="tanggal_sampai" class="form-label small text-muted mb-1">Sampai Tanggal</label>
+                        <input type="date" name="tanggal_sampai" id="tanggal_sampai" class="form-control form-control-sm" value="{{ request('tanggal_sampai') }}">
+                    </div>
+                </div>
+                
+                <small class="text-muted d-block mb-2">Quick preset:</small>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="setDateRange(0, 0); return false;">Hari Ini</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="setDateRange(7, 0); return false;">1 Minggu</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="setDateRange(30, 0); return false;">1 Bulan</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="offcanvas-footer p-3 border-top bg-light d-flex gap-2">
+        <a href="{{ route('recycle-bin.index') }}" class="btn btn-light flex-grow-1 border">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+        </a>
+        <button type="submit" form="advancedFilterForm" class="btn btn-success flex-grow-1">
+            <i class="bi bi-check2 me-1"></i>Terapkan
+        </button>
     </div>
 </div>
 
@@ -136,7 +206,7 @@
     </div>
     <div class="card-body border-bottom">
         <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
+            <table class="table table-striped table-hover align-middle" id="recycle-bin-table">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 40px;">
@@ -374,6 +444,18 @@ function submitBulkDelete() {
     }
 }
 
+function setDateRange(daysBack, daysForward) {
+    const today = new Date();
+    const fromDate = new Date(today);
+    fromDate.setDate(today.getDate() - daysBack);
+    
+    const toDate = new Date(today);
+    toDate.setDate(today.getDate() + daysForward);
+
+    document.getElementById('tanggal_dari').value = fromDate.toISOString().split('T')[0];
+    document.getElementById('tanggal_sampai').value = toDate.toISOString().split('T')[0];
+}
+
 function updatePerPage(val) {
     const url = new URL(window.location.href);
     url.searchParams.set('per_page', val);
@@ -382,6 +464,64 @@ function updatePerPage(val) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    let searchTimeout;
+    const searchInput = document.querySelector('input[name="search"]');
+    const searchForm = document.getElementById('mainFilterForm');
+    
+    if (searchInput && searchForm) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const url = new URL(searchForm.action);
+                const formData = new FormData(searchForm);
+                const searchParams = new URLSearchParams();
+                for (const pair of formData) {
+                    if (pair[1]) searchParams.append(pair[0], pair[1]);
+                }
+                url.search = searchParams.toString();
+                
+                const tableContainer = document.querySelector('.table-responsive');
+                if (tableContainer) tableContainer.style.opacity = '0.5';
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        
+                        const newTable = doc.querySelector('#recycle-bin-table');
+                        if (newTable) {
+                            document.querySelector('#recycle-bin-table').innerHTML = newTable.innerHTML;
+                        }
+                        
+                        const newPagination = doc.querySelector('.card-footer');
+                        const currentPagination = document.querySelector('.card-footer');
+                        if (newPagination && currentPagination) {
+                            currentPagination.innerHTML = newPagination.innerHTML;
+                        }
+
+                        window.history.pushState({}, '', url);
+                        if (tableContainer) tableContainer.style.opacity = '1';
+                        
+                        // Reset checkboxes
+                        updateBulkActions();
+                        const selectAll = document.getElementById('selectAllCheckbox');
+                        if (selectAll) selectAll.checked = false;
+                    })
+                    .catch(() => {
+                        searchForm.submit(); // Fallback
+                    });
+            }, 400); // Delay 400ms is smooth
+        });
+        
+        // Auto-focus search on initial load
+        if(searchInput.value) {
+            searchInput.focus();
+            const length = searchInput.value.length;
+            searchInput.setSelectionRange(length, length);
+        }
+    }
+
     // Filter form loading state
     const filterForm = document.querySelector("form[action='{{ route('recycle-bin.index') }}']");
     if (filterForm) {
