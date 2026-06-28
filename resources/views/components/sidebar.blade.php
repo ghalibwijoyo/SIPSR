@@ -10,8 +10,8 @@
                 <span class="sidebar-logo-text">SI</span>
             </div>
             <div>
-                <h5 class="fw-bold text-white mb-0 lh-1">SIPSR</h5>
-                <small class="text-white-50 lh-1" style="font-size: 0.7rem;">PSR Tanaman</small>
+                <h5 class="fw-bold text-dark mb-0 lh-1">SIPSR</h5>
+                <small class="text-muted lh-1" style="font-size: 0.7rem;">PSR Tanaman</small>
             </div>
         </div>
     </div>
@@ -98,14 +98,14 @@
     </nav>
 
     {{-- Sidebar Footer --}}
-    <div class="sidebar-footer px-3 py-3 border-top border-white border-opacity-10">
+    <div class="sidebar-footer px-3 py-3">
         <div class="d-flex align-items-center">
             <div class="sidebar-avatar me-2">
                 <i class="bi bi-person-fill"></i>
             </div>
             <div class="flex-grow-1 overflow-hidden">
-                <p class="text-white fw-semibold mb-0 small text-truncate">{{ auth()->user()->nama_lengkap }}</p>
-                <small class="text-white-50">{{ auth()->user()->role }}</small>
+                <p class="text-dark fw-semibold mb-0 small text-truncate">{{ auth()->user()->nama_lengkap }}</p>
+                <small class="text-muted">{{ auth()->user()->role }}</small>
             </div>
         </div>
     </div>
