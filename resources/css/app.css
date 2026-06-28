@@ -1,14 +1,14 @@
-﻿/* ============================================================
-   SIPSR ÔÇö CSS Theme
-   Sistem Informasi Pengarsipan PSR Tanaman ┬À PTPN IV Regional IV
+/* ============================================================
+   SIPSR — CSS Theme
+   Sistem Informasi Pengarsipan PSR Tanaman · PTPN IV Regional IV
    ============================================================ */
 
-/* ÔöÇÔöÇÔöÇ Imports (must come first) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Imports (must come first) ─────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
-/* ÔöÇÔöÇÔöÇ CSS Custom Properties ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── CSS Custom Properties ─────────────────────────────── */
 :root {
     --sipsr-primary: #3B6D11;
     --sipsr-primary-dark: #2d5a0b;
@@ -22,7 +22,7 @@
 }
 
 
-/* ÔöÇÔöÇÔöÇ Base ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Base ──────────────────────────────────────────────── */
 
 body {
     font-family: var(--sipsr-font);
@@ -40,7 +40,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     transform: scale(0.96);
 }
 
-/* ÔöÇÔöÇÔöÇ Badges ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Badges ────────────────────────────────────────────── */
 .badge.bg-sipsr-primary {
     background-color: var(--sipsr-primary) !important;
 }
@@ -51,7 +51,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     border: 1px solid rgba(var(--sipsr-primary-rgb), 0.2);
 }
 
-/* ÔöÇÔöÇÔöÇ Pagination ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Pagination ────────────────────────────────────────── */
 .pagination .page-link {
     color: var(--sipsr-primary);
 }
@@ -73,7 +73,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     color: var(--sipsr-primary-dark);
 }
 
-/* ÔöÇÔöÇÔöÇ Utility Classes ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Utility Classes ───────────────────────────────────── */
 .bg-sipsr-primary {
     background-color: var(--sipsr-primary) !important;
 }
@@ -117,7 +117,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     min-height: 100vh;
 }
 
-/* ÔöÇÔöÇÔöÇ Sidebar ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Sidebar ───────────────────────────────────────────── */
 .sidebar {
     width: var(--sipsr-sidebar-width);
     min-width: var(--sipsr-sidebar-width);
@@ -213,7 +213,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     visibility: visible;
 }
 
-/* ÔöÇÔöÇÔöÇ Login Page ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Login Page ────────────────────────────────────────── */
 .login-container {
     width: 100%;
     max-width: 420px;
@@ -244,7 +244,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     letter-spacing: 2px;
 }
 
-/* ÔöÇÔöÇÔöÇ Stats Cards ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Stats Cards ───────────────────────────────────────── */
 .stats-icon {
     width: 48px;
     height: 48px;
@@ -255,7 +255,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     flex-shrink: 0;
 }
 
-/* ÔöÇÔöÇÔöÇ Cards ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Cards ─────────────────────────────────────────────── */
 .card {
     border-radius: 12px;
     border: none;
@@ -268,7 +268,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     transform: translateY(-2px);
 }
 
-/* ÔöÇÔöÇÔöÇ Tables ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Tables ────────────────────────────────────────────── */
 .table thead th {
     font-size: 0.78rem;
     font-weight: 600;
@@ -278,7 +278,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     border-bottom-width: 1px;
 }
 
-/* ÔöÇÔöÇÔöÇ Buttons ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Buttons ───────────────────────────────────────────── */
 .btn-success {
     background-color: var(--sipsr-primary);
     border-color: var(--sipsr-primary);
@@ -300,19 +300,19 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     border-color: var(--sipsr-primary);
 }
 
-/* ÔöÇÔöÇÔöÇ Form Controls ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Form Controls ─────────────────────────────────────── */
 .form-control:focus,
 .form-select:focus {
     border-color: var(--sipsr-primary-light);
     box-shadow: 0 0 0 0.2rem rgba(var(--sipsr-primary-rgb), 0.15);
 }
 
-/* ÔöÇÔöÇÔöÇ Badges ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Badges ────────────────────────────────────────────── */
 .badge.bg-sipsr-primary {
     background-color: var(--sipsr-primary) !important;
 }
 
-/* ÔöÇÔöÇÔöÇ Scrollbar ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Scrollbar ─────────────────────────────────────────── */
 .sidebar-nav::-webkit-scrollbar {
     width: 4px;
 }
@@ -326,9 +326,9 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     border-radius: 4px;
 }
 
-/* ÔöÇÔöÇÔöÇ Responsive ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Responsive ────────────────────────────────────────── */
 
-/* --- Tablet & below (Ôëñ991px) --- */
+/* --- Tablet & below (≤991px) --- */
 @media (max-width: 991.98px) {
     /* Sidebar: off-canvas on tablets */
     .sidebar {
@@ -363,7 +363,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     }
 }
 
-/* --- Mobile / Small screens (Ôëñ767px) --- */
+/* --- Mobile / Small screens (≤767px) --- */
 @media (max-width: 767.98px) {
     /* Reduce main padding on mobile */
     .container-fluid.p-4 {
@@ -468,7 +468,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     }
 }
 
-/* --- Extra Small (Ôëñ575px) --- */
+/* --- Extra Small (≤575px) --- */
 @media (max-width: 575.98px) {
     /* Even more compact */
     .container-fluid.p-4 {
@@ -547,7 +547,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     }
 }
 
-/* ÔöÇÔöÇÔöÇ Animations ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Animations ────────────────────────────────────────── */
 @keyframes fadePageIn {
     from {
         opacity: 0;
@@ -581,7 +581,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
 .card:nth-child(5) { animation-delay: 0.25s; }
 .card:nth-child(6) { animation-delay: 0.3s; }
 
-/* ÔöÇÔöÇÔöÇ Loading State ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Loading State ─────────────────────────────────────── */
 .btn.is-loading {
     position: relative;
     pointer-events: none;
@@ -607,7 +607,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     border-top-color: #333;
 }
 
-/* ÔöÇÔöÇÔöÇ Forms ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+/* ─── Forms ─────────────────────────────────────────────── */
 /* Hide native password reveal button in Edge/IE */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {

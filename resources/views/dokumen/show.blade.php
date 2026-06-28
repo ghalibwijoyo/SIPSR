@@ -1,6 +1,6 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
-@section('title', $dokumen->nama_dokumen . ' ÔÇö SIPSR')
+@section('title', $dokumen->nama_dokumen . ' — SIPSR')
 
 @section('content')
 {{-- Page Header --}}
@@ -120,7 +120,7 @@
                             <td class="ps-3 text-muted fw-semibold">Terakhir Diedit</td>
                             <td class="small">
                                 {{ $dokumen->updatedBy->nama_lengkap }}
-                                ┬À {{ $dokumen->updated_at?->format('d/m/Y H:i') }}
+                                · {{ $dokumen->updated_at?->format('d/m/Y H:i') }}
                             </td>
                         </tr>
                         @endif
@@ -224,7 +224,7 @@
                     <div class="mb-4 position-relative">
                         <div class="position-absolute" style="left: -29px; top: 0; background: #fff; border: 2px solid #3B6D11; border-radius: 50%; width: 16px; height: 16px;"></div>
                         <div class="small text-muted fw-bold mb-1">
-                            {{ $hist->changed_at?->format('d/m/Y H:i') }} ┬À Diubah oleh: {{ $hist->changedBy->nama_lengkap ?? '-' }}
+                            {{ $hist->changed_at?->format('d/m/Y H:i') }} · Diubah oleh: {{ $hist->changedBy->nama_lengkap ?? '-' }}
                         </div>
                         <div class="bg-light p-2 rounded-3 small">
                             <div class="d-flex mb-1">
