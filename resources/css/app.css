@@ -14,10 +14,10 @@
     --sipsr-primary-dark: #2d5a0b;
     --sipsr-primary-light: #4a8a15;
     --sipsr-primary-rgb: 59, 109, 17;
-    --sipsr-sidebar-bg: #ffffff;
+    --sipsr-sidebar-bg: var(--sipsr-primary);
     --sipsr-sidebar-width: 260px;
-    --sipsr-sidebar-hover: rgba(59, 109, 17, 0.06);
-    --sipsr-sidebar-active: rgba(59, 109, 17, 0.12);
+    --sipsr-sidebar-hover: rgba(255, 255, 255, 0.1);
+    --sipsr-sidebar-active: rgba(255, 255, 255, 0.2);
     --sipsr-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -122,14 +122,14 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     width: var(--sipsr-sidebar-width);
     min-width: var(--sipsr-sidebar-width);
     background: var(--sipsr-sidebar-bg);
-    color: #333;
+    color: #fff;
     transition: transform 0.3s ease;
     z-index: 1050;
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    border-right: none;
 }
 
 .sidebar-header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-logo {
@@ -152,7 +152,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
 
 /* Sidebar Navigation */
 .sidebar-link {
-    color: #555 !important;
+    color: rgba(255, 255, 255, 0.75) !important;
     border-radius: 8px;
     padding: 0.55rem 0.85rem;
     font-size: 0.875rem;
@@ -163,12 +163,12 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
 }
 
 .sidebar-link:hover {
-    color: var(--sipsr-primary) !important;
+    color: #fff !important;
     background: var(--sipsr-sidebar-hover);
 }
 
 .sidebar-link.active {
-    color: var(--sipsr-primary) !important;
+    color: #fff !important;
     background: var(--sipsr-sidebar-active) !important;
     font-weight: 600;
 }
@@ -176,13 +176,13 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
 .sidebar-label {
     font-size: 0.65rem;
     font-weight: 700;
-    color: #999;
+    color: rgba(255, 255, 255, 0.5);
     letter-spacing: 1.5px;
 }
 
 /* Sidebar Footer */
 .sidebar-footer {
-    background: #fff;
+    background: rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-avatar {
