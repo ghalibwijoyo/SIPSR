@@ -1,6 +1,6 @@
-@extends('layouts.guest')
+﻿@extends('layouts.guest')
 
-@section('title', 'Login — SIPSR')
+@section('title', 'Login ÔÇö SIPSR')
 
 @section('content')
 {{-- Antigravity Blob --}}
@@ -18,7 +18,7 @@
                 <h1 class="h3 fw-bold text-dark mb-1">SIPSR</h1>
                 <p class="text-muted small mb-0">
                     Sistem Informasi Pengarsipan<br>
-                    PSR Tanaman — PTPN IV Regional IV
+                    PSR Tanaman ÔÇö PTPN IV Regional IV
                 </p>
             </div>
 
