@@ -38,11 +38,35 @@ class LaporanController extends Controller
               ->byUploader($request->uploader_id)
               ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
 
-        $query->orderBy('tanggal_dokumen', 'desc');
+        // ── Quick filters ───────────────────────────────────
+        if ($request->filled('quick_filter')) {
+            if ($request->quick_filter === 'pdf') {
+                $query->where('file_name', 'LIKE', '%.pdf');
+            } elseif ($request->quick_filter === 'my_upload') {
+                $query->where('uploader_id', auth()->id());
+            } elseif ($request->quick_filter === 'today') {
+                $query->whereDate('created_at', Carbon::today());
+            }
+        }
 
-        $totalDokumen = $query->count();
-        // Preview table maximum 10 rows
-        $dokumenPreview = $query->take(10)->get();
+        // ── Sorting ─────────────────────────────────────────
+        $sortCol = $request->input('sort', 'tanggal_dokumen');
+        $sortDir = $request->input('dir', 'desc');
+        $allowedSorts = ['nomor_dokumen', 'nama_dokumen', 'tanggal_dokumen', 'created_at'];
+
+        if (!in_array($sortCol, $allowedSorts)) {
+            $sortCol = 'tanggal_dokumen';
+        }
+        if (!in_array($sortDir, ['asc', 'desc'])) {
+            $sortDir = 'desc';
+        }
+
+        $query->orderBy($sortCol, $sortDir);
+
+        // ── Pagination ──────────────────────────────────────
+        $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
+        $dokumenPreview = $query->paginate($perPage)->withQueryString();
+        $totalDokumen = $dokumenPreview->total();
 
         // Data untuk dropdown filter
         $categories = Category::orderBy('nama')->get();
@@ -114,7 +138,28 @@ class LaporanController extends Controller
               ->byUploader($request->uploader_id)
               ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
 
-        return $query->orderBy('tanggal_dokumen', 'desc')->get();
+        if ($request->filled('quick_filter')) {
+            if ($request->quick_filter === 'pdf') {
+                $query->where('file_name', 'LIKE', '%.pdf');
+            } elseif ($request->quick_filter === 'my_upload') {
+                $query->where('uploader_id', auth()->id());
+            } elseif ($request->quick_filter === 'today') {
+                $query->whereDate('created_at', Carbon::today());
+            }
+        }
+
+        $sortCol = $request->input('sort', 'tanggal_dokumen');
+        $sortDir = $request->input('dir', 'desc');
+        $allowedSorts = ['nomor_dokumen', 'nama_dokumen', 'tanggal_dokumen', 'created_at'];
+
+        if (!in_array($sortCol, $allowedSorts)) {
+            $sortCol = 'tanggal_dokumen';
+        }
+        if (!in_array($sortDir, ['asc', 'desc'])) {
+            $sortDir = 'desc';
+        }
+
+        return $query->orderBy($sortCol, $sortDir)->get();
     }
 
     /**
@@ -154,6 +199,7 @@ class LaporanController extends Controller
         if ($request->filled('uploader_id'))  $filters[] = "uploader_id={$request->uploader_id}";
         if ($request->filled('tanggal_dari')) $filters[] = "dari={$request->tanggal_dari}";
         if ($request->filled('tanggal_sampai')) $filters[] = "sampai={$request->tanggal_sampai}";
+        if ($request->filled('quick_filter')) $filters[] = "quick_filter={$request->quick_filter}";
 
         return empty($filters) ? 'Tanpa filter' : implode(', ', $filters);
     }

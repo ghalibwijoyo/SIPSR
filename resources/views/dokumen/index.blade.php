@@ -22,9 +22,9 @@
             <div class="col-12">
                 <label for="search_input" class="form-label visually-hidden">Cari Dokumen</label>
                 <div class="input-group input-group-lg shadow-sm rounded overflow-hidden border">
-                    <span class="input-group-text bg-white border-0 text-muted">
-                        <i class="bi bi-search"></i>
-                    </span>
+                    <button type="button" class="btn btn-light border-0 px-4" data-bs-toggle="offcanvas" data-bs-target="#advancedFilter" aria-controls="advancedFilter" aria-label="Buka panel filter lanjutan" title="Filter Lanjutan">
+                        <i class="bi bi-sliders text-sipsr-primary"></i>
+                    </button>
                     <input type="text" 
                            id="search_input"
                            name="search" 
@@ -33,8 +33,8 @@
                            value="{{ request('search') }}"
                            aria-label="Cari dokumen"
                            aria-describedby="search_hint">
-                    <button type="button" class="btn btn-light border-0 px-4" data-bs-toggle="offcanvas" data-bs-target="#advancedFilter" aria-controls="advancedFilter" aria-label="Buka panel filter lanjutan" title="Filter Lanjutan">
-                        <i class="bi bi-sliders text-sipsr-primary"></i>
+                    <button type="submit" class="input-group-text bg-white border-0 text-muted px-4 btn btn-link" aria-label="Cari">
+                        <i class="bi bi-search text-dark"></i>
                     </button>
                 </div>
             </div>
@@ -47,6 +47,33 @@
                        aria-label="Lihat semua dokumen">
                         Semua Dokumen
                     </a>
+                    
+                    {{-- System Quick Filters --}}
+                    <a href="{{ route('dokumen.index', array_merge(request()->except(['page']), ['quick_filter' => 'today'])) }}" 
+                       class="btn btn-sm {{ request('quick_filter') == 'today' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                        <i class="bi bi-calendar-event me-1"></i> Hari Ini
+                    </a>
+                    
+                    <a href="{{ route('dokumen.index', array_merge(request()->except(['page']), ['quick_filter' => 'my_upload'])) }}" 
+                       class="btn btn-sm {{ request('quick_filter') == 'my_upload' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                        <i class="bi bi-person-fill me-1"></i> Unggahan Saya
+                    </a>
+                    
+                    <a href="{{ route('dokumen.index', array_merge(request()->except(['page']), ['quick_filter' => 'pdf'])) }}" 
+                       class="btn btn-sm {{ request('quick_filter') == 'pdf' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> File PDF
+                    </a>
+
+                    {{-- Separator --}}
+                    <div class="vr mx-1 d-none d-md-block" style="opacity: 0.1;"></div>
+
+                    {{-- Category Quick Filters --}}
+                    @foreach($categories as $cat)
+                        <a href="{{ route('dokumen.index', array_merge(request()->except(['page']), ['category_id' => $cat->id])) }}" 
+                           class="btn btn-sm {{ request('category_id') == $cat->id ? 'btn-info text-white' : 'btn-outline-info' }}">
+                            {{ $cat->nama }}
+                        </a>
+                    @endforeach
                 </div>
             </div>
         </form>
@@ -217,7 +244,7 @@
 
     <div class="card-body p-0 border-bottom">
         <div class="table-responsive" style="min-height: 400px;">
-            <table class="table table-striped table-hover align-middle mb-0" id="dokumen-table">
+            <table class="table table-hover table-striped align-middle mb-0" id="dokumen-table">
                 <thead class="table-light">
                     <tr>
                         <th class="ps-3" style="width: 40px;">

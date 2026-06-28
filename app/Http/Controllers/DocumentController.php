@@ -67,7 +67,7 @@ class DocumentController extends Controller
         // ── Pagination ──────────────────────────────────────
         $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
 
-        $documents = $query->paginate(50)->withQueryString();
+        $documents = $query->paginate($perPage)->withQueryString();
         $categories = Category::orderBy('nama')->get();
         $banks = Bank::orderBy('nama')->get();
         $users = User::where('is_active', true)->orderBy('nama_lengkap')->get();

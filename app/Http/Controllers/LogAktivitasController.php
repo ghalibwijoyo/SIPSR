@@ -16,6 +16,21 @@ class ActivityLogController extends Controller
     {
         $query = ActivityLog::withEagerLoading();
 
+        // ── Smart Search ───────────────────────────────────
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('jenis_aktivitas', 'LIKE', "%{$search}%")
+                  ->orWhere('detail', 'LIKE', "%{$search}%")
+                  ->orWhere('ip_address', 'LIKE', "%{$search}%")
+                  ->orWhere('user_agent', 'LIKE', "%{$search}%")
+                  ->orWhereHas('user', function ($qu) use ($search) {
+                      $qu->where('nama_lengkap', 'LIKE', "%{$search}%")
+                         ->orWhere('username', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
         // ── Filter: jenis_aktivitas ────────────────────────
         if ($request->filled('jenis_aktivitas')) {
             $query->where('jenis_aktivitas', $request->jenis_aktivitas);
@@ -49,6 +64,15 @@ class ActivityLogController extends Controller
         // ── Filter: user_agent ─────────────────────────────
         if ($request->filled('user_agent')) {
             $query->where('user_agent', 'LIKE', "%{$request->user_agent}%");
+        }
+
+        // ── Filter: quick_filter ────────────────────────────
+        if ($request->filled('quick_filter')) {
+            if ($request->quick_filter === 'today') {
+                $query->whereDate('created_at', \Carbon\Carbon::today());
+            } elseif ($request->quick_filter === 'my_activity') {
+                $query->where('user_id', auth()->id());
+            }
         }
 
         // ── Sorting & Pagination ───────────────────────────
