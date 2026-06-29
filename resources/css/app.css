@@ -11,10 +11,10 @@
 /* ─── CSS Custom Properties ─────────────────────────────── */
 :root {
     --sipsr-primary: #3B6D11;
-    --sipsr-primary-dark: #2d5a0b;
+    --sipsr-primary-dark: #244a07;
     --sipsr-primary-light: #4a8a15;
     --sipsr-primary-rgb: 59, 109, 17;
-    --sipsr-sidebar-bg: var(--sipsr-primary);
+    --sipsr-sidebar-bg: var(--sipsr-primary-dark);
     --sipsr-sidebar-width: 260px;
     --sipsr-sidebar-hover: rgba(255, 255, 255, 0.1);
     --sipsr-sidebar-active: rgba(255, 255, 255, 0.2);
