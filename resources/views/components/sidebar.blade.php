@@ -6,11 +6,11 @@
     {{-- Sidebar Header --}}
     <div class="sidebar-header px-3 py-3">
         <div class="d-flex align-items-center">
-            <div class="sidebar-logo me-2">
-                <span class="sidebar-logo-text">SI</span>
+            <div class="sidebar-logo me-2 bg-white" style="box-shadow: none;">
+                <img src="{{ asset('logo-sm.png') }}" alt="ArsiPSR Logo" style="height: 28px; width: auto; object-fit: contain;">
             </div>
             <div>
-                <h5 class="fw-bold text-white mb-0 lh-1">SIPSR</h5>
+                <h5 class="fw-bold text-white mb-0 lh-1">ArsiPSR</h5>
                 <small class="text-white-50 lh-1" style="font-size: 0.7rem;">PSR Tanaman</small>
             </div>
         </div>

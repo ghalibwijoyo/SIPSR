@@ -23,7 +23,7 @@
     opacity: 0;
     visibility: hidden;
     transform: translateY(30px);
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Efek memantul khas SIPSR */
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Efek memantul khas ArsiPSR */
 }
 .scroll-top-wrapper.show {
     opacity: 1;

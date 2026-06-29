@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Dokumen — SIPSR')
+@section('title', 'Daftar Dokumen — ArsiPSR')
 
 @section('content')
 {{-- Page Header --}}

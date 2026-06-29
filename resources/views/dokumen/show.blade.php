@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $dokumen->nama_dokumen . ' — SIPSR')
+@section('title', $dokumen->nama_dokumen . ' — ArsiPSR')
 
 @section('content')
 {{-- Page Header --}}
@@ -327,7 +327,7 @@
 </div>
 
 <style>
-/* SIPSR Custom Range Slider */
+/* ArsiPSR Custom Range Slider */
 .custom-sipsr-range {
     height: 6px;
     border-radius: 5px;

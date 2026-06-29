@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="SIPSR - Sistem Informasi Pengarsipan PSR Tanaman PTPN IV Regional IV">
+    <meta name="description" content="ArsiPSR - Sistem Informasi Pengarsipan PSR Tanaman PTPN IV Regional IV">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'SIPSR')</title>
+    <title>@yield('title', 'ArsiPSR')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>

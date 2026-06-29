@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Login — SIPSR')
+@section('title', 'Login — ArsiPSR')
 
 @section('content')
 
@@ -10,10 +10,10 @@
         <div class="card-body p-4 p-md-5">
             {{-- Logo --}}
             <div class="text-center mb-4">
-                <div class="login-logo mx-auto mb-3">
-                    <span class="login-logo-text">SI</span>
+                <div class="login-logo mx-auto mb-3" style="background: transparent; box-shadow: none;">
+                    <img src="{{ asset('logo-sm.png') }}" alt="ArsiPSR Logo" style="height: 64px; width: auto; object-fit: contain;">
                 </div>
-                <h1 class="h3 fw-bold text-dark mb-1">SIPSR</h1>
+                <h1 class="h3 fw-bold text-dark mb-1">ArsiPSR</h1>
                 <p class="text-muted small mb-0">
                     Sistem Informasi Pengarsipan<br>
                     PSR Tanaman — PTPN IV Regional IV

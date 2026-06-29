@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $dokumen->nama_dokumen }} — Tautan Berbagi SIPSR</title>
+    <title>{{ $dokumen->nama_dokumen }} — Tautan Berbagi ArsiPSR</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -32,7 +32,7 @@
         <div class="container">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <h1 class="h5 mb-1 fw-bold"><i class="bi bi-link-45deg me-1"></i>Tautan Berbagi SIPSR</h1>
+                    <h1 class="h5 mb-1 fw-bold"><i class="bi bi-link-45deg me-1"></i>Tautan Berbagi ArsiPSR</h1>
                     <span class="share-badge"><i class="bi bi-clock me-1"></i>Berlaku sampai {{ $link->expired_at->format('d M Y H:i') }}</span>
                 </div>
                 <span class="badge bg-white text-dark">{{ $dokumen->category->nama ?? '-' }}</span>
@@ -95,7 +95,7 @@
                 </div>
 
                 <div class="text-center text-muted small">
-                    <i class="bi bi-shield-check me-1"></i>Dibagikan melalui SIPSR
+                    <i class="bi bi-shield-check me-1"></i>Dibagikan melalui ArsiPSR
                 </div>
             </div>
 

@@ -7,7 +7,10 @@
         </button>
 
         {{-- Brand (mobile) --}}
-        <span class="navbar-brand fw-bold text-sipsr-primary d-lg-none mb-0">SIPSR</span>
+        <span class="navbar-brand fw-bold text-sipsr-primary d-lg-none mb-0 d-flex align-items-center">
+            <img src="{{ asset('logo-sm.png') }}" alt="ArsiPSR Logo" style="height: 24px; width: auto; object-fit: contain;" class="me-2">
+            ArsiPSR
+        </span>
 
         {{-- Spacer --}}
         <div class="flex-grow-1"></div>

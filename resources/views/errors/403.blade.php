@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Akses Ditolak (403) — SIPSR')
+@section('title', 'Akses Ditolak (403) — ArsiPSR')
 
 @section('content')
 <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100 text-center py-5">

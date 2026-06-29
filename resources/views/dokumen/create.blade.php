@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Upload Dokumen — SIPSR')
+@section('title', 'Upload Dokumen — ArsiPSR')
 
 @section('content')
 {{-- Page Header --}}

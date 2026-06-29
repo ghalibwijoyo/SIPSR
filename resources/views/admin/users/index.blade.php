@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Manajemen Pengguna — SIPSR')
+@section('title', 'Manajemen Pengguna — ArsiPSR')
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">

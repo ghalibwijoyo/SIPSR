@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Dokumen SIPSR</title>
+    <title>Laporan Dokumen ArsiPSR</title>
     <style>
         @page {
             margin: 1cm;
@@ -70,7 +70,7 @@
     <div class="header">
         <h3>PTPN IV REGIONAL IV</h3>
         <h4>Bidang PSR Bagian Tanaman</h4>
-        <p>LAPORAN DOKUMEN ARSIP — SIPSR</p>
+        <p>LAPORAN DOKUMEN ARSIP — ArsiPSR</p>
         <div style="margin-top: 5px; font-weight: normal; font-size: 11px;">
             Periode: {{ $rentangWaktu }}
         </div>
