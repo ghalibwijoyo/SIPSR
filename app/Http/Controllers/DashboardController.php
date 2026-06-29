@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Document;
-use App\Models\Category;
-use App\Models\User;
 use App\Models\ActivityLog;
-use Illuminate\Http\Request;
+use App\Models\Category;
+use App\Models\Document;
+use App\Models\User;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -19,13 +18,15 @@ class DashboardController extends Controller
         // Statistik Card
         $totalDokumen = Document::count();
         $uploadBulanIni = Document::whereMonth('created_at', Carbon::now()->month)
-                                  ->whereYear('created_at', Carbon::now()->year)
-                                  ->count();
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count();
         $totalUserAktif = User::where('is_active', true)->count();
-        $kategoriTerbanyak = Category::withCount('documents')->orderBy('documents_count', 'desc')->first()->nama ?? '-';
+
+        // Menggunakan 1 kali query untuk data Kategori
+        $kategoriData = Category::withCount('documents')->get();
+        $kategoriTerbanyak = $kategoriData->sortByDesc('documents_count')->first()->nama ?? '-';
 
         // Chart 1: Dokumen per Kategori (Doughnut)
-        $kategoriData = Category::withCount('documents')->get();
         $chartKategoriLabels = $kategoriData->pluck('nama')->toArray();
         $chartKategoriData = $kategoriData->pluck('documents_count')->toArray();
 
@@ -33,9 +34,15 @@ class DashboardController extends Controller
         $chartUploadLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         $chartUploadData = [];
         $currentYear = Carbon::now()->year;
-        
+
+        // Optimasi: Gunakan selectRaw dan groupBy untuk mengambil data 12 bulan dalam 1 query saja
+        $monthlyUploads = Document::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->pluck('count', 'month');
+
         for ($i = 1; $i <= 12; $i++) {
-            $chartUploadData[] = Document::whereMonth('created_at', $i)->whereYear('created_at', $currentYear)->count();
+            $chartUploadData[] = $monthlyUploads[$i] ?? 0;
         }
 
         // Tabel Terbaru

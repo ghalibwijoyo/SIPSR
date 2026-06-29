@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\ActivityLog;
-use App\Models\User;
 use App\Models\Document;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class ActivityLogSeeder extends Seeder
 {
@@ -59,20 +59,20 @@ class ActivityLogSeeder extends Seeder
             $documentId = null;
             if (in_array($activity['jenis'], [
                 'UPLOAD_DOKUMEN', 'DOWNLOAD_DOKUMEN', 'HAPUS_DOKUMEN',
-                'RESTORE_DOKUMEN', 'LIHAT_DOKUMEN', 'BUAT_SHARE_LINK'
-            ]) && !empty($documents)) {
+                'RESTORE_DOKUMEN', 'LIHAT_DOKUMEN', 'BUAT_SHARE_LINK',
+            ]) && ! empty($documents)) {
                 $documentId = $documents[array_rand($documents)];
             }
 
             ActivityLog::create([
-                'user_id'          => $randomUser->id,
-                'role_saat_itu'    => $randomUser->role,
-                'jenis_aktivitas'  => $activity['jenis'],
-                'detail'           => $activity['detail'],
-                'document_id'      => $documentId,
-                'ip_address'       => $ipAddresses[array_rand($ipAddresses)],
-                'user_agent'       => $userAgents[array_rand($userAgents)],
-                'created_at'       => $randomDate,
+                'user_id' => $randomUser->id,
+                'role_saat_itu' => $randomUser->role,
+                'jenis_aktivitas' => $activity['jenis'],
+                'detail' => $activity['detail'],
+                'document_id' => $documentId,
+                'ip_address' => $ipAddresses[array_rand($ipAddresses)],
+                'user_agent' => $userAgents[array_rand($userAgents)],
+                'created_at' => $randomDate,
             ]);
         }
     }

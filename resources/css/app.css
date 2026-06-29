@@ -4,13 +4,13 @@
    ============================================================ */
 
 /* ─── Imports (must come first) ─────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import 'bootstrap/dist/css/bootstrap.min.css';
-@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
 
 /* ─── CSS Custom Properties ─────────────────────────────── */
 :root {
-    --sipsr-primary: #3B6D11;
+    --sipsr-primary: #3b6d11;
     --sipsr-primary-dark: #244a07;
     --sipsr-primary-light: #4a8a15;
     --sipsr-primary-rgb: 59, 109, 17;
@@ -18,9 +18,10 @@
     --sipsr-sidebar-width: 260px;
     --sipsr-sidebar-hover: rgba(255, 255, 255, 0.1);
     --sipsr-sidebar-active: rgba(255, 255, 255, 0.2);
-    --sipsr-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --sipsr-font:
+        "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        sans-serif;
 }
-
 
 /* ─── Base ──────────────────────────────────────────────── */
 
@@ -32,7 +33,14 @@ body {
 }
 
 /* Global Smooth Transitions */
-a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
+a,
+.btn,
+.form-control,
+.form-select,
+.page-link,
+.badge,
+.dropdown-item,
+tr {
     transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
@@ -230,7 +238,11 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
 .login-logo {
     width: 64px;
     height: 64px;
-    background: linear-gradient(135deg, var(--sipsr-primary) 0%, var(--sipsr-primary-light) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--sipsr-primary) 0%,
+        var(--sipsr-primary-light) 100%
+    );
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -477,7 +489,8 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     }
 
     /* Page titles smaller */
-    h1.h3, .h3 {
+    h1.h3,
+    .h3 {
         font-size: 1.15rem;
     }
 
@@ -534,7 +547,12 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
 
 /* --- Print styles --- */
 @media print {
-    .sidebar, #top-navbar, .sidebar-overlay, .btn, .pagination, .card-header .d-flex {
+    .sidebar,
+    #top-navbar,
+    .sidebar-overlay,
+    .btn,
+    .pagination,
+    .card-header .d-flex {
         display: none !important;
     }
 
@@ -569,18 +587,31 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     }
 }
 
-.card, .alert {
+.card,
+.alert {
     opacity: 0;
     animation: fadeInUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
 }
 
 /* Staggered card animations */
-.card:nth-child(1) { animation-delay: 0.05s; }
-.card:nth-child(2) { animation-delay: 0.1s; }
-.card:nth-child(3) { animation-delay: 0.15s; }
-.card:nth-child(4) { animation-delay: 0.2s; }
-.card:nth-child(5) { animation-delay: 0.25s; }
-.card:nth-child(6) { animation-delay: 0.3s; }
+.card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+.card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+.card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+.card:nth-child(4) {
+    animation-delay: 0.2s;
+}
+.card:nth-child(5) {
+    animation-delay: 0.25s;
+}
+.card:nth-child(6) {
+    animation-delay: 0.3s;
+}
 
 /* ─── Loading State ─────────────────────────────────────── */
 .btn.is-loading {
@@ -599,7 +630,7 @@ a, .btn, .form-control, .form-select, .page-link, .badge, .dropdown-item, tr {
     border: 2px solid rgba(255, 255, 255, 0.5);
     border-top-color: #fff;
     border-radius: 50%;
-    animation: spinner-border .75s linear infinite;
+    animation: spinner-border 0.75s linear infinite;
 }
 
 .btn-light.is-loading::after,

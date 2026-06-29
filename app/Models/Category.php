@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class Category extends Model
 {
@@ -13,7 +13,7 @@ class Category extends Model
 
     protected $fillable = [
         'nama',
-        'deskripsi'
+        'deskripsi',
     ];
 
     protected static function booted()
@@ -21,11 +21,11 @@ class Category extends Model
         static::created(function () {
             Cache::forget('categories');
         });
-        
+
         static::updated(function () {
             Cache::forget('categories');
         });
-        
+
         static::deleted(function () {
             Cache::forget('categories');
         });

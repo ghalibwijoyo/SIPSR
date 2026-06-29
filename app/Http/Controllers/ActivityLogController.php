@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class ActivityLogController extends Controller
 {
@@ -57,7 +56,7 @@ class ActivityLogController extends Controller
 
         // ── Data untuk dropdown filter ─────────────────────
         $users = User::where('is_active', true)->orderBy('nama_lengkap')->get();
-        
+
         // Ambil jenis_aktivitas unik dari tabel
         $jenisAktivitasList = ActivityLog::select('jenis_aktivitas')
             ->distinct()

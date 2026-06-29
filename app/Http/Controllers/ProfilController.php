@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Models\ActivityLog;
 
 class ProfilController extends Controller
 {
     public function show()
     {
         $user = request()->user();
+
         return view('profil.index', compact('user'));
     }
 
@@ -30,7 +31,7 @@ class ProfilController extends Controller
                 'user_id' => $user->id,
                 'role_saat_itu' => $user->role,
                 'jenis_aktivitas' => 'EDIT_USER',
-                'detail' => "Memperbarui nama profil dari $oldName menjadi " . $user->nama_lengkap,
+                'detail' => "Memperbarui nama profil dari $oldName menjadi ".$user->nama_lengkap,
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
                 'created_at' => now(),
@@ -52,7 +53,7 @@ class ProfilController extends Controller
 
         $user = $request->user();
 
-        if (!Hash::check($validated['password_lama'], $user->password)) {
+        if (! Hash::check($validated['password_lama'], $user->password)) {
             return back()->withErrors(['password_lama' => 'Password lama tidak sesuai.']);
         }
 

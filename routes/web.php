@@ -1,17 +1,17 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\Admin\BankController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
-use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\RecycleBinController;
 use App\Http\Controllers\ShareLinkController;
 use App\Http\Controllers\ShareViewController;
-use App\Http\Controllers\ProfilController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\BankController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,7 +51,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/{dokumen}/preview', 'preview')->name('preview');
     });
     Route::resource('dokumen', DocumentController::class)->parameters([
-        'dokumen' => 'dokumen'
+        'dokumen' => 'dokumen',
     ]);
 
     // ── Share Link ──────────────────────────────────────

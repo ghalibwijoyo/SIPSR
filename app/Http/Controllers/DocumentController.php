@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
-use App\Models\Category;
 use App\Models\Bank;
+use App\Models\Category;
 use App\Models\Document;
 use App\Models\DocumentHistory;
-use Carbon\Carbon;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -44,21 +44,21 @@ class DocumentController extends Controller
 
         // ── Smart Filters via Scopes ────────────────────────
         $query->search($request->search)
-              ->byCategory($request->category_id)
-              ->byBank($request->bank_id)
-              ->byUploader($request->uploader_id)
-              ->dateRange($request->tanggal_dari, $request->tanggal_sampai)
-              ->byFormat($request->format);
+            ->byCategory($request->category_id)
+            ->byBank($request->bank_id)
+            ->byUploader($request->uploader_id)
+            ->dateRange($request->tanggal_dari, $request->tanggal_sampai)
+            ->byFormat($request->format);
 
         // ── Sorting ─────────────────────────────────────────
         $sortCol = $request->input('sort', 'created_at');
         $sortDir = $request->input('dir', 'desc');
         $allowedSorts = ['nomor_dokumen', 'nama_dokumen', 'tanggal_dokumen', 'created_at'];
 
-        if (!in_array($sortCol, $allowedSorts)) {
+        if (! in_array($sortCol, $allowedSorts)) {
             $sortCol = 'created_at';
         }
-        if (!in_array($sortDir, ['asc', 'desc'])) {
+        if (! in_array($sortDir, ['asc', 'desc'])) {
             $sortDir = 'desc';
         }
 
@@ -68,9 +68,9 @@ class DocumentController extends Controller
         $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
 
         $documents = $query->paginate($perPage)->withQueryString();
-        $categories = Category::orderBy('nama')->get();
-        $banks = Bank::orderBy('nama')->get();
-        $users = User::where('is_active', true)->orderBy('nama_lengkap')->get();
+        $categories = Cache::remember('categories_all', 86400, fn() => Category::orderBy('nama')->get());
+        $banks = Cache::remember('banks_all', 86400, fn() => Bank::orderBy('nama')->get());
+        $users = Cache::remember('users_active', 86400, fn() => User::where('is_active', true)->orderBy('nama_lengkap')->get());
 
         return view('dokumen.index', compact('documents', 'categories', 'banks', 'users'));
     }
@@ -80,8 +80,8 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        $categories = Category::orderBy('nama')->get();
-        $banks = Bank::orderBy('nama')->get();
+        $categories = Cache::remember('categories_all', 86400, fn() => Category::orderBy('nama')->get());
+        $banks = Cache::remember('banks_all', 86400, fn() => Bank::orderBy('nama')->get());
 
         return view('dokumen.create', compact('categories', 'banks'));
     }
@@ -92,17 +92,17 @@ class DocumentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nomor_dokumen'   => 'required|string|max:255',
-            'nama_dokumen'    => 'required|string|max:255',
-            'bank_id'         => 'nullable|exists:banks,id',
-            'category_id'     => 'required|exists:categories,id',
+            'nomor_dokumen' => 'required|string|max:255',
+            'nama_dokumen' => 'required|string|max:255',
+            'bank_id' => 'nullable|exists:banks,id',
+            'category_id' => 'required|exists:categories,id',
             'tanggal_dokumen' => 'required|date',
-            'deskripsi'       => 'nullable|string',
-            'file'            => 'required|mimes:pdf,doc,docx|max:512000',
+            'deskripsi' => 'nullable|string',
+            'file' => 'required|mimes:pdf,doc,docx|max:512000',
         ]);
 
         // ── Cek nomor duplikat ──────────────────────────────
-        if (!$request->boolean('konfirmasi_duplikat')) {
+        if (! $request->boolean('konfirmasi_duplikat')) {
             $exists = Document::where('nomor_dokumen', $validated['nomor_dokumen'])->exists();
             if ($exists) {
                 return back()
@@ -113,18 +113,18 @@ class DocumentController extends Controller
         }
 
         // ── Proses file ─────────────────────────────────────
-        $file      = $request->file('file');
-        $now       = Carbon::now();
-        $folder    = 'uploads/' . $now->format('Y') . '/' . $now->format('m');
-        $origName  = $file->getClientOriginalName();
+        $file = $request->file('file');
+        $now = Carbon::now();
+        $folder = 'uploads/'.$now->format('Y').'/'.$now->format('m');
+        $origName = $file->getClientOriginalName();
         $extension = $file->getClientOriginalExtension();
-        $baseName  = pathinfo($origName, PATHINFO_FILENAME);
+        $baseName = pathinfo($origName, PATHINFO_FILENAME);
 
         // Auto-rename jika file sudah ada
         $fileName = $origName;
-        $counter  = 1;
-        while (Storage::disk('local')->exists($folder . '/' . $fileName)) {
-            $fileName = $baseName . '_' . $counter . '.' . $extension;
+        $counter = 1;
+        while (Storage::disk('local')->exists($folder.'/'.$fileName)) {
+            $fileName = $baseName.'_'.$counter.'.'.$extension;
             $counter++;
         }
 
@@ -132,19 +132,19 @@ class DocumentController extends Controller
 
         // ── Simpan ke database ──────────────────────────────
         $document = Document::create([
-            'nomor_dokumen'   => $validated['nomor_dokumen'],
-            'nama_dokumen'    => $validated['nama_dokumen'],
-            'bank_id'         => $validated['bank_id'] ?? null,
-            'category_id'     => $validated['category_id'],
+            'nomor_dokumen' => $validated['nomor_dokumen'],
+            'nama_dokumen' => $validated['nama_dokumen'],
+            'bank_id' => $validated['bank_id'] ?? null,
+            'category_id' => $validated['category_id'],
             'tanggal_dokumen' => $validated['tanggal_dokumen'],
-            'deskripsi'       => $validated['deskripsi'] ?? null,
-            'file_path'       => $folder . '/' . $fileName,
-            'file_name'       => $fileName,
-            'uploader_id'     => auth()->id(),
+            'deskripsi' => $validated['deskripsi'] ?? null,
+            'file_path' => $folder.'/'.$fileName,
+            'file_name' => $fileName,
+            'uploader_id' => auth()->id(),
         ]);
 
         // ── Activity Log ────────────────────────────────────
-        $this->logActivity('UPLOAD_DOKUMEN', 'Mengupload dokumen: ' . $document->nama_dokumen, $document->id);
+        $this->logActivity('UPLOAD_DOKUMEN', 'Mengupload dokumen: '.$document->nama_dokumen, $document->id);
 
         return redirect()->route('dokumen.index')
             ->with('success', 'Dokumen berhasil diupload.');
@@ -165,8 +165,8 @@ class DocumentController extends Controller
      */
     public function edit(Document $dokumen)
     {
-        $categories = Category::orderBy('nama')->get();
-        $banks = Bank::orderBy('nama')->get();
+        $categories = Cache::remember('categories_all', 86400, fn() => Category::orderBy('nama')->get());
+        $banks = Cache::remember('banks_all', 86400, fn() => Bank::orderBy('nama')->get());
 
         return view('dokumen.edit', compact('dokumen', 'categories', 'banks'));
     }
@@ -177,22 +177,22 @@ class DocumentController extends Controller
     public function update(Request $request, Document $dokumen)
     {
         $validated = $request->validate([
-            'nomor_dokumen'   => 'required|string|max:255',
-            'nama_dokumen'    => 'required|string|max:255',
-            'bank_id'         => 'nullable|exists:banks,id',
-            'category_id'     => 'required|exists:categories,id',
+            'nomor_dokumen' => 'required|string|max:255',
+            'nama_dokumen' => 'required|string|max:255',
+            'bank_id' => 'nullable|exists:banks,id',
+            'category_id' => 'required|exists:categories,id',
             'tanggal_dokumen' => 'required|date',
-            'deskripsi'       => 'nullable|string',
+            'deskripsi' => 'nullable|string',
         ]);
 
         // ── Track changes per field ─────────────────────────
         $trackFields = [
-            'nomor_dokumen'   => 'Nomor Dokumen',
-            'nama_dokumen'    => 'Nama Dokumen',
-            'bank_id'         => 'Bank',
-            'category_id'     => 'Kategori',
+            'nomor_dokumen' => 'Nomor Dokumen',
+            'nama_dokumen' => 'Nama Dokumen',
+            'bank_id' => 'Bank',
+            'category_id' => 'Kategori',
             'tanggal_dokumen' => 'Tanggal Dokumen',
-            'deskripsi'       => 'Deskripsi',
+            'deskripsi' => 'Deskripsi',
         ];
 
         foreach ($trackFields as $field => $label) {
@@ -212,13 +212,14 @@ class DocumentController extends Controller
                 $oldCat = Category::find($oldValue);
                 $newCat = Category::find($newValue);
                 DocumentHistory::create([
-                    'document_id'   => $dokumen->id,
-                    'field_name'    => $label,
-                    'old_value'     => $oldCat?->nama ?? $oldValue,
-                    'new_value'     => $newCat?->nama ?? $newValue,
+                    'document_id' => $dokumen->id,
+                    'field_name' => $label,
+                    'old_value' => $oldCat?->nama ?? $oldValue,
+                    'new_value' => $newCat?->nama ?? $newValue,
                     'changed_by_id' => auth()->id(),
-                    'changed_at'    => now(),
+                    'changed_at' => now(),
                 ]);
+
                 continue;
             }
 
@@ -227,24 +228,25 @@ class DocumentController extends Controller
                 $oldBank = Bank::find($oldValue);
                 $newBank = Bank::find($newValue);
                 DocumentHistory::create([
-                    'document_id'   => $dokumen->id,
-                    'field_name'    => $label,
-                    'old_value'     => $oldBank?->nama ?? $oldValue,
-                    'new_value'     => $newBank?->nama ?? $newValue,
+                    'document_id' => $dokumen->id,
+                    'field_name' => $label,
+                    'old_value' => $oldBank?->nama ?? $oldValue,
+                    'new_value' => $newBank?->nama ?? $newValue,
                     'changed_by_id' => auth()->id(),
-                    'changed_at'    => now(),
+                    'changed_at' => now(),
                 ]);
+
                 continue;
             }
 
             if ((string) $oldValue !== (string) $newValue) {
                 DocumentHistory::create([
-                    'document_id'   => $dokumen->id,
-                    'field_name'    => $label,
-                    'old_value'     => $oldValue,
-                    'new_value'     => $newValue,
+                    'document_id' => $dokumen->id,
+                    'field_name' => $label,
+                    'old_value' => $oldValue,
+                    'new_value' => $newValue,
                     'changed_by_id' => auth()->id(),
-                    'changed_at'    => now(),
+                    'changed_at' => now(),
                 ]);
             }
         }
@@ -254,7 +256,7 @@ class DocumentController extends Controller
         $dokumen->update($validated);
 
         // ── Activity Log ────────────────────────────────────
-        $this->logActivity('EDIT_METADATA', 'Mengedit metadata: ' . $dokumen->nama_dokumen, $dokumen->id);
+        $this->logActivity('EDIT_METADATA', 'Mengedit metadata: '.$dokumen->nama_dokumen, $dokumen->id);
 
         return redirect()->route('dokumen.show', $dokumen)
             ->with('success', 'Metadata dokumen berhasil diperbarui.');
@@ -271,7 +273,7 @@ class DocumentController extends Controller
         $dokumen->delete(); // SoftDeletes → sets deleted_at
 
         // ── Activity Log ────────────────────────────────────
-        $this->logActivity('HAPUS_DOKUMEN', 'Menghapus dokumen: ' . $dokumen->nama_dokumen, $dokumen->id);
+        $this->logActivity('HAPUS_DOKUMEN', 'Menghapus dokumen: '.$dokumen->nama_dokumen, $dokumen->id);
 
         return redirect()->route('dokumen.index')
             ->with('success', 'Dokumen dipindahkan ke Recycle Bin.');
@@ -284,7 +286,7 @@ class DocumentController extends Controller
     {
         $request->validate([
             'ids' => 'required|array',
-            'ids.*' => 'exists:documents,id'
+            'ids.*' => 'exists:documents,id',
         ]);
 
         $documents = Document::whereIn('id', $request->ids)->get();
@@ -293,11 +295,11 @@ class DocumentController extends Controller
                 'deleted_by_id' => auth()->id(),
             ]);
             $dokumen->delete();
-            $this->logActivity('HAPUS_DOKUMEN', 'Menghapus dokumen massal: ' . $dokumen->nama_dokumen, $dokumen->id);
+            $this->logActivity('HAPUS_DOKUMEN', 'Menghapus dokumen massal: '.$dokumen->nama_dokumen, $dokumen->id);
         }
 
         return redirect()->route('dokumen.index')
-            ->with('success', count($documents) . ' dokumen berhasil dipindahkan ke Recycle Bin.');
+            ->with('success', count($documents).' dokumen berhasil dipindahkan ke Recycle Bin.');
     }
 
     /**
@@ -307,7 +309,7 @@ class DocumentController extends Controller
     {
         $request->validate([
             'ids' => 'required|array',
-            'ids.*' => 'exists:documents,id'
+            'ids.*' => 'exists:documents,id',
         ]);
 
         $documents = Document::whereIn('id', $request->ids)->get();
@@ -315,19 +317,19 @@ class DocumentController extends Controller
             return back()->with('error', 'Tidak ada dokumen yang dipilih.');
         }
 
-        $zip = new \ZipArchive();
-        $zipFileName = 'SIPSR_Bulk_Download_' . now()->format('Ymd_His') . '.zip';
+        $zip = new \ZipArchive;
+        $zipFileName = 'SIPSR_Bulk_Download_'.now()->format('Ymd_His').'.zip';
         // Simpan sementara di storage/app/public
-        $zipFilePath = storage_path('app/public/' . $zipFileName);
+        $zipFilePath = storage_path('app/public/'.$zipFileName);
 
-        if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+        if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
             foreach ($documents as $dokumen) {
                 if (\Storage::disk('local')->exists($dokumen->file_path)) {
                     $absolutePath = \Storage::disk('local')->path($dokumen->file_path);
-                    $safeName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $dokumen->nomor_dokumen) . '_' . $dokumen->file_name;
+                    $safeName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $dokumen->nomor_dokumen).'_'.$dokumen->file_name;
                     $zip->addFile($absolutePath, $safeName);
-                    
-                    $this->logActivity('DOWNLOAD_DOKUMEN', 'Mengunduh dokumen massal (ZIP): ' . $dokumen->nama_dokumen, $dokumen->id);
+
+                    $this->logActivity('DOWNLOAD_DOKUMEN', 'Mengunduh dokumen massal (ZIP): '.$dokumen->nama_dokumen, $dokumen->id);
                 }
             }
             $zip->close();
@@ -343,12 +345,12 @@ class DocumentController extends Controller
      */
     public function download(Document $dokumen)
     {
-        if (!Storage::disk('local')->exists($dokumen->file_path)) {
+        if (! Storage::disk('local')->exists($dokumen->file_path)) {
             return back()->with('error', 'File tidak ditemukan di server.');
         }
 
         // ── Activity Log ────────────────────────────────────
-        $this->logActivity('DOWNLOAD_DOKUMEN', 'Mengunduh dokumen: ' . $dokumen->nama_dokumen, $dokumen->id);
+        $this->logActivity('DOWNLOAD_DOKUMEN', 'Mengunduh dokumen: '.$dokumen->nama_dokumen, $dokumen->id);
 
         return Storage::disk('local')->download($dokumen->file_path, $dokumen->file_name);
     }
@@ -358,7 +360,7 @@ class DocumentController extends Controller
      */
     public function preview(Document $dokumen)
     {
-        if (!Storage::disk('local')->exists($dokumen->file_path)) {
+        if (! Storage::disk('local')->exists($dokumen->file_path)) {
             abort(404, 'File tidak ditemukan.');
         }
 
@@ -375,14 +377,14 @@ class DocumentController extends Controller
     private function logActivity(string $jenis, string $detail, ?string $documentId = null): void
     {
         ActivityLog::create([
-            'user_id'         => auth()->id(),
-            'role_saat_itu'   => auth()->user()->role,
+            'user_id' => auth()->id(),
+            'role_saat_itu' => auth()->user()->role,
             'jenis_aktivitas' => $jenis,
-            'detail'          => $detail,
-            'document_id'     => $documentId,
-            'ip_address'      => request()->ip(),
-            'user_agent'      => request()->userAgent(),
-            'created_at'      => now(),
+            'detail' => $detail,
+            'document_id' => $documentId,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'created_at' => now(),
         ]);
     }
 }

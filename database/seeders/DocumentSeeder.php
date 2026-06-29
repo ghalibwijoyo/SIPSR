@@ -12,7 +12,7 @@ class DocumentSeeder extends Seeder
 {
     public function run(): void
     {
-        $users      = User::all();
+        $users = User::all();
         $categories = Category::all();
 
         $documents = [
@@ -39,23 +39,23 @@ class DocumentSeeder extends Seeder
         ];
 
         foreach ($documents as $i => $doc) {
-            $tanggal  = Carbon::parse($doc['tanggal']);
+            $tanggal = Carbon::parse($doc['tanggal']);
             $uploader = $users->random();
 
-            $document = new Document();
-            $document->nomor_dokumen   = $doc['nomor'];
-            $document->nama_dokumen    = $doc['nama'];
-            $document->category_id     = $categories->firstWhere('nama', $doc['kategori'])->id;
+            $document = new Document;
+            $document->nomor_dokumen = $doc['nomor'];
+            $document->nama_dokumen = $doc['nama'];
+            $document->category_id = $categories->firstWhere('nama', $doc['kategori'])->id;
             $document->tanggal_dokumen = $tanggal;
-            $document->deskripsi       = 'Deskripsi untuk dokumen ' . $doc['nama'];
-            $document->file_path       = 'uploads/' . $tanggal->format('Y') . '/' . $tanggal->format('m') . '/dummy_' . ($i + 1) . '.pdf';
-            $document->file_name       = 'dummy_' . ($i + 1) . '.pdf';
-            $document->uploader_id     = $uploader->id;
-            $document->created_at      = $tanggal;
-            $document->updated_at      = $tanggal;
+            $document->deskripsi = 'Deskripsi untuk dokumen '.$doc['nama'];
+            $document->file_path = 'uploads/'.$tanggal->format('Y').'/'.$tanggal->format('m').'/dummy_'.($i + 1).'.pdf';
+            $document->file_name = 'dummy_'.($i + 1).'.pdf';
+            $document->uploader_id = $uploader->id;
+            $document->created_at = $tanggal;
+            $document->updated_at = $tanggal;
 
             if ($doc['deleted']) {
-                $document->deleted_at    = $tanggal->copy()->addDays(rand(5, 30));
+                $document->deleted_at = $tanggal->copy()->addDays(rand(5, 30));
                 $document->deleted_by_id = $users->firstWhere('role', 'ADMIN')->id;
             }
 

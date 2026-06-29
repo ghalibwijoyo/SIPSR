@@ -3,19 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\ActivityLog;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     public function index()
     {
         $users = User::orderBy('nama_lengkap')->paginate(20);
+
         return view('admin.users.index', compact('users'));
     }
 
@@ -28,7 +27,7 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['ADMIN', 'STAFF'])],
         ], [
             'password.regex' => 'Password harus mengandung kombinasi huruf dan angka.',
-            'username.unique' => 'Username sudah digunakan, silakan pilih yang lain.'
+            'username.unique' => 'Username sudah digunakan, silakan pilih yang lain.',
         ]);
 
         $user = User::create([
@@ -43,7 +42,7 @@ class UserController extends Controller
             'user_id' => request()->user()->id,
             'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'TAMBAH_USER',
-            'detail' => 'Menambahkan pengguna baru: ' . $user->username,
+            'detail' => 'Menambahkan pengguna baru: '.$user->username,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'created_at' => now(),
@@ -70,7 +69,7 @@ class UserController extends Controller
             'user_id' => request()->user()->id,
             'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'EDIT_USER',
-            'detail' => 'Memperbarui data pengguna: ' . $user->username,
+            'detail' => 'Memperbarui data pengguna: '.$user->username,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'created_at' => now(),
@@ -86,7 +85,7 @@ class UserController extends Controller
             return redirect()->route('users.index')->with('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri.');
         }
 
-        $user->is_active = !$user->is_active;
+        $user->is_active = ! $user->is_active;
         $user->save();
 
         $action = $user->is_active ? 'AKTIFKAN_USER' : 'NONAKTIFKAN_USER';
@@ -96,7 +95,7 @@ class UserController extends Controller
             'user_id' => request()->user()->id,
             'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => $action,
-            'detail' => ucfirst($statusText) . ' pengguna: ' . $user->username,
+            'detail' => ucfirst($statusText).' pengguna: '.$user->username,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'created_at' => now(),
@@ -121,7 +120,7 @@ class UserController extends Controller
             'user_id' => request()->user()->id,
             'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'RESET_PASSWORD',
-            'detail' => 'Mereset password pengguna: ' . $user->username,
+            'detail' => 'Mereset password pengguna: '.$user->username,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'created_at' => now(),
@@ -131,7 +130,7 @@ class UserController extends Controller
             ->with('success', 'Password berhasil direset.')
             ->with('new_password_info', [
                 'username' => $user->username,
-                'password' => $validated['new_password']
+                'password' => $validated['new_password'],
             ]);
     }
 }

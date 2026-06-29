@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Document extends Model
 {
-    use HasUuids, SoftDeletes, Prunable;
+    use HasUuids, Prunable, SoftDeletes;
 
     protected $fillable = [
         'nomor_dokumen',
@@ -49,56 +49,65 @@ class Document extends Model
 
     public function scopeSearch($query, $search)
     {
-        if (!$search) return $query;
-        
-        return $query->where(function($q) use ($search) {
+        if (! $search) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($search) {
             $q->where('nomor_dokumen', 'LIKE', "%{$search}%")
-              ->orWhere('nama_dokumen', 'LIKE', "%{$search}%")
-              ->orWhereHas('uploader', function ($q2) use ($search) {
-                  $q2->where('nama_lengkap', 'LIKE', "%{$search}%");
-              })
-              ->orWhereHas('category', function ($q2) use ($search) {
-                  $q2->where('nama', 'LIKE', "%{$search}%");
-              })
-              ->orWhereHas('bank', function ($q2) use ($search) {
-                  $q2->where('nama', 'LIKE', "%{$search}%");
-              });
+                ->orWhere('nama_dokumen', 'LIKE', "%{$search}%")
+                ->orWhereHas('uploader', function ($q2) use ($search) {
+                    $q2->where('nama_lengkap', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('category', function ($q2) use ($search) {
+                    $q2->where('nama', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('bank', function ($q2) use ($search) {
+                    $q2->where('nama', 'LIKE', "%{$search}%");
+                });
         });
     }
-    
+
     public function scopeByCategory($query, $categoryId)
     {
         return $categoryId ? $query->where('category_id', $categoryId) : $query;
     }
-    
+
     public function scopeByBank($query, $bankId)
     {
         return $bankId ? $query->where('bank_id', $bankId) : $query;
     }
-    
+
     public function scopeByUploader($query, $uploaderId)
     {
         return $uploaderId ? $query->where('uploader_id', $uploaderId) : $query;
     }
-    
+
     public function scopeDateRange($query, $from, $to)
     {
-        if ($from) $query->whereDate('tanggal_dokumen', '>=', $from);
-        if ($to) $query->whereDate('tanggal_dokumen', '<=', $to);
+        if ($from) {
+            $query->whereDate('tanggal_dokumen', '>=', $from);
+        }
+        if ($to) {
+            $query->whereDate('tanggal_dokumen', '<=', $to);
+        }
+
         return $query;
     }
-    
+
     public function scopeByFormat($query, $formats)
     {
-        if (!$formats || empty($formats)) return $query;
-        
-        return $query->where(function($q) use ($formats) {
-            foreach($formats as $format) {
+        if (! $formats || empty($formats)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($formats) {
+            foreach ($formats as $format) {
                 if ($format === 'pdf') {
                     $q->orWhere('file_name', 'LIKE', '%.pdf');
                 } elseif ($format === 'doc') {
                     $q->orWhere('file_name', 'LIKE', '%.doc')
-                      ->orWhere('file_name', 'LIKE', '%.docx');
+                        ->orWhere('file_name', 'LIKE', '%.docx');
                 }
             }
         });

@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="ArsiPSR - Sistem Informasi Pengarsipan PSR Tanaman PTPN IV Regional IV">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'ArsiPSR')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta charset="UTF-8" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta
+        name="description"
+        content="ArsiPSR - Sistem Informasi Pengarsipan PSR Tanaman PTPN IV Regional IV"
+    />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <title>@yield ('title', 'ArsiPSR')</title>
+    @vite (['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
     <div class="d-flex vh-100 overflow-hidden">
         {{-- Sidebar --}}
-        @include('components.sidebar')
+        @include ('components.sidebar')
 
         {{-- Main Content Area --}}
         <div class="d-flex flex-column flex-grow-1 overflow-hidden">
             {{-- Navbar --}}
-            @include('components.navbar')
+            @include ('components.navbar')
 
             {{-- Page Content --}}
             <main class="flex-grow-1 overflow-auto bg-body-secondary">
                 <div class="container-fluid p-4">
-                    @yield('content')
+                    @yield ('content')
                 </div>
             </main>
         </div>
     </div>
 
     {{-- Toast Container --}}
-    @include('components.toast')
+    @include ('components.toast')
 
-    @stack('scripts')
-
-
+    @stack ('scripts')
 </body>
 </html>

@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Document;
 use App\Models\ActivityLog;
 use App\Models\Category;
+use App\Models\Document;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class RecycleBinController extends Controller
@@ -52,13 +51,13 @@ class RecycleBinController extends Controller
             } elseif ($request->trash_age === 'medium') {
                 $query->whereBetween('deleted_at', [
                     now()->subDays(20),
-                    now()->subDays(7)
+                    now()->subDays(7),
                 ]);
             } elseif ($request->trash_age === 'old') {
                 $query->where('deleted_at', '<', now()->subDays(20));
             }
         }
-        
+
         // ── Filter: deleted_by ──────────────────────────────
         if ($request->filled('deleted_by') && $request->deleted_by) {
             $query->where('deleted_by_id', $request->deleted_by);
@@ -77,7 +76,7 @@ class RecycleBinController extends Controller
         $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
 
         $documents = $query->orderBy('deleted_at', 'desc')->paginate($perPage)->withQueryString();
-        
+
         $categories = Category::orderBy('nama')->get();
         $users = User::where('is_active', true)->orderBy('nama_lengkap')->get();
 
@@ -171,7 +170,7 @@ class RecycleBinController extends Controller
     {
         $request->validate([
             'document_ids' => 'required|array',
-            'document_ids.*' => 'exists:documents,id'
+            'document_ids.*' => 'exists:documents,id',
         ]);
 
         $documents = Document::onlyTrashed()->whereIn('id', $request->document_ids)->get();
@@ -203,7 +202,7 @@ class RecycleBinController extends Controller
     {
         $request->validate([
             'document_ids' => 'required|array',
-            'document_ids.*' => 'exists:documents,id'
+            'document_ids.*' => 'exists:documents,id',
         ]);
 
         $documents = Document::onlyTrashed()->whereIn('id', $request->document_ids)->get();

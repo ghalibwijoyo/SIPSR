@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Document;
-use App\Models\Category;
-use App\Models\Bank;
-use App\Models\User;
-use App\Models\ActivityLog;
 use App\Exports\DokumenExport;
+use App\Models\ActivityLog;
+use App\Models\Bank;
+use App\Models\Category;
+use App\Models\Document;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanController extends Controller
@@ -33,10 +33,10 @@ class LaporanController extends Controller
 
         // ── Smart Filters via Scopes ────────────────────────
         $query->search($request->search)
-              ->byCategory($request->category_id)
-              ->byBank($request->bank_id)
-              ->byUploader($request->uploader_id)
-              ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
+            ->byCategory($request->category_id)
+            ->byBank($request->bank_id)
+            ->byUploader($request->uploader_id)
+            ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
 
         // ── Quick filters ───────────────────────────────────
         if ($request->filled('quick_filter')) {
@@ -54,10 +54,10 @@ class LaporanController extends Controller
         $sortDir = $request->input('dir', 'desc');
         $allowedSorts = ['nomor_dokumen', 'nama_dokumen', 'tanggal_dokumen', 'created_at'];
 
-        if (!in_array($sortCol, $allowedSorts)) {
+        if (! in_array($sortCol, $allowedSorts)) {
             $sortCol = 'tanggal_dokumen';
         }
-        if (!in_array($sortDir, ['asc', 'desc'])) {
+        if (! in_array($sortDir, ['asc', 'desc'])) {
             $sortDir = 'desc';
         }
 
@@ -87,8 +87,8 @@ class LaporanController extends Controller
         $filterDesc = $this->getFilterDescription($request);
         $this->logActivity('EXPORT_EXCEL', "Export laporan dokumen ke Excel ({$filterDesc})");
 
-        $fileName = 'Laporan_Dokumen_SIPSR_' . date('Y-m-d_His') . '.xlsx';
-        
+        $fileName = 'Laporan_Dokumen_SIPSR_'.date('Y-m-d_His').'.xlsx';
+
         return Excel::download(new DokumenExport($request->all()), $fileName);
     }
 
@@ -99,20 +99,20 @@ class LaporanController extends Controller
     {
         $dokumen = $this->getDokumenByFilter($request);
         $rentangWaktu = $this->getRentangWaktuText($request);
-        
+
         $stats = [
             'total' => $dokumen->count(),
-            'top_category' => $dokumen->groupBy('category_id')->sortByDesc(fn($g) => $g->count())->first()?->first()?->category?->nama ?? '-',
-            'top_bank' => $dokumen->groupBy('bank_id')->sortByDesc(fn($g) => $g->count())->first()?->first()?->bank?->nama ?? '-',
+            'top_category' => $dokumen->groupBy('category_id')->sortByDesc(fn ($g) => $g->count())->first()?->first()?->category?->nama ?? '-',
+            'top_bank' => $dokumen->groupBy('bank_id')->sortByDesc(fn ($g) => $g->count())->first()?->first()?->bank?->nama ?? '-',
         ];
 
         $filterDesc = $this->getFilterDescription($request);
         $this->logActivity('EXPORT_PDF', "Export laporan dokumen ke PDF ({$filterDesc})");
 
         $pdf = Pdf::loadView('laporan.pdf', compact('dokumen', 'rentangWaktu', 'stats'))
-                  ->setPaper('a4', 'landscape');
-                  
-        return $pdf->download('Laporan_Dokumen_SIPSR_' . date('Y-m-d') . '.pdf');
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('Laporan_Dokumen_SIPSR_'.date('Y-m-d').'.pdf');
     }
 
     /**
@@ -125,17 +125,17 @@ class LaporanController extends Controller
 
         $stats = [
             'total' => $dokumen->count(),
-            'top_category' => $dokumen->groupBy('category_id')->sortByDesc(fn($g) => $g->count())->first()?->first()?->category?->nama ?? '-',
-            'top_bank' => $dokumen->groupBy('bank_id')->sortByDesc(fn($g) => $g->count())->first()?->first()?->bank?->nama ?? '-',
+            'top_category' => $dokumen->groupBy('category_id')->sortByDesc(fn ($g) => $g->count())->first()?->first()?->category?->nama ?? '-',
+            'top_bank' => $dokumen->groupBy('bank_id')->sortByDesc(fn ($g) => $g->count())->first()?->first()?->bank?->nama ?? '-',
         ];
 
         $filterDesc = $this->getFilterDescription($request);
         $this->logActivity('CETAK_PDF', "Mencetak laporan dokumen ({$filterDesc})");
 
         $pdf = Pdf::loadView('laporan.pdf', compact('dokumen', 'rentangWaktu', 'stats'))
-                  ->setPaper('a4', 'landscape');
-                  
-        return $pdf->stream('Laporan_Dokumen_SIPSR_' . date('Y-m-d') . '.pdf');
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->stream('Laporan_Dokumen_SIPSR_'.date('Y-m-d').'.pdf');
     }
 
     // ─── Private Helpers ─────────────────────────────────────
@@ -143,12 +143,12 @@ class LaporanController extends Controller
     private function getDokumenByFilter(Request $request)
     {
         $query = Document::with(['category', 'uploader', 'bank']);
-        
+
         $query->search($request->search)
-              ->byCategory($request->category_id)
-              ->byBank($request->bank_id)
-              ->byUploader($request->uploader_id)
-              ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
+            ->byCategory($request->category_id)
+            ->byBank($request->bank_id)
+            ->byUploader($request->uploader_id)
+            ->dateRange($request->tanggal_dari, $request->tanggal_sampai);
 
         if ($request->filled('quick_filter')) {
             if ($request->quick_filter === 'pdf') {
@@ -164,10 +164,10 @@ class LaporanController extends Controller
         $sortDir = $request->input('dir', 'desc');
         $allowedSorts = ['nomor_dokumen', 'nama_dokumen', 'tanggal_dokumen', 'created_at'];
 
-        if (!in_array($sortCol, $allowedSorts)) {
+        if (! in_array($sortCol, $allowedSorts)) {
             $sortCol = 'tanggal_dokumen';
         }
-        if (!in_array($sortDir, ['asc', 'desc'])) {
+        if (! in_array($sortDir, ['asc', 'desc'])) {
             $sortDir = 'desc';
         }
 
@@ -182,17 +182,17 @@ class LaporanController extends Controller
         $parts = [];
 
         if ($request->filled('tanggal_dari') && $request->filled('tanggal_sampai')) {
-            $parts[] = Carbon::parse($request->tanggal_dari)->format('d/m/Y') . ' — ' . Carbon::parse($request->tanggal_sampai)->format('d/m/Y');
+            $parts[] = Carbon::parse($request->tanggal_dari)->format('d/m/Y').' — '.Carbon::parse($request->tanggal_sampai)->format('d/m/Y');
         } elseif ($request->filled('tanggal_dari')) {
-            $parts[] = 'Dari ' . Carbon::parse($request->tanggal_dari)->format('d/m/Y');
+            $parts[] = 'Dari '.Carbon::parse($request->tanggal_dari)->format('d/m/Y');
         } elseif ($request->filled('tanggal_sampai')) {
-            $parts[] = 'Sampai ' . Carbon::parse($request->tanggal_sampai)->format('d/m/Y');
+            $parts[] = 'Sampai '.Carbon::parse($request->tanggal_sampai)->format('d/m/Y');
         } else {
             $parts[] = 'Semua Waktu';
         }
 
         if ($request->filled('search')) {
-            $parts[] = 'Pencarian: "' . $request->search . '"';
+            $parts[] = 'Pencarian: "'.$request->search.'"';
         }
 
         return implode(' · ', $parts);
@@ -205,13 +205,27 @@ class LaporanController extends Controller
     {
         $filters = [];
 
-        if ($request->filled('search'))       $filters[] = "search={$request->search}";
-        if ($request->filled('category_id'))  $filters[] = "category_id={$request->category_id}";
-        if ($request->filled('bank_id'))      $filters[] = "bank_id={$request->bank_id}";
-        if ($request->filled('uploader_id'))  $filters[] = "uploader_id={$request->uploader_id}";
-        if ($request->filled('tanggal_dari')) $filters[] = "dari={$request->tanggal_dari}";
-        if ($request->filled('tanggal_sampai')) $filters[] = "sampai={$request->tanggal_sampai}";
-        if ($request->filled('quick_filter')) $filters[] = "quick_filter={$request->quick_filter}";
+        if ($request->filled('search')) {
+            $filters[] = "search={$request->search}";
+        }
+        if ($request->filled('category_id')) {
+            $filters[] = "category_id={$request->category_id}";
+        }
+        if ($request->filled('bank_id')) {
+            $filters[] = "bank_id={$request->bank_id}";
+        }
+        if ($request->filled('uploader_id')) {
+            $filters[] = "uploader_id={$request->uploader_id}";
+        }
+        if ($request->filled('tanggal_dari')) {
+            $filters[] = "dari={$request->tanggal_dari}";
+        }
+        if ($request->filled('tanggal_sampai')) {
+            $filters[] = "sampai={$request->tanggal_sampai}";
+        }
+        if ($request->filled('quick_filter')) {
+            $filters[] = "quick_filter={$request->quick_filter}";
+        }
 
         return empty($filters) ? 'Tanpa filter' : implode(', ', $filters);
     }
@@ -219,13 +233,13 @@ class LaporanController extends Controller
     private function logActivity(string $jenis, string $detail): void
     {
         ActivityLog::create([
-            'user_id'         => auth()->id(),
-            'role_saat_itu'   => auth()->user()->role,
+            'user_id' => auth()->id(),
+            'role_saat_itu' => auth()->user()->role,
             'jenis_aktivitas' => $jenis,
-            'detail'          => $detail,
-            'ip_address'      => request()->ip(),
-            'user_agent'      => request()->userAgent(),
-            'created_at'      => now(),
+            'detail' => $detail,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'created_at' => now(),
         ]);
     }
 }

@@ -20,15 +20,15 @@ return new class extends Migration
             $table->index('tanggal_dokumen');
             $table->index('created_at');
             $table->index('deleted_at');
-            
+
             // Composite index untuk soft delete queries
             $table->index(['deleted_at', 'created_at']);
         });
-        
+
         Schema::table('users', function (Blueprint $table) {
             $table->index('is_active');
         });
-        
+
         Schema::table('activity_logs', function (Blueprint $table) {
             $table->index('user_id');
             $table->index('jenis_aktivitas');
@@ -52,11 +52,11 @@ return new class extends Migration
             $table->dropIndex(['deleted_at']);
             $table->dropIndex(['deleted_at', 'created_at']);
         });
-        
+
         Schema::table('users', function (Blueprint $table) {
             $table->dropIndex(['is_active']);
         });
-        
+
         Schema::table('activity_logs', function (Blueprint $table) {
             $table->dropIndex(['user_id']);
             $table->dropIndex(['jenis_aktivitas']);

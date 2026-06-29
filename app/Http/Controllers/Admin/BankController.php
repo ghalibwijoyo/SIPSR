@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bank;
 use App\Models\ActivityLog;
+use App\Models\Bank;
 use Illuminate\Http\Request;
 
 class BankController extends Controller
@@ -12,6 +12,7 @@ class BankController extends Controller
     public function index()
     {
         $banks = Bank::withCount('documents')->orderBy('nama')->paginate(20);
+
         return view('admin.banks.index', compact('banks'));
     }
 
@@ -20,7 +21,7 @@ class BankController extends Controller
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255', 'unique:banks'],
         ], [
-            'nama.unique' => 'Bank sudah ada.'
+            'nama.unique' => 'Bank sudah ada.',
         ]);
 
         $bank = Bank::create($validated);
@@ -29,7 +30,7 @@ class BankController extends Controller
             'user_id' => request()->user()->id,
             'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'TAMBAH_BANK',
-            'detail' => 'Menambahkan bank baru: ' . $bank->nama,
+            'detail' => 'Menambahkan bank baru: '.$bank->nama,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'created_at' => now(),
@@ -41,9 +42,9 @@ class BankController extends Controller
     public function update(Request $request, Bank $bank)
     {
         $validated = $request->validate([
-            'nama' => ['required', 'string', 'max:255', 'unique:banks,nama,' . $bank->id],
+            'nama' => ['required', 'string', 'max:255', 'unique:banks,nama,'.$bank->id],
         ], [
-            'nama.unique' => 'Bank sudah ada.'
+            'nama.unique' => 'Bank sudah ada.',
         ]);
 
         $oldName = $bank->nama;
@@ -53,7 +54,7 @@ class BankController extends Controller
             'user_id' => request()->user()->id,
             'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'EDIT_BANK',
-            'detail' => "Memperbarui bank: $oldName menjadi " . $bank->nama,
+            'detail' => "Memperbarui bank: $oldName menjadi ".$bank->nama,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'created_at' => now(),
@@ -75,7 +76,7 @@ class BankController extends Controller
             'user_id' => request()->user()->id,
             'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'HAPUS_BANK',
-            'detail' => 'Menghapus bank: ' . $name,
+            'detail' => 'Menghapus bank: '.$name,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'created_at' => now(),

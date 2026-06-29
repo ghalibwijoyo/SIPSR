@@ -1,45 +1,48 @@
 // Bootstrap JS
-import * as bootstrap from 'bootstrap';
+import * as bootstrap from "bootstrap";
 
 // Make bootstrap available globally
 window.bootstrap = bootstrap;
 
 // ─── Sidebar Toggle (Mobile) ───────────────────────────────
-document.addEventListener('DOMContentLoaded', function () {
-    const sidebar  = document.getElementById('sidebar');
-    const overlay  = document.getElementById('sidebar-overlay');
-    const toggler  = document.getElementById('sidebar-toggler');
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+    const toggler = document.getElementById("sidebar-toggler");
 
     function openSidebar() {
-        sidebar?.classList.add('show');
-        overlay?.classList.add('show');
-        document.body.style.overflow = 'hidden';
+        sidebar?.classList.add("show");
+        overlay?.classList.add("show");
+        document.body.style.overflow = "hidden";
     }
 
     function closeSidebar() {
-        sidebar?.classList.remove('show');
-        overlay?.classList.remove('show');
-        document.body.style.overflow = '';
+        sidebar?.classList.remove("show");
+        overlay?.classList.remove("show");
+        document.body.style.overflow = "";
     }
 
-    toggler?.addEventListener('click', function () {
-        if (sidebar?.classList.contains('show')) {
+    toggler?.addEventListener("click", function () {
+        if (sidebar?.classList.contains("show")) {
             closeSidebar();
         } else {
             openSidebar();
         }
     });
 
-    overlay?.addEventListener('click', closeSidebar);
+    overlay?.addEventListener("click", closeSidebar);
 
     // ─── Global Form Submit Loading State ──────────────────
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function (e) {
+    document.querySelectorAll("form").forEach((form) => {
+        form.addEventListener("submit", function (e) {
             // Jangan jalankan loading jika aksi sudah dibatalkan (misal oleh confirm dialog)
             if (e.defaultPrevented) return;
 
             // Jangan jalankan loading untuk form download/cetak yang tidak me-reload halaman
-            if (this.target === '_blank' || this.classList.contains('no-global-loading')) {
+            if (
+                this.target === "_blank" ||
+                this.classList.contains("no-global-loading")
+            ) {
                 return;
             }
 
@@ -48,11 +51,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 const submitBtn = this.querySelector('button[type="submit"]');
                 if (submitBtn) {
                     // Prevent double submit on btn
-                    if (submitBtn.classList.contains('is-loading')) {
+                    if (submitBtn.classList.contains("is-loading")) {
                         e.preventDefault();
                         return;
                     }
-                    submitBtn.classList.add('is-loading');
+                    submitBtn.classList.add("is-loading");
                 }
             }
         });

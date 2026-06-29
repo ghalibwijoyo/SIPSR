@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class Bank extends Model
 {
@@ -20,11 +20,11 @@ class Bank extends Model
         static::created(function () {
             Cache::forget('banks');
         });
-        
+
         static::updated(function () {
             Cache::forget('banks');
         });
-        
+
         static::deleted(function () {
             Cache::forget('banks');
         });

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\ActivityLog;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -12,6 +12,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::withCount('documents')->orderBy('nama')->paginate(20);
+
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -20,7 +21,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255', 'unique:categories'],
         ], [
-            'nama.unique' => 'Kategori sudah ada.'
+            'nama.unique' => 'Kategori sudah ada.',
         ]);
 
         $category = Category::create($validated);
@@ -29,7 +30,7 @@ class CategoryController extends Controller
             'user_id' => request()->user()->id,
             'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'TAMBAH_KATEGORI',
-            'detail' => 'Menambahkan kategori baru: ' . $category->nama,
+            'detail' => 'Menambahkan kategori baru: '.$category->nama,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'created_at' => now(),
@@ -41,9 +42,9 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'nama' => ['required', 'string', 'max:255', 'unique:categories,nama,' . $category->id],
+            'nama' => ['required', 'string', 'max:255', 'unique:categories,nama,'.$category->id],
         ], [
-            'nama.unique' => 'Kategori sudah ada.'
+            'nama.unique' => 'Kategori sudah ada.',
         ]);
 
         $oldName = $category->nama;
@@ -53,7 +54,7 @@ class CategoryController extends Controller
             'user_id' => request()->user()->id,
             'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'EDIT_KATEGORI',
-            'detail' => "Memperbarui kategori: $oldName menjadi " . $category->nama,
+            'detail' => "Memperbarui kategori: $oldName menjadi ".$category->nama,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'created_at' => now(),
@@ -75,7 +76,7 @@ class CategoryController extends Controller
             'user_id' => request()->user()->id,
             'role_saat_itu' => request()->user()->role,
             'jenis_aktivitas' => 'HAPUS_KATEGORI',
-            'detail' => 'Menghapus kategori: ' . $name,
+            'detail' => 'Menghapus kategori: '.$name,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'created_at' => now(),

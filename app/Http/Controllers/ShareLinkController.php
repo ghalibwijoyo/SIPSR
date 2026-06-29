@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Document;
 use App\Models\DocumentShareLink;
-use App\Models\ActivityLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ShareLinkController extends Controller
 {
@@ -18,11 +18,11 @@ class ShareLinkController extends Controller
     {
         $request->validate([
             'is_permanent' => 'nullable|boolean',
-            'duration_hours' => 'nullable|integer|min:1|max:168'
+            'duration_hours' => 'nullable|integer|min:1|max:168',
         ]);
 
         $expiredAt = null;
-        if (!$request->boolean('is_permanent')) {
+        if (! $request->boolean('is_permanent')) {
             $hours = $request->input('duration_hours', 168); // default 7 hari
             $expiredAt = now()->addHours($hours);
         }
@@ -52,8 +52,8 @@ class ShareLinkController extends Controller
                 'token' => $link->token,
                 'url' => route('share.show', $link->token),
                 'expired_at' => $link->expired_at ? $link->expired_at->format('d M Y H:i') : 'Tanpa batas waktu',
-                'id' => $link->id
-            ]
+                'id' => $link->id,
+            ],
         ]);
     }
 

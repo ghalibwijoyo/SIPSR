@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Laporan Dokumen ArsiPSR</title>
     <style>
         @page {
             margin: 1cm;
         }
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 11px;
             color: #333;
         }
         .header {
             text-align: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #3B6D11;
+            border-bottom: 2px solid #3b6d11;
             padding-bottom: 10px;
         }
         .header h3 {
             margin: 0;
             font-size: 18px;
-            color: #3B6D11;
+            color: #3b6d11;
         }
         .header h4 {
             margin: 5px 0 0 0;
@@ -37,7 +37,8 @@
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-        th, td {
+        th,
+        td {
             border: 1px solid #ddd;
             padding: 6px;
             text-align: left;
@@ -66,49 +67,137 @@
     </style>
 </head>
 <body>
-
     <div class="header">
-        <table style="width: 100%; border: none; margin-bottom: 0;">
+        <table style="width: 100%; border: none; margin-bottom: 0">
             <tr>
-                <td style="width: 15%; border: none; text-align: left; padding: 0; vertical-align: middle;">
-                    @if(extension_loaded('gd') || extension_loaded('imagick'))
-                        <img src="{{ public_path('logo-sm.png') }}" style="width: 70px; height: auto;">
+                <td
+                    style="
+                        width: 15%;
+                        border: none;
+                        text-align: left;
+                        padding: 0;
+                        vertical-align: middle;
+                    "
+                >
+                    @if (extension_loaded('gd') || extension_loaded('imagick'))
+                        <img
+                            src="{{ public_path('logo-sm.png') }}"
+                            style="width: 70px; height: auto"
+                        />
                     @else
-                        <h2 style="color: #3B6D11; margin: 0; font-size: 24px;">ArsiPSR</h2>
+                        <h2 style="color: #3b6d11; margin: 0; font-size: 24px">
+                            ArsiPSR
+                        </h2>
                     @endif
                 </td>
-                <td style="width: 70%; border: none; text-align: center; padding: 0; vertical-align: middle;">
-                    <h3 style="margin: 0; font-size: 18px; color: #3B6D11;">PTPN IV REGIONAL IV</h3>
-                    <h4 style="margin: 5px 0 0 0; font-size: 14px;">Bidang PSR Bagian Tanaman</h4>
-                    <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: bold;">LAPORAN DOKUMEN ARSIP — ArsiPSR</p>
-                    <div style="margin-top: 5px; font-weight: normal; font-size: 11px;">
+                <td
+                    style="
+                        width: 70%;
+                        border: none;
+                        text-align: center;
+                        padding: 0;
+                        vertical-align: middle;
+                    "
+                >
+                    <h3 style="margin: 0; font-size: 18px; color: #3b6d11">
+                        PTPN IV REGIONAL IV
+                    </h3>
+                    <h4 style="margin: 5px 0 0 0; font-size: 14px">
+                        Bidang PSR Bagian Tanaman
+                    </h4>
+                    <p style="
+                            margin: 5px 0 0 0;
+                            font-size: 12px;
+                            font-weight: bold;
+                        ">LAPORAN DOKUMEN ARSIP — ArsiPSR</p>
+                    <div
+                        style="
+                            margin-top: 5px;
+                            font-weight: normal;
+                            font-size: 11px;
+                        "
+                    >
                         Periode: {{ $rentangWaktu }}
                     </div>
                 </td>
-                <td style="width: 15%; border: none;"></td>
+                <td style="width: 15%; border: none"></td>
             </tr>
         </table>
     </div>
 
     <!-- Dashboard Summary Cards -->
-    <table style="width: 100%; border: none; margin-bottom: 20px;">
+    <table style="width: 100%; border: none; margin-bottom: 20px">
         <tr>
-            <td style="width: 33.3%; border: none; padding: 0 5px 0 0;">
-                <div style="background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center;">
-                    <span style="font-size: 11px; color: #666; display: block;">Total Dokumen</span>
-                    <strong style="font-size: 18px; color: #3B6D11; display: block; margin-top: 5px;">{{ number_format($stats['total']) }}</strong>
+            <td style="width: 33.3%; border: none; padding: 0 5px 0 0">
+                <div
+                    style="
+                        background-color: #f8f9fa;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        padding: 10px;
+                        text-align: center;
+                    "
+                >
+                    <span style="font-size: 11px; color: #666; display: block"
+                        >Total Dokumen</span
+                    >
+                    <strong
+                        style="
+                            font-size: 18px;
+                            color: #3b6d11;
+                            display: block;
+                            margin-top: 5px;
+                        "
+                        >{{ number_format($stats['total']) }}</strong
+                    >
                 </div>
             </td>
-            <td style="width: 33.3%; border: none; padding: 0 5px;">
-                <div style="background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center;">
-                    <span style="font-size: 11px; color: #666; display: block;">Kategori Mendominasi</span>
-                    <strong style="font-size: 14px; color: #0dcaf0; display: block; margin-top: 5px;">{{ $stats['top_category'] }}</strong>
+            <td style="width: 33.3%; border: none; padding: 0 5px">
+                <div
+                    style="
+                        background-color: #f8f9fa;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        padding: 10px;
+                        text-align: center;
+                    "
+                >
+                    <span style="font-size: 11px; color: #666; display: block"
+                        >Kategori Mendominasi</span
+                    >
+                    <strong
+                        style="
+                            font-size: 14px;
+                            color: #0dcaf0;
+                            display: block;
+                            margin-top: 5px;
+                        "
+                        >{{ $stats['top_category'] }}</strong
+                    >
                 </div>
             </td>
-            <td style="width: 33.3%; border: none; padding: 0 0 0 5px;">
-                <div style="background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center;">
-                    <span style="font-size: 11px; color: #666; display: block;">Bank Paling Aktif</span>
-                    <strong style="font-size: 14px; color: #198754; display: block; margin-top: 5px;">{{ $stats['top_bank'] }}</strong>
+            <td style="width: 33.3%; border: none; padding: 0 0 0 5px">
+                <div
+                    style="
+                        background-color: #f8f9fa;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        padding: 10px;
+                        text-align: center;
+                    "
+                >
+                    <span style="font-size: 11px; color: #666; display: block"
+                        >Bank Paling Aktif</span
+                    >
+                    <strong
+                        style="
+                            font-size: 14px;
+                            color: #198754;
+                            display: block;
+                            margin-top: 5px;
+                        "
+                        >{{ $stats['top_bank'] }}</strong
+                    >
                 </div>
             </td>
         </tr>
@@ -128,30 +217,38 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($dokumen as $index => $doc)
-            <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
-                <td>{{ $doc->nomor_dokumen }}</td>
-                <td>{{ $doc->nama_dokumen }}</td>
-                <td>{{ $doc->bank->nama ?? '-' }}</td>
-                <td>{{ $doc->category->nama ?? '-' }}</td>
-                <td>{{ $doc->tanggal_dokumen?->format('d/m/Y') }}</td>
-                <td>{{ $doc->uploader->nama_lengkap ?? '-' }}</td>
-                <td>{{ \Illuminate\Support\Str::limit($doc->deskripsi, 50) ?? '-' }}</td>
-            </tr>
+            @forelse ($dokumen as $index => $doc)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>{{ $doc->nomor_dokumen }}</td>
+                    <td>{{ $doc->nama_dokumen }}</td>
+                    <td>{{ $doc->bank->nama ?? '-' }}</td>
+                    <td>{{ $doc->category->nama ?? '-' }}</td>
+                    <td>{{ $doc->tanggal_dokumen?->format('d/m/Y') }}</td>
+                    <td>{{ $doc->uploader->nama_lengkap ?? '-' }}</td>
+                    <td>
+                        {{ \Illuminate\Support\Str::limit($doc->deskripsi, 50) ?? '-' }}
+                    </td>
+                </tr>
             @empty
-            <tr>
-                <td colspan="8" class="text-center">Tidak ada data dokumen pada periode ini.</td>
-            </tr>
+                <tr>
+                    <td colspan="8" class="text-center">
+                        Tidak ada data dokumen pada periode ini.
+                    </td>
+                </tr>
             @endforelse
         </tbody>
     </table>
 
     <div class="footer">
-        <table style="border: none; padding: 0; margin: 0;">
+        <table style="border: none; padding: 0; margin: 0">
             <tr>
-                <td style="border: none; text-align: left; padding: 0;">Dicetak pada: {{ date('d/m/Y H:i') }}</td>
-                <td style="border: none; text-align: right; padding: 0;">Halaman <span class="page-number"></span></td>
+                <td style="border: none; text-align: left; padding: 0">
+                    Dicetak pada: {{ date('d/m/Y H:i') }}
+                </td>
+                <td style="border: none; text-align: right; padding: 0">
+                    Halaman <span class="page-number"></span>
+                </td>
             </tr>
         </table>
     </div>
