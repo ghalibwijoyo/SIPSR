@@ -68,9 +68,9 @@ class DocumentController extends Controller
         $perPage = in_array($request->input('per_page'), [50, 100, 250, 500]) ? (int) $request->per_page : 50;
 
         $documents = $query->paginate($perPage)->withQueryString();
-        $categories = Cache::remember('categories_all', 86400, fn() => Category::orderBy('nama')->get());
-        $banks = Cache::remember('banks_all', 86400, fn() => Bank::orderBy('nama')->get());
-        $users = Cache::remember('users_active', 86400, fn() => User::where('is_active', true)->orderBy('nama_lengkap')->get());
+        $categories = Category::orderBy('nama')->get();
+        $banks = Bank::orderBy('nama')->get();
+        $users = User::where('is_active', true)->orderBy('nama_lengkap')->get();
 
         return view('dokumen.index', compact('documents', 'categories', 'banks', 'users'));
     }
@@ -80,8 +80,8 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        $categories = Cache::remember('categories_all', 86400, fn() => Category::orderBy('nama')->get());
-        $banks = Cache::remember('banks_all', 86400, fn() => Bank::orderBy('nama')->get());
+        $categories = Category::orderBy('nama')->get();
+        $banks = Bank::orderBy('nama')->get();
 
         return view('dokumen.create', compact('categories', 'banks'));
     }
@@ -165,8 +165,8 @@ class DocumentController extends Controller
      */
     public function edit(Document $dokumen)
     {
-        $categories = Cache::remember('categories_all', 86400, fn() => Category::orderBy('nama')->get());
-        $banks = Cache::remember('banks_all', 86400, fn() => Bank::orderBy('nama')->get());
+        $categories = Category::orderBy('nama')->get();
+        $banks = Bank::orderBy('nama')->get();
 
         return view('dokumen.edit', compact('dokumen', 'categories', 'banks'));
     }
