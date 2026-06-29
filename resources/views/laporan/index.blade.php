@@ -373,14 +373,14 @@
         <div
             class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center flex-wrap gap-2"
         >
-            <div>
-                <h6 class="m-0 font-weight-bold text-dark d-inline-block">
-                    Pratinjau Data
-                </h6>
-                <span class="badge bg-success ms-2 px-2 py-1"
-                    >Ditemukan {{ $totalDokumen }} dokumen</span
+            <h5 class="card-title mb-0 fw-semibold">
+                <i class="bi bi-table me-2 text-sipsr-primary"></i>
+                Pratinjau Data
+                <span
+                    class="badge bg-secondary ms-1"
+                    >{{ $totalDokumen }}</span
                 >
-            </div>
+            </h5>
 
             @if ($totalDokumen > 0)
                 <div class="d-flex align-items-center gap-3 flex-wrap">
