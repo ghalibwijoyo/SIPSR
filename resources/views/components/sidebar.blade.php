@@ -8,7 +8,7 @@
         <div class="d-flex align-items-center">
             <div class="sidebar-logo me-2 bg-white" style="box-shadow: none">
                 <img
-                    src="{{ asset('logo-sm.png') }}"
+                    src="{{ asset('logo.png') }}"
                     alt="ArsiPSR Logo"
                     style="height: 28px; width: auto; object-fit: contain"
                 />

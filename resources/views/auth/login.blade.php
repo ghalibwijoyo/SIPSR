@@ -19,7 +19,7 @@
                         style="background: transparent; box-shadow: none"
                     >
                         <img
-                            src="{{ asset('logo-sm.png') }}"
+                            src="{{ asset('logo.png') }}"
                             alt="ArsiPSR Logo"
                             style="
                                 height: 64px;

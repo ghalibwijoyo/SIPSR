@@ -12,6 +12,7 @@
     />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>@yield ('title', 'ArsiPSR')</title>
+    <link rel="icon" href="{{ asset('logo.png') }}" type="image/png" />
     @vite (['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>

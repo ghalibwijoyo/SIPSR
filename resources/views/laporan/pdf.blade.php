@@ -81,7 +81,7 @@
                 >
                     @if (extension_loaded('gd') || extension_loaded('imagick'))
                         <img
-                            src="{{ public_path('logo-sm.png') }}"
+                            src="{{ public_path('logo.png') }}"
                             style="width: 70px; height: auto"
                         />
                     @else
