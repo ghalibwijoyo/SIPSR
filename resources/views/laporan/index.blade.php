@@ -208,7 +208,7 @@
             </div>
             
             <div class="d-flex gap-2">
-                <form action="{{ route('laporan.export.excel') }}" method="GET" class="d-inline">
+                <form action="{{ route('laporan.export.excel') }}" method="GET" class="d-inline no-global-loading">
                     <input type="hidden" name="search" value="{{ request('search') }}">
                     <input type="hidden" name="category_id" value="{{ request('category_id') }}">
                     <input type="hidden" name="bank_id" value="{{ request('bank_id') }}">
@@ -222,7 +222,7 @@
                     </button>
                 </form>
                 
-                <form action="{{ route('laporan.export.pdf') }}" method="GET" class="d-inline">
+                <form action="{{ route('laporan.export.pdf') }}" method="GET" class="d-inline no-global-loading">
                     <input type="hidden" name="search" value="{{ request('search') }}">
                     <input type="hidden" name="category_id" value="{{ request('category_id') }}">
                     <input type="hidden" name="bank_id" value="{{ request('bank_id') }}">

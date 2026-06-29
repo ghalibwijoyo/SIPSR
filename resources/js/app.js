@@ -38,6 +38,11 @@ document.addEventListener('DOMContentLoaded', function () {
             // Jangan jalankan loading jika aksi sudah dibatalkan (misal oleh confirm dialog)
             if (e.defaultPrevented) return;
 
+            // Jangan jalankan loading untuk form download/cetak yang tidak me-reload halaman
+            if (this.target === '_blank' || this.classList.contains('no-global-loading')) {
+                return;
+            }
+
             // Jika form valid, disable tombol submit dan tampilkan loading
             if (this.checkValidity()) {
                 const submitBtn = this.querySelector('button[type="submit"]');

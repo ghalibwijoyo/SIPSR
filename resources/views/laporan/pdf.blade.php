@@ -68,13 +68,51 @@
 <body>
 
     <div class="header">
-        <h3>PTPN IV REGIONAL IV</h3>
-        <h4>Bidang PSR Bagian Tanaman</h4>
-        <p>LAPORAN DOKUMEN ARSIP — ArsiPSR</p>
-        <div style="margin-top: 5px; font-weight: normal; font-size: 11px;">
-            Periode: {{ $rentangWaktu }}
-        </div>
+        <table style="width: 100%; border: none; margin-bottom: 0;">
+            <tr>
+                <td style="width: 15%; border: none; text-align: left; padding: 0; vertical-align: middle;">
+                    @if(extension_loaded('gd') || extension_loaded('imagick'))
+                        <img src="{{ public_path('logo-sm.png') }}" style="width: 70px; height: auto;">
+                    @else
+                        <h2 style="color: #3B6D11; margin: 0; font-size: 24px;">ArsiPSR</h2>
+                    @endif
+                </td>
+                <td style="width: 70%; border: none; text-align: center; padding: 0; vertical-align: middle;">
+                    <h3 style="margin: 0; font-size: 18px; color: #3B6D11;">PTPN IV REGIONAL IV</h3>
+                    <h4 style="margin: 5px 0 0 0; font-size: 14px;">Bidang PSR Bagian Tanaman</h4>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: bold;">LAPORAN DOKUMEN ARSIP — ArsiPSR</p>
+                    <div style="margin-top: 5px; font-weight: normal; font-size: 11px;">
+                        Periode: {{ $rentangWaktu }}
+                    </div>
+                </td>
+                <td style="width: 15%; border: none;"></td>
+            </tr>
+        </table>
     </div>
+
+    <!-- Dashboard Summary Cards -->
+    <table style="width: 100%; border: none; margin-bottom: 20px;">
+        <tr>
+            <td style="width: 33.3%; border: none; padding: 0 5px 0 0;">
+                <div style="background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center;">
+                    <span style="font-size: 11px; color: #666; display: block;">Total Dokumen</span>
+                    <strong style="font-size: 18px; color: #3B6D11; display: block; margin-top: 5px;">{{ number_format($stats['total']) }}</strong>
+                </div>
+            </td>
+            <td style="width: 33.3%; border: none; padding: 0 5px;">
+                <div style="background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center;">
+                    <span style="font-size: 11px; color: #666; display: block;">Kategori Mendominasi</span>
+                    <strong style="font-size: 14px; color: #0dcaf0; display: block; margin-top: 5px;">{{ $stats['top_category'] }}</strong>
+                </div>
+            </td>
+            <td style="width: 33.3%; border: none; padding: 0 0 0 5px;">
+                <div style="background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center;">
+                    <span style="font-size: 11px; color: #666; display: block;">Bank Paling Aktif</span>
+                    <strong style="font-size: 14px; color: #198754; display: block; margin-top: 5px;">{{ $stats['top_bank'] }}</strong>
+                </div>
+            </td>
+        </tr>
+    </table>
 
     <table>
         <thead>

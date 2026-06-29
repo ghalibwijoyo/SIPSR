@@ -99,11 +99,17 @@ class LaporanController extends Controller
     {
         $dokumen = $this->getDokumenByFilter($request);
         $rentangWaktu = $this->getRentangWaktuText($request);
+        
+        $stats = [
+            'total' => $dokumen->count(),
+            'top_category' => $dokumen->groupBy('category_id')->sortByDesc(fn($g) => $g->count())->first()?->first()?->category?->nama ?? '-',
+            'top_bank' => $dokumen->groupBy('bank_id')->sortByDesc(fn($g) => $g->count())->first()?->first()?->bank?->nama ?? '-',
+        ];
 
         $filterDesc = $this->getFilterDescription($request);
         $this->logActivity('EXPORT_PDF', "Export laporan dokumen ke PDF ({$filterDesc})");
 
-        $pdf = Pdf::loadView('laporan.pdf', compact('dokumen', 'rentangWaktu'))
+        $pdf = Pdf::loadView('laporan.pdf', compact('dokumen', 'rentangWaktu', 'stats'))
                   ->setPaper('a4', 'landscape');
                   
         return $pdf->download('Laporan_Dokumen_SIPSR_' . date('Y-m-d') . '.pdf');
@@ -117,10 +123,16 @@ class LaporanController extends Controller
         $dokumen = $this->getDokumenByFilter($request);
         $rentangWaktu = $this->getRentangWaktuText($request);
 
+        $stats = [
+            'total' => $dokumen->count(),
+            'top_category' => $dokumen->groupBy('category_id')->sortByDesc(fn($g) => $g->count())->first()?->first()?->category?->nama ?? '-',
+            'top_bank' => $dokumen->groupBy('bank_id')->sortByDesc(fn($g) => $g->count())->first()?->first()?->bank?->nama ?? '-',
+        ];
+
         $filterDesc = $this->getFilterDescription($request);
         $this->logActivity('CETAK_PDF', "Mencetak laporan dokumen ({$filterDesc})");
 
-        $pdf = Pdf::loadView('laporan.pdf', compact('dokumen', 'rentangWaktu'))
+        $pdf = Pdf::loadView('laporan.pdf', compact('dokumen', 'rentangWaktu', 'stats'))
                   ->setPaper('a4', 'landscape');
                   
         return $pdf->stream('Laporan_Dokumen_SIPSR_' . date('Y-m-d') . '.pdf');
