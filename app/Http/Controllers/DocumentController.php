@@ -117,11 +117,11 @@ class DocumentController extends Controller
         $now = Carbon::now();
         $folder = 'uploads/'.$now->format('Y').'/'.$now->format('m');
         $origName = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
+        $extension = $file->extension();
         $baseName = pathinfo($origName, PATHINFO_FILENAME);
 
         // Auto-rename jika file sudah ada
-        $fileName = $origName;
+        $fileName = $baseName . '.' . $extension;
         $counter = 1;
         while (Storage::disk('local')->exists($folder.'/'.$fileName)) {
             $fileName = $baseName.'_'.$counter.'.'.$extension;
@@ -177,12 +177,14 @@ class DocumentController extends Controller
     public function update(Request $request, Document $dokumen)
     {
         $validated = $request->validate([
-            'nomor_dokumen' => 'required|string|max:255',
+            'nomor_dokumen' => 'required|string|max:255|unique:documents,nomor_dokumen,' . $dokumen->id,
             'nama_dokumen' => 'required|string|max:255',
             'bank_id' => 'nullable|exists:banks,id',
             'category_id' => 'required|exists:categories,id',
             'tanggal_dokumen' => 'required|date',
             'deskripsi' => 'nullable|string',
+        ], [
+            'nomor_dokumen.unique' => 'Nomor ini sudah digunakan dokumen lain.',
         ]);
 
         // ── Track changes per field ─────────────────────────
