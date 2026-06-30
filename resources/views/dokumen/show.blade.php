@@ -85,7 +85,7 @@
                             >
                                 <div>
                                     <i
-                                        class="bi bi-file-earmark fs-1 text-primary d-block mb-3"
+                                        class="bi {{ $dokumen->getIconClass() }} fs-1 d-block mb-3"
                                     ></i>
                                     <p class="mb-1 fw-semibold">Preview tidak tersedia</p>
                                     <p class="small mb-3">Format file ini tidak dapat ditampilkan langsung di browser.</p>
