@@ -17,7 +17,6 @@ return new class extends Migration
             $table->text('deskripsi')->nullable();
             $table->string('file_path');
             $table->string('file_name');
-            $table->longText('hasil_ocr')->nullable();
             $table->foreignUuid('uploader_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('updated_by_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('deleted_at')->nullable();

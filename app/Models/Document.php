@@ -22,7 +22,6 @@ class Document extends Model
         'deskripsi',
         'file_path',
         'file_name',
-        'hasil_ocr',
         'uploader_id',
         'updated_by_id',
         'deleted_by_id',
