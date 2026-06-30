@@ -173,21 +173,24 @@ class RecycleBinController extends Controller
             'document_ids.*' => 'exists:documents,id',
         ]);
 
-        $documents = Document::onlyTrashed()->whereIn('id', $request->document_ids)->get();
-        $count = 0;
-
-        foreach ($documents as $doc) {
-            $doc->restore();
-            $doc->update(['deleted_by_id' => null]);
-            $count++;
-        }
+        $documents = Document::onlyTrashed()->whereIn('id', $request->document_ids)->get(['id', 'nama_dokumen']);
+        $count = $documents->count();
 
         if ($count > 0) {
+            $docNames = $documents->pluck('nama_dokumen')->toArray();
+            $docNamesString = implode(', ', $docNames);
+
+            // Bulk Update (1 Query instead of N*2)
+            Document::onlyTrashed()->whereIn('id', $request->document_ids)->update([
+                'deleted_by_id' => null,
+                'deleted_at' => null,
+            ]);
+
             ActivityLog::create([
                 'user_id' => Auth::id(),
                 'role_saat_itu' => Auth::user()->role,
                 'jenis_aktivitas' => 'RESTORE_DOKUMEN',
-                'detail' => "Restore Massal: {$count} dokumen",
+                'detail' => "Restore Massal {$count} dokumen: {$docNamesString}",
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
                 'created_at' => now(),
@@ -207,21 +210,24 @@ class RecycleBinController extends Controller
 
         $documents = Document::onlyTrashed()->whereIn('id', $request->document_ids)->get();
         $count = 0;
+        $docNames = [];
 
         foreach ($documents as $doc) {
             if (Storage::disk('local')->exists($doc->file_path)) {
                 Storage::disk('local')->delete($doc->file_path);
             }
+            $docNames[] = $doc->nama_dokumen;
             $doc->forceDelete();
             $count++;
         }
 
         if ($count > 0) {
+            $docNamesString = implode(', ', $docNames);
             ActivityLog::create([
                 'user_id' => Auth::id(),
                 'role_saat_itu' => Auth::user()->role,
                 'jenis_aktivitas' => 'HAPUS_PERMANEN',
-                'detail' => "Hapus Permanen Massal: {$count} dokumen",
+                'detail' => "Hapus Permanen Massal {$count} dokumen: {$docNamesString}",
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
                 'created_at' => now(),

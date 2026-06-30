@@ -289,17 +289,23 @@ class DocumentController extends Controller
             'ids.*' => 'exists:documents,id',
         ]);
 
-        $documents = Document::whereIn('id', $request->ids)->get();
-        foreach ($documents as $dokumen) {
-            $dokumen->update([
-                'deleted_by_id' => auth()->id(),
-            ]);
-            $dokumen->delete();
-            $this->logActivity('HAPUS_DOKUMEN', 'Menghapus dokumen massal: '.$dokumen->nama_dokumen, $dokumen->id);
+        $documents = Document::whereIn('id', $request->ids)->get(['id', 'nama_dokumen']);
+        $count = $documents->count();
+        
+        if ($count > 0) {
+            $docNames = $documents->pluck('nama_dokumen')->toArray();
+            $docNamesString = implode(', ', $docNames);
+
+            // Bulk Update & Delete (2 Queries instead of N*3)
+            Document::whereIn('id', $request->ids)->update(['deleted_by_id' => auth()->id()]);
+            Document::whereIn('id', $request->ids)->delete();
+
+            // Single Global Log
+            $this->logActivity('HAPUS_MASSAL', "Menghapus massal {$count} dokumen: {$docNamesString}");
         }
 
         return redirect()->route('dokumen.index')
-            ->with('success', count($documents).' dokumen berhasil dipindahkan ke Recycle Bin.');
+            ->with('success', "{$count} dokumen berhasil dipindahkan ke Recycle Bin.");
     }
 
     /**
@@ -323,16 +329,26 @@ class DocumentController extends Controller
         $zipFilePath = sys_get_temp_dir().DIRECTORY_SEPARATOR.$zipFileName;
 
         if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
+            $docNames = [];
+            $count = 0;
+            
             foreach ($documents as $dokumen) {
                 if (\Storage::disk('local')->exists($dokumen->file_path)) {
                     $absolutePath = \Storage::disk('local')->path($dokumen->file_path);
                     $safeName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $dokumen->nomor_dokumen).'_'.$dokumen->file_name;
                     $zip->addFile($absolutePath, $safeName);
-
-                    $this->logActivity('DOWNLOAD_DOKUMEN', 'Mengunduh dokumen massal (ZIP): '.$dokumen->nama_dokumen, $dokumen->id);
+                    
+                    $docNames[] = $dokumen->nama_dokumen;
+                    $count++;
                 }
             }
             $zip->close();
+            
+            if ($count > 0) {
+                $docNamesString = implode(', ', $docNames);
+                $this->logActivity('DOWNLOAD_DOKUMEN', "Mengunduh massal {$count} dokumen (ZIP): {$docNamesString}");
+            }
+            
         } else {
             return back()->with('error', 'Gagal membuat file ZIP.');
         }
