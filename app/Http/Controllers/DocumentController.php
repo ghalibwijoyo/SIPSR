@@ -318,9 +318,9 @@ class DocumentController extends Controller
         }
 
         $zip = new \ZipArchive;
-        $zipFileName = 'SIPSR_Bulk_Download_'.now()->format('Ymd_His').'.zip';
-        // Simpan sementara di storage/app/public
-        $zipFilePath = storage_path('app/public/'.$zipFileName);
+        $zipFileName = 'SIPSR_Bulk_Download_'.now()->format('Ymd_His').'_'.uniqid().'.zip';
+        // Simpan sementara di temporary folder sistem (lebih aman dari penumpukan junk file)
+        $zipFilePath = sys_get_temp_dir().DIRECTORY_SEPARATOR.$zipFileName;
 
         if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
             foreach ($documents as $dokumen) {
