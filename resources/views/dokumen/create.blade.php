@@ -256,11 +256,11 @@
                                     class="form-control @error('file') is-invalid @enderror"
                                     id="file"
                                     name="file"
-                                    accept=".pdf,.doc,.docx"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.zip,.rar"
                                     required
                                 />
                                 <div class="form-text">
-                                    Format: PDF, DOC, DOCX · Maks: 500 MB
+                                    Format: PDF, Office, Gambar, Arsip · Maks: 500 MB
                                 </div>
                                 @error ('file')
                                     <div class="invalid-feedback">

@@ -61,7 +61,12 @@
                 </div>
                 <div class="collapse show d-lg-block" id="previewCollapse">
                     <div class="card-body p-0">
-                        @if (Str::endsWith($dokumen->file_name, '.pdf'))
+                        @php
+                            $ext = strtolower(pathinfo($dokumen->file_name, PATHINFO_EXTENSION));
+                            $isImage = in_array($ext, ['jpg', 'jpeg', 'png']);
+                            $isPdf = $ext === 'pdf';
+                        @endphp
+                        @if ($isPdf)
                             <iframe
                                 src="{{ route('dokumen.preview', $dokumen) }}"
                                 class="w-100 border-0"
@@ -69,6 +74,10 @@
                                 title="Preview {{ $dokumen->nama_dokumen }}"
                                 id="pdf-preview"
                             ></iframe>
+                        @elseif ($isImage)
+                            <div class="d-flex justify-content-center align-items-center bg-light" style="height: calc(100vh - 110px); overflow: auto;">
+                                <img src="{{ route('dokumen.preview', $dokumen) }}" alt="{{ $dokumen->nama_dokumen }}" class="img-fluid" style="max-height: 100%;">
+                            </div>
                         @else
                             <div
                                 class="text-center py-5 text-muted d-flex flex-column justify-content-center"
@@ -76,10 +85,10 @@
                             >
                                 <div>
                                     <i
-                                        class="bi bi-file-earmark-word fs-1 text-primary d-block mb-3"
+                                        class="bi bi-file-earmark fs-1 text-primary d-block mb-3"
                                     ></i>
                                     <p class="mb-1 fw-semibold">Preview tidak tersedia</p>
-                                    <p class="small mb-3">Format DOC/DOCX tidak dapat ditampilkan langsung di browser.</p>
+                                    <p class="small mb-3">Format file ini tidak dapat ditampilkan langsung di browser.</p>
                                     <a
                                         href="{{ route('dokumen.download', $dokumen) }}"
                                         class="btn btn-success btn-sm"

@@ -98,7 +98,7 @@ class DocumentController extends Controller
             'category_id' => 'required|exists:categories,id',
             'tanggal_dokumen' => 'required|date',
             'deskripsi' => 'nullable|string',
-            'file' => 'required|mimes:pdf,doc,docx|max:512000',
+            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,zip,rar|max:512000',
         ]);
 
         // ── Cek nomor duplikat ──────────────────────────────
