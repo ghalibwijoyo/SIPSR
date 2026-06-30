@@ -42,9 +42,14 @@
                         <i class="bi bi-link-45deg me-1"></i>Tautan Berbagi
                         ArsiPSR
                     </h1>
-                    <span class="share-badge"
-                        ><i class="bi bi-clock me-1"></i>Berlaku sampai {{ $link->expired_at->format('d M Y H:i') }}</span
-                    >
+                    <span class="share-badge">
+                        <i class="bi bi-clock me-1"></i>
+                        @if($link->expired_at)
+                            Berlaku sampai {{ $link->expired_at->format('d M Y H:i') }}
+                        @else
+                            Tanpa batas waktu (Permanen)
+                        @endif
+                    </span>
                 </div>
                 <span
                     class="badge bg-white text-dark"

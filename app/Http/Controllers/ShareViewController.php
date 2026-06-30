@@ -30,7 +30,7 @@ class ShareViewController extends Controller
         }
 
         // Cek expired
-        if ($link->expired_at < now()) {
+        if ($link->expired_at !== null && $link->expired_at < now()) {
             return view('share.invalid', [
                 'message' => 'Tautan ini telah kedaluwarsa.',
             ]);
@@ -107,7 +107,7 @@ class ShareViewController extends Controller
         if ($link->revoked_at !== null) {
             return view('share.invalid', ['message' => 'Tautan ini telah dicabut oleh pemiliknya.']);
         }
-        if ($link->expired_at < now()) {
+        if ($link->expired_at !== null && $link->expired_at < now()) {
             return view('share.invalid', ['message' => 'Tautan ini telah kedaluwarsa.']);
         }
         if (! $link->document || $link->document->trashed()) {
