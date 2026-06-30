@@ -93,6 +93,9 @@ Route::middleware(['auth', 'role:ADMIN'])->group(function () {
         Route::delete('/{id}', 'destroy')->name('destroy');
     });
 
+    // Activity Log (Admin only actions)
+    Route::delete('/admin/aktivitas/empty', [ActivityLogController::class, 'empty'])->name('admin.aktivitas.empty');
+
     // User Management
     Route::controller(UserController::class)->prefix('admin/users')->name('users.')->group(function () {
         Route::patch('/{user}/toggle-active', 'toggleActive')->name('toggle-active');
