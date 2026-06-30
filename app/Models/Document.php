@@ -181,4 +181,22 @@ class Document extends Model
             ['Content-Type' => $mimeType]
         );
     }
+
+    /**
+     * Get the Bootstrap Icon class based on the file extension.
+     */
+    public function getIconClass(): string
+    {
+        $ext = strtolower(pathinfo($this->file_name, PATHINFO_EXTENSION));
+
+        return match (true) {
+            $ext === 'pdf' => 'bi-file-earmark-pdf text-danger',
+            in_array($ext, ['doc', 'docx']) => 'bi-file-earmark-word text-primary',
+            in_array($ext, ['xls', 'xlsx']) => 'bi-file-earmark-excel text-success',
+            in_array($ext, ['ppt', 'pptx']) => 'bi-file-earmark-play text-warning',
+            in_array($ext, ['jpg', 'jpeg', 'png']) => 'bi-file-earmark-image text-info',
+            in_array($ext, ['zip', 'rar']) => 'bi-file-earmark-zip text-secondary',
+            default => 'bi-file-earmark-text text-secondary',
+        };
+    }
 }

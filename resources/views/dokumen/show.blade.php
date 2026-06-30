@@ -183,7 +183,7 @@
                                 </td>
                                 <td>
                                     <i
-                                        class="bi bi-file-earmark-{{ Str::endsWith($dokumen->file_name, '.pdf') ? 'pdf text-danger' : 'word text-primary' }} me-1"
+                                        class="bi {{ $dokumen->getIconClass() }} me-1"
                                     ></i>
                                     {{ $dokumen->file_name }}
                                 </td>

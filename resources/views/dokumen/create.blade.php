@@ -332,10 +332,15 @@
                     sizeEl.textContent =
                         (file.size / 1024 / 1024).toFixed(2) + " MB";
 
-                    iconEl.className =
-                        ext === "pdf"
-                            ? "bi bi-file-earmark-pdf text-danger fs-4"
-                            : "bi bi-file-earmark-word text-primary fs-4";
+                    let iconClass = "bi-file-earmark-text text-secondary";
+                    if (ext === "pdf") iconClass = "bi-file-earmark-pdf text-danger";
+                    else if (["doc", "docx"].includes(ext)) iconClass = "bi-file-earmark-word text-primary";
+                    else if (["xls", "xlsx"].includes(ext)) iconClass = "bi-file-earmark-excel text-success";
+                    else if (["ppt", "pptx"].includes(ext)) iconClass = "bi-file-earmark-play text-warning";
+                    else if (["jpg", "jpeg", "png"].includes(ext)) iconClass = "bi-file-earmark-image text-info";
+                    else if (["zip", "rar"].includes(ext)) iconClass = "bi-file-earmark-zip text-secondary";
+
+                    iconEl.className = "bi " + iconClass + " fs-4";
 
                     info.classList.remove("d-none");
                 } else {
