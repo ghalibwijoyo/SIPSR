@@ -153,4 +153,32 @@ class Document extends Model
     {
         return $this->hasMany(ActivityLog::class);
     }
+
+    // ─── File Response Helpers ─────────────────────────────
+
+    /**
+     * Mengembalikan response untuk download file dokumen ini.
+     */
+    public function getDownloadResponse()
+    {
+        if (! \Illuminate\Support\Facades\Storage::disk('local')->exists($this->file_path)) {
+            return false;
+        }
+        return \Illuminate\Support\Facades\Storage::disk('local')->download($this->file_path, $this->file_name);
+    }
+
+    /**
+     * Mengembalikan response untuk preview (stream) file dokumen ini.
+     */
+    public function getPreviewResponse()
+    {
+        if (! \Illuminate\Support\Facades\Storage::disk('local')->exists($this->file_path)) {
+            return false;
+        }
+        $mimeType = \Illuminate\Support\Facades\Storage::disk('local')->mimeType($this->file_path);
+        return response()->file(
+            \Illuminate\Support\Facades\Storage::disk('local')->path($this->file_path),
+            ['Content-Type' => $mimeType]
+        );
+    }
 }

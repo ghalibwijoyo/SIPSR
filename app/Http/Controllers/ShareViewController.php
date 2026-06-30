@@ -34,15 +34,15 @@ class ShareViewController extends Controller
             return $link;
         }
 
-        $dokumen = $link->document;
-
-        if (! Storage::disk('local')->exists($dokumen->file_path)) {
+        $response = $link->document->getDownloadResponse();
+        
+        if (! $response) {
             return view('share.invalid', [
                 'message' => 'File tidak ditemukan di server.',
             ]);
         }
 
-        return Storage::disk('local')->download($dokumen->file_path, $dokumen->file_name);
+        return $response;
     }
 
     /**
@@ -55,18 +55,13 @@ class ShareViewController extends Controller
             abort(404, 'Tautan tidak valid.');
         }
 
-        $dokumen = $link->document;
-
-        if (! Storage::disk('local')->exists($dokumen->file_path)) {
+        $response = $link->document->getPreviewResponse();
+        
+        if (! $response) {
             abort(404, 'File tidak ditemukan.');
         }
 
-        $mimeType = Storage::disk('local')->mimeType($dokumen->file_path);
-
-        return response()->file(
-            Storage::disk('local')->path($dokumen->file_path),
-            ['Content-Type' => $mimeType]
-        );
+        return $response;
     }
 
     /**

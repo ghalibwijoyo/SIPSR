@@ -361,14 +361,15 @@ class DocumentController extends Controller
      */
     public function download(Document $dokumen)
     {
-        if (! Storage::disk('local')->exists($dokumen->file_path)) {
+        $response = $dokumen->getDownloadResponse();
+        if (! $response) {
             return back()->with('error', 'File tidak ditemukan di server.');
         }
 
         // ── Activity Log ────────────────────────────────────
         $this->logActivity('DOWNLOAD_DOKUMEN', 'Mengunduh dokumen: '.$dokumen->nama_dokumen, $dokumen->id);
 
-        return Storage::disk('local')->download($dokumen->file_path, $dokumen->file_name);
+        return $response;
     }
 
     /**
@@ -376,18 +377,14 @@ class DocumentController extends Controller
      */
     public function preview(Document $dokumen)
     {
-        if (! Storage::disk('local')->exists($dokumen->file_path)) {
+        $response = $dokumen->getPreviewResponse();
+        if (! $response) {
             abort(404, 'File tidak ditemukan.');
         }
 
         $this->logActivity('PREVIEW_DOKUMEN', 'Melihat (preview) dokumen: '.$dokumen->nama_dokumen, $dokumen->id);
 
-        $mimeType = Storage::disk('local')->mimeType($dokumen->file_path);
-
-        return response()->file(
-            Storage::disk('local')->path($dokumen->file_path),
-            ['Content-Type' => $mimeType]
-        );
+        return $response;
     }
 
     // ─── Helper: Activity Log ──────────────────────────────
