@@ -26,15 +26,7 @@ class CategoryController extends Controller
 
         $category = Category::create($validated);
 
-        ActivityLog::create([
-            'user_id' => request()->user()->id,
-            'role_saat_itu' => request()->user()->role,
-            'jenis_aktivitas' => 'TAMBAH_KATEGORI',
-            'detail' => 'Menambahkan kategori baru: '.$category->nama,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('TAMBAH_KATEGORI', 'Menambahkan kategori baru: '.$category->nama);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
@@ -50,15 +42,7 @@ class CategoryController extends Controller
         $oldName = $category->nama;
         $category->update($validated);
 
-        ActivityLog::create([
-            'user_id' => request()->user()->id,
-            'role_saat_itu' => request()->user()->role,
-            'jenis_aktivitas' => 'EDIT_KATEGORI',
-            'detail' => "Memperbarui kategori: $oldName menjadi ".$category->nama,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('EDIT_KATEGORI', "Memperbarui kategori: $oldName menjadi ".$category->nama);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui.');
     }
@@ -72,15 +56,7 @@ class CategoryController extends Controller
         $name = $category->nama;
         $category->delete();
 
-        ActivityLog::create([
-            'user_id' => request()->user()->id,
-            'role_saat_itu' => request()->user()->role,
-            'jenis_aktivitas' => 'HAPUS_KATEGORI',
-            'detail' => 'Menghapus kategori: '.$name,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('HAPUS_KATEGORI', 'Menghapus kategori: '.$name);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus.');
     }

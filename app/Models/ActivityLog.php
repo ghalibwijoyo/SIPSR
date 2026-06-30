@@ -30,6 +30,23 @@ class ActivityLog extends Model
         ];
     }
 
+    /**
+     * Helper statis untuk mencatat log aktivitas dengan cepat.
+     */
+    public static function log(string $jenis, string $detail, ?string $documentId = null): self
+    {
+        return self::create([
+            'user_id' => auth()->id(),
+            'role_saat_itu' => auth()->check() ? auth()->user()->role : null,
+            'jenis_aktivitas' => $jenis,
+            'detail' => $detail,
+            'document_id' => $documentId,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'created_at' => now(),
+        ]);
+    }
+
     // ─── Scopes ────────────────────────────────────────────
 
     public function scopeWithEagerLoading($query)

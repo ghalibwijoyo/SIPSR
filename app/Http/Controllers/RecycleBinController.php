@@ -94,16 +94,7 @@ class RecycleBinController extends Controller
         ]);
 
         // Activity log
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'role_saat_itu' => Auth::user()->role,
-            'jenis_aktivitas' => 'RESTORE_DOKUMEN',
-            'detail' => "Restore: {$document->nama_dokumen}",
-            'document_id' => $document->id,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('RESTORE_DOKUMEN', "Restore: {$document->nama_dokumen}", $document->id);
 
         return redirect()->back()->with('success', 'Dokumen berhasil dipulihkan.');
     }
@@ -124,16 +115,7 @@ class RecycleBinController extends Controller
         $document->forceDelete();
 
         // Activity log
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'role_saat_itu' => Auth::user()->role,
-            'jenis_aktivitas' => 'HAPUS_PERMANEN',
-            'detail' => "Hapus Permanen: {$namaDokumen}",
-            'document_id' => $documentId,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('HAPUS_PERMANEN', "Hapus Permanen: {$namaDokumen}", $documentId);
 
         return redirect()->back()->with('success', 'Dokumen berhasil dihapus permanen.');
     }
@@ -152,15 +134,7 @@ class RecycleBinController extends Controller
         }
 
         // Activity log
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'role_saat_itu' => Auth::user()->role,
-            'jenis_aktivitas' => 'KOSONGKAN_RECYCLE_BIN',
-            'detail' => "Kosongkan Recycle Bin: {$count} dokumen",
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('KOSONGKAN_RECYCLE_BIN', "Kosongkan Recycle Bin: {$count} dokumen");
 
         return redirect()->back()->with('success', 'Recycle Bin berhasil dikosongkan.');
     }
@@ -186,15 +160,7 @@ class RecycleBinController extends Controller
                 'deleted_at' => null,
             ]);
 
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'role_saat_itu' => Auth::user()->role,
-                'jenis_aktivitas' => 'RESTORE_DOKUMEN',
-                'detail' => "Restore Massal {$count} dokumen: {$docNamesString}",
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'created_at' => now(),
-            ]);
+            ActivityLog::log('RESTORE_DOKUMEN', "Restore Massal {$count} dokumen: {$docNamesString}");
         }
 
         return redirect()->back()->with('success', "{$count} dokumen berhasil dipulihkan.");
@@ -223,15 +189,7 @@ class RecycleBinController extends Controller
 
         if ($count > 0) {
             $docNamesString = implode(', ', $docNames);
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'role_saat_itu' => Auth::user()->role,
-                'jenis_aktivitas' => 'HAPUS_PERMANEN',
-                'detail' => "Hapus Permanen Massal {$count} dokumen: {$docNamesString}",
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'created_at' => now(),
-            ]);
+            ActivityLog::log('HAPUS_PERMANEN', "Hapus Permanen Massal {$count} dokumen: {$docNamesString}");
         }
 
         return redirect()->back()->with('success', "{$count} dokumen berhasil dihapus permanen.");

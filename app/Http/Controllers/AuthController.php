@@ -29,6 +29,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             // Cek apakah akun aktif
             if (! Auth::user()->is_active) {
+                ActivityLog::log('LOGIN_DITOLAK', 'Mencoba login namun akun berstatus nonaktif');
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
@@ -41,15 +42,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             // Activity log
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'role_saat_itu' => Auth::user()->role,
-                'jenis_aktivitas' => 'LOGIN_BERHASIL',
-                'detail' => 'User berhasil login ke sistem',
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'created_at' => now(),
-            ]);
+            ActivityLog::log('LOGIN_BERHASIL', 'User berhasil login ke sistem');
 
             return redirect()->intended('/dashboard')->with('login_success', true);
         }
@@ -64,6 +57,10 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        if (Auth::check()) {
+            ActivityLog::log('LOGOUT_BERHASIL', 'User berhasil logout dari sistem');
+        }
+        
         Auth::logout();
 
         $request->session()->invalidate();

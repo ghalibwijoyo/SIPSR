@@ -75,15 +75,7 @@ class ActivityLogController extends Controller
         ActivityLog::truncate();
 
         // Catat aktivitas pengosongan log
-        ActivityLog::create([
-            'user_id' => $request->user()->id,
-            'role_saat_itu' => $request->user()->role,
-            'jenis_aktivitas' => 'HAPUS_SEMUA_LOG',
-            'detail' => 'Mengosongkan seluruh log aktivitas sistem.',
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('HAPUS_SEMUA_LOG', 'Mengosongkan seluruh log aktivitas sistem.');
 
         return redirect()->route('aktivitas.index')->with('success', 'Seluruh log aktivitas berhasil dikosongkan.');
     }

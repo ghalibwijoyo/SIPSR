@@ -34,16 +34,7 @@ class ShareLinkController extends Controller
             'expired_at' => $expiredAt,
         ]);
 
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'role_saat_itu' => Auth::user()->role,
-            'jenis_aktivitas' => 'GENERATE_SHARE_LINK',
-            'detail' => "Membuat Share Link: {$dokumen->nama_dokumen}",
-            'document_id' => $dokumen->id,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('GENERATE_SHARE_LINK', "Membuat Share Link: {$dokumen->nama_dokumen}", $dokumen->id);
 
         return response()->json([
             'status' => 'success',
@@ -68,16 +59,7 @@ class ShareLinkController extends Controller
 
         $dokumen = $link->document;
 
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'role_saat_itu' => Auth::user()->role,
-            'jenis_aktivitas' => 'REVOKE_SHARE_LINK',
-            'detail' => "Mencabut Share Link: {$dokumen->nama_dokumen}",
-            'document_id' => $dokumen->id,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('REVOKE_SHARE_LINK', "Mencabut Share Link: {$dokumen->nama_dokumen}", $dokumen->id);
 
         return redirect()->back()->with('success', 'Link berhasil dicabut.');
     }

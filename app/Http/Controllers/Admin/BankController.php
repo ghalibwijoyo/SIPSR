@@ -26,15 +26,7 @@ class BankController extends Controller
 
         $bank = Bank::create($validated);
 
-        ActivityLog::create([
-            'user_id' => request()->user()->id,
-            'role_saat_itu' => request()->user()->role,
-            'jenis_aktivitas' => 'TAMBAH_BANK',
-            'detail' => 'Menambahkan bank baru: '.$bank->nama,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('TAMBAH_BANK', 'Menambahkan bank baru: '.$bank->nama);
 
         return redirect()->route('banks.index')->with('success', 'Bank berhasil ditambahkan.');
     }
@@ -50,15 +42,7 @@ class BankController extends Controller
         $oldName = $bank->nama;
         $bank->update($validated);
 
-        ActivityLog::create([
-            'user_id' => request()->user()->id,
-            'role_saat_itu' => request()->user()->role,
-            'jenis_aktivitas' => 'EDIT_BANK',
-            'detail' => "Memperbarui bank: $oldName menjadi ".$bank->nama,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('EDIT_BANK', "Memperbarui bank: $oldName menjadi ".$bank->nama);
 
         return redirect()->route('banks.index')->with('success', 'Bank berhasil diperbarui.');
     }
@@ -72,15 +56,7 @@ class BankController extends Controller
         $name = $bank->nama;
         $bank->delete();
 
-        ActivityLog::create([
-            'user_id' => request()->user()->id,
-            'role_saat_itu' => request()->user()->role,
-            'jenis_aktivitas' => 'HAPUS_BANK',
-            'detail' => 'Menghapus bank: '.$name,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('HAPUS_BANK', 'Menghapus bank: '.$name);
 
         return redirect()->route('banks.index')->with('success', 'Bank berhasil dihapus.');
     }

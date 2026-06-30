@@ -232,14 +232,6 @@ class LaporanController extends Controller
 
     private function logActivity(string $jenis, string $detail): void
     {
-        ActivityLog::create([
-            'user_id' => auth()->id(),
-            'role_saat_itu' => auth()->user()->role,
-            'jenis_aktivitas' => $jenis,
-            'detail' => $detail,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log($jenis, $detail);
     }
 }

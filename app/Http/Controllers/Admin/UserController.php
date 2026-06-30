@@ -38,15 +38,7 @@ class UserController extends Controller
             'is_active' => true,
         ]);
 
-        ActivityLog::create([
-            'user_id' => request()->user()->id,
-            'role_saat_itu' => request()->user()->role,
-            'jenis_aktivitas' => 'TAMBAH_USER',
-            'detail' => 'Menambahkan pengguna baru: '.$user->username,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('TAMBAH_USER', 'Menambahkan pengguna baru: '.$user->username);
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
@@ -65,15 +57,7 @@ class UserController extends Controller
             'is_active' => $validated['is_active'],
         ]);
 
-        ActivityLog::create([
-            'user_id' => request()->user()->id,
-            'role_saat_itu' => request()->user()->role,
-            'jenis_aktivitas' => 'EDIT_USER',
-            'detail' => 'Memperbarui data pengguna: '.$user->username,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('EDIT_USER', 'Memperbarui data pengguna: '.$user->username);
 
         return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui.');
     }
@@ -91,15 +75,7 @@ class UserController extends Controller
         $action = $user->is_active ? 'AKTIFKAN_USER' : 'NONAKTIFKAN_USER';
         $statusText = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
 
-        ActivityLog::create([
-            'user_id' => request()->user()->id,
-            'role_saat_itu' => request()->user()->role,
-            'jenis_aktivitas' => $action,
-            'detail' => ucfirst($statusText).' pengguna: '.$user->username,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log($action, ucfirst($statusText).' pengguna: '.$user->username);
 
         return redirect()->route('users.index')->with('success', "Pengguna {$user->username} berhasil $statusText.");
     }
@@ -116,15 +92,7 @@ class UserController extends Controller
             'password' => Hash::make($validated['new_password']),
         ]);
 
-        ActivityLog::create([
-            'user_id' => request()->user()->id,
-            'role_saat_itu' => request()->user()->role,
-            'jenis_aktivitas' => 'RESET_PASSWORD',
-            'detail' => 'Mereset password pengguna: '.$user->username,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log('RESET_PASSWORD', 'Mereset password pengguna: '.$user->username);
 
         return redirect()->route('users.index')
             ->with('success', 'Password berhasil direset.')

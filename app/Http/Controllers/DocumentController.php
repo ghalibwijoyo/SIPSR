@@ -380,6 +380,8 @@ class DocumentController extends Controller
             abort(404, 'File tidak ditemukan.');
         }
 
+        $this->logActivity('PREVIEW_DOKUMEN', 'Melihat (preview) dokumen: '.$dokumen->nama_dokumen, $dokumen->id);
+
         $mimeType = Storage::disk('local')->mimeType($dokumen->file_path);
 
         return response()->file(
@@ -392,15 +394,6 @@ class DocumentController extends Controller
 
     private function logActivity(string $jenis, string $detail, ?string $documentId = null): void
     {
-        ActivityLog::create([
-            'user_id' => auth()->id(),
-            'role_saat_itu' => auth()->user()->role,
-            'jenis_aktivitas' => $jenis,
-            'detail' => $detail,
-            'document_id' => $documentId,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-        ]);
+        ActivityLog::log($jenis, $detail, $documentId);
     }
 }
