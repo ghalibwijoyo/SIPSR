@@ -46,6 +46,9 @@ class AuthController extends Controller
                 ])->onlyInput('username');
             }
 
+            // Invalidate other sessions for this user
+            Auth::logoutOtherDevices($request->password);
+
             $request->session()->regenerate();
 
             // Activity log
