@@ -73,19 +73,19 @@
                         @method ('PUT')
 
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label text-muted"
+                            <label class="col-sm-3 col-form-label"
                                 >Username</label
                             >
                             <div class="col-sm-9">
                                 <input
                                     type="text"
-                                    class="form-control bg-light"
+                                    name="username"
+                                    class="form-control"
                                     value="{{ $user->username }}"
-                                    readonly
+                                    required
                                 />
                                 <small class="form-text text-muted"
-                                    >Username digunakan untuk login dan tidak
-                                    dapat diubah.</small
+                                    >Username digunakan untuk login.</small
                                 >
                             </div>
                         </div>
@@ -108,7 +108,7 @@
                         <div class="row">
                             <div class="col-sm-9 offset-sm-3">
                                 <button type="submit" class="btn btn-primary">
-                                    Simpan Nama
+                                    Simpan Profil
                                 </button>
                             </div>
                         </div>

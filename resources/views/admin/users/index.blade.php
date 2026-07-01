@@ -119,7 +119,7 @@
                                     @if (auth()->user()->id !== $user->id)
                                         <button
                                             type="button"
-                                            class="btn btn-sm btn-light btn-icon {{ $user->is_active ? 'text-danger' : 'text-success' }}"
+                                            class="btn btn-sm btn-light btn-icon {{ $user->is_active ? 'text-danger' : 'text-success' }} me-1"
                                             data-bs-toggle="modal"
                                             data-bs-target="#toggleStatusModal{{ $user->id }}"
                                             title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}"
@@ -127,6 +127,15 @@
                                             <i
                                                 class="bi {{ $user->is_active ? 'bi-x-circle' : 'bi-check-circle' }}"
                                             ></i>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-light btn-icon text-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteUserModal{{ $user->id }}"
+                                            title="Hapus Pengguna"
+                                        >
+                                            <i class="bi bi-trash"></i>
                                         </button>
                                     @endif
                                 </td>
@@ -185,9 +194,10 @@
                                 <label class="form-label">Username</label>
                                 <input
                                     type="text"
-                                    class="form-control bg-light"
+                                    name="username"
+                                    class="form-control"
                                     value="{{ $user->username }}"
-                                    readonly
+                                    required
                                 />
                             </div>
                             <div class="mb-3">
@@ -370,6 +380,51 @@
                                 class="btn {{ $user->is_active ? 'btn-danger' : 'btn-success' }}"
                             >
                                 Ya, {{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Delete User Modal --}}
+        <div
+            class="modal fade text-start"
+            id="deleteUserModal{{ $user->id }}"
+            tabindex="-1"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body text-center pb-4">
+                        <div class="mb-3">
+                            <i class="bi bi-trash text-danger fs-1"></i>
+                        </div>
+                        <h5 class="mb-2">Hapus Akun</h5>
+                        <p class="text-muted mb-4">Anda yakin ingin menghapus pengguna <strong>{{ $user->username }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
+                        <form
+                            action="{{ route('users.destroy', $user->id) }}"
+                            method="POST"
+                        >
+                            @csrf
+                            @method ('DELETE')
+                            <button
+                                type="button"
+                                class="btn btn-light me-2"
+                                data-bs-dismiss="modal"
+                            >
+                                Batal
+                            </button>
+                            <button type="submit" class="btn btn-danger">
+                                Ya, Hapus
                             </button>
                         </form>
                     </div>

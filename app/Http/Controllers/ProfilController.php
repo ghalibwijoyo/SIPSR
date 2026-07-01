@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class ProfilController extends Controller
 {
@@ -17,20 +18,27 @@ class ProfilController extends Controller
 
     public function updateNama(Request $request)
     {
+        $user = $request->user();
+
         $validated = $request->validate([
+            'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'nama_lengkap' => ['required', 'string', 'max:255'],
+        ], [
+            'username.unique' => 'Username sudah digunakan, silakan pilih yang lain.',
         ]);
 
-        $user = $request->user();
         $oldName = $user->nama_lengkap;
+        $oldUsername = $user->username;
+        
+        $user->username = $validated['username'];
         $user->nama_lengkap = $validated['nama_lengkap'];
         $user->save();
 
-        if ($oldName !== $user->nama_lengkap) {
-            ActivityLog::log('EDIT_USER', "Memperbarui nama profil dari $oldName menjadi ".$user->nama_lengkap);
+        if ($oldName !== $user->nama_lengkap || $oldUsername !== $user->username) {
+            ActivityLog::log('EDIT_USER', 'Memperbarui informasi profil (Nama/Username).');
         }
 
-        return redirect()->route('profil.show')->with('success', 'Nama profil berhasil diperbarui.');
+        return redirect()->route('profil.show')->with('success', 'Profil berhasil diperbarui.');
     }
 
     public function updatePassword(Request $request)

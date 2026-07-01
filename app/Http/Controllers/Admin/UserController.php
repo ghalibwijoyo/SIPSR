@@ -46,12 +46,16 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
+            'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'role' => ['required', Rule::in(['ADMIN', 'STAFF'])],
             'is_active' => ['required', 'boolean'],
+        ], [
+            'username.unique' => 'Username sudah digunakan, silakan pilih yang lain.',
         ]);
 
         $user->update([
+            'username' => $validated['username'],
             'nama_lengkap' => $validated['nama_lengkap'],
             'role' => $validated['role'],
             'is_active' => $validated['is_active'],
@@ -100,5 +104,23 @@ class UserController extends Controller
                 'username' => $user->username,
                 'password' => $validated['new_password'],
             ]);
+    }
+
+    public function destroy(User $user)
+    {
+        if (request()->user()->id === $user->id) {
+            return redirect()->route('users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
+        if ($user->documents()->exists()) {
+            return redirect()->route('users.index')->with('error', 'Akun tidak dapat dihapus karena pengguna ini telah mengunggah dokumen.');
+        }
+
+        $username = $user->username;
+        $user->delete();
+
+        ActivityLog::log('HAPUS_USER', 'Menghapus pengguna: '.$username);
+
+        return redirect()->route('users.index')->with('success', "Pengguna {$username} berhasil dihapus.");
     }
 }
