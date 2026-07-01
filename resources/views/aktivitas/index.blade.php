@@ -31,18 +31,14 @@
                         >Cari Aktivitas</label
                     >
                     <div
-                        class="input-group input-group-lg shadow-sm rounded overflow-hidden border"
+                        class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border-0 bg-white"
                     >
                         <button
-                            type="button"
-                            class="btn btn-light border-0 px-4"
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#advancedFilter"
-                            aria-controls="advancedFilter"
-                            aria-label="Buka panel filter lanjutan"
-                            title="Filter Lanjutan"
+                            type="submit"
+                            class="input-group-text bg-white border-0 text-muted px-4 btn btn-link"
+                            aria-label="Cari"
                         >
-                            <i class="bi bi-sliders text-sipsr-primary"></i>
+                            <i class="bi bi-search text-dark"></i>
                         </button>
                         <input
                             type="text"
@@ -54,93 +50,120 @@
                             aria-label="Cari aktivitas"
                         />
                         <button
-                            type="submit"
-                            class="input-group-text bg-white border-0 text-muted px-4 btn btn-link"
-                            aria-label="Cari"
+                            type="button"
+                            class="btn btn-light border-0 px-4"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#advancedFilter"
+                            aria-controls="advancedFilter"
+                            aria-label="Buka panel filter lanjutan"
+                            title="Filter Lanjutan"
                         >
-                            <i class="bi bi-search text-dark"></i>
+                            <i class="bi bi-sliders text-sipsr-primary"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Quick Filter Badges -->
+                <!-- Quick Filter Dropdown & Removable Tags -->
                 <div class="col-12 mt-2">
-                    <div class="d-flex flex-wrap gap-2">
-                        <a
-                            href="{{ route('aktivitas.index') }}"
-                            class="btn btn-sm rounded-pill px-3 shadow-sm {{ !request()->has('search') && !request()->has('jenis_aktivitas') && !request()->has('user_id') && !request()->has('ip_address') && !request()->has('user_agent') && !request()->has('tanggal_dari') && !request()->has('quick_filter') ? 'btn-success' : 'btn-light text-muted border-0' }}"
-                            aria-label="Lihat semua aktivitas"
-                        >
-                            Semua Aktivitas
-                        </a>
-
-                        {{-- System Quick Filters --}}
-                        <a
-                            href="{{ route('aktivitas.index', array_merge(request()->except(['page']), ['quick_filter' => 'today'])) }}"
-                            class="btn btn-sm rounded-pill px-3 shadow-sm {{ request('quick_filter') == 'today' ? 'btn-success' : 'btn-light text-muted border-0' }}"
-                        >
-                            <i class="bi bi-calendar-event me-1"></i> Hari Ini
-                        </a>
-
-                        <a
-                            href="{{ route('aktivitas.index', array_merge(request()->except(['page']), ['quick_filter' => 'my_activity'])) }}"
-                            class="btn btn-sm rounded-pill px-3 shadow-sm {{ request('quick_filter') == 'my_activity' ? 'btn-success' : 'btn-light text-muted border-0' }}"
-                        >
-                            <i class="bi bi-person-fill me-1"></i> Aktivitas
-                            Saya
-                        </a>
-
-                        {{-- Separator --}}
-                        <div
-                            class="vr mx-1 d-none d-md-block"
-                            style="opacity: 0.1"
-                        ></div>
-
-                        {{-- Jenis Aktivitas Filters --}}
-                        @foreach ($jenisAktivitasList as $jenis)
-                            <a
-                                href="{{ route('aktivitas.index', array_merge(request()->except(['page']), ['jenis_aktivitas' => $jenis])) }}"
-                                class="btn btn-sm rounded-pill px-3 shadow-sm {{ request('jenis_aktivitas') == $jenis ? 'btn-success' : 'btn-light text-muted border-0' }}"
-                            >
-                                {{ str_replace('_', ' ', $jenis) }}
-                            </a>
-                        @endforeach
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        
+                        {{-- Dropdown Quick Filter --}}
+                        <div class="dropdown quick-filter-dropdown">
+                            @php
+                                $activeQuickFilterText = 'Pilih Filter Cepat...';
+                                if(request('quick_filter') == 'today') $activeQuickFilterText = 'Hari Ini';
+                                elseif(request('quick_filter') == 'my_activity') $activeQuickFilterText = 'Aktivitas Saya';
+                                elseif(request('jenis_aktivitas')) {
+                                    $activeQuickFilterText = ucwords(str_replace('_', ' ', request('jenis_aktivitas')));
+                                }
+                            @endphp
+                            
+                            <button class="btn btn-sm btn-light rounded-pill px-3 shadow-sm dropdown-toggle border-0" type="button" id="aktivitasQuickFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-lightning-charge-fill text-warning me-1"></i> {{ $activeQuickFilterText }}
+                            </button>
+                            <ul class="dropdown-menu shadow border-0 rounded-3 mt-1" aria-labelledby="aktivitasQuickFilterDropdown">
+                                <li>
+                                    <a class="dropdown-item {{ !request()->has('quick_filter') && !request()->has('jenis_aktivitas') ? 'active bg-light text-dark' : '' }}" href="{{ route('aktivitas.index', request()->except(['quick_filter', 'jenis_aktivitas', 'page'])) }}">
+                                        Semua Aktivitas
+                                    </a>
+                                </li>
+                                
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header text-uppercase text-muted" style="font-size: 0.75rem;">Filter Sistem</h6></li>
+                                
+                                <li>
+                                    <a class="dropdown-item {{ request('quick_filter') == 'today' ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('aktivitas.index', array_merge(request()->except(['page', 'jenis_aktivitas']), ['quick_filter' => 'today'])) }}">
+                                        <i class="bi bi-calendar-event me-2"></i> Hari Ini
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ request('quick_filter') == 'my_activity' ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('aktivitas.index', array_merge(request()->except(['page', 'jenis_aktivitas']), ['quick_filter' => 'my_activity'])) }}">
+                                        <i class="bi bi-person-fill me-2"></i> Aktivitas Saya
+                                    </a>
+                                </li>
+                                
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header text-uppercase text-muted" style="font-size: 0.75rem;">Jenis Aktivitas</h6></li>
+                                
+                                @foreach ($jenisAktivitasList as $jenis)
+                                    <li>
+                                        <a class="dropdown-item {{ request('jenis_aktivitas') == $jenis ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('aktivitas.index', array_merge(request()->except(['page', 'quick_filter']), ['jenis_aktivitas' => $jenis])) }}">
+                                            {{ ucwords(str_replace('_', ' ', $jenis)) }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        
+                        {{-- Active Filter Tags --}}
+                        <div class="d-flex flex-wrap gap-2 ms-2">
+                            @if(request('search'))
+                                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+                                    <span class="fw-normal">Pencarian: <strong>{{ request('search') }}</strong></span>
+                                    <a href="{{ route('aktivitas.index', request()->except(['search', 'page'])) }}" class="text-muted hover-danger text-decoration-none">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            @if(request('tanggal_dari') || request('tanggal_sampai'))
+                                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+                                    <span class="fw-normal">Tanggal: <strong>{{ request('tanggal_dari') }} s/d {{ request('tanggal_sampai') }}</strong></span>
+                                    <a href="{{ route('aktivitas.index', request()->except(['tanggal_dari', 'tanggal_sampai', 'page'])) }}" class="text-muted hover-danger text-decoration-none">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            @if(request('user_id'))
+                                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+                                    <span class="fw-normal">Pengguna Difilter</span>
+                                    <a href="{{ route('aktivitas.index', request()->except(['user_id', 'page'])) }}" class="text-muted hover-danger text-decoration-none">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            @if(request('ip_address'))
+                                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+                                    <span class="fw-normal">IP: <strong>{{ request('ip_address') }}</strong></span>
+                                    <a href="{{ route('aktivitas.index', request()->except(['ip_address', 'page'])) }}" class="text-muted hover-danger text-decoration-none">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            @if(request('user_agent'))
+                                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+                                    <span class="fw-normal">Browser Difilter</span>
+                                    <a href="{{ route('aktivitas.index', request()->except(['user_agent', 'page'])) }}" class="text-muted hover-danger text-decoration-none">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            
+                            @if(!empty(array_filter([request('search'), request('jenis_aktivitas'), request('user_id'), request('ip_address'), request('user_agent'), request('tanggal_dari'), request('tanggal_sampai'), request('quick_filter')])))
+                                <a href="{{ route('aktivitas.index') }}" class="btn btn-sm btn-link text-danger text-decoration-none">Reset Semua</a>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- Filter Status & Result Counter --}}
-    @php
-    $activeFilters = array_filter([
-        request('search'),
-        request('jenis_aktivitas'),
-        request('user_id'),
-        request('ip_address'),
-        request('user_agent'),
-        request('tanggal_dari'),
-        request('tanggal_sampai')
-    ]);
-@endphp
-
-    @if (!empty($activeFilters))
-        <div
-            class="alert alert-secondary py-2 px-3 mb-3 d-flex justify-content-between align-items-center shadow-sm border-0"
-        >
-            <span>
-                <i class="bi bi-funnel-fill text-sipsr-primary me-2"></i>
-                <strong>{{ count($activeFilters) }} filter aktif</strong>
-                diterapkan.
-            </span>
-            <a
-                href="{{ route('aktivitas.index') }}"
-                class="btn btn-sm btn-danger rounded-pill px-3"
-            >
-                <i class="bi bi-x-circle me-1"></i>Clear All
-            </a>
-        </div>
-    @endif
 
     {{-- Offcanvas Advanced Filter Panel --}}
     <div

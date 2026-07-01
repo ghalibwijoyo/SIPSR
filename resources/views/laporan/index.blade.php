@@ -29,18 +29,14 @@
                         >Cari Dokumen</label
                     >
                     <div
-                        class="input-group input-group-lg shadow-sm rounded overflow-hidden border"
+                        class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border-0 bg-white"
                     >
                         <button
-                            type="button"
-                            class="btn btn-light border-0 px-4"
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#laporanAdvancedFilter"
-                            aria-controls="laporanAdvancedFilter"
-                            aria-label="Buka panel filter lanjutan"
-                            title="Filter Lanjutan"
+                            type="submit"
+                            class="input-group-text bg-white border-0 text-muted px-4 btn btn-link"
+                            aria-label="Cari"
                         >
-                            <i class="bi bi-sliders text-sipsr-primary"></i>
+                            <i class="bi bi-search text-dark"></i>
                         </button>
                         <input
                             type="text"
@@ -52,98 +48,119 @@
                             aria-label="Cari dokumen untuk laporan"
                         />
                         <button
-                            type="submit"
-                            class="input-group-text bg-white border-0 text-muted px-4 btn btn-link"
-                            aria-label="Cari"
+                            type="button"
+                            class="btn btn-light border-0 px-4"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#laporanAdvancedFilter"
+                            aria-controls="laporanAdvancedFilter"
+                            aria-label="Buka panel filter lanjutan"
+                            title="Filter Lanjutan"
                         >
-                            <i class="bi bi-search text-dark"></i>
+                            <i class="bi bi-sliders text-sipsr-primary"></i>
                         </button>
                     </div>
                 </div>
 
-                {{-- Quick Filter Badges --}}
+                {{-- Quick Filter Dropdown & Removable Tags --}}
                 <div class="col-12 mt-2">
-                    <div class="d-flex flex-wrap gap-2">
-                        <a
-                            href="{{ route('laporan.index') }}"
-                            class="btn btn-sm rounded-pill px-3 shadow-sm {{ !request()->has('search') && !request()->has('category_id') && !request()->has('bank_id') && !request()->has('uploader_id') && !request()->has('tanggal_dari') && !request()->has('quick_filter') ? 'btn-success' : 'btn-light text-muted border-0' }}"
-                            aria-label="Lihat semua dokumen"
-                        >
-                            Semua Dokumen
-                        </a>
-
-                        {{-- System Quick Filters --}}
-                        <a
-                            href="{{ route('laporan.index', array_merge(request()->except(['page']), ['quick_filter' => 'today'])) }}"
-                            class="btn btn-sm rounded-pill px-3 shadow-sm {{ request('quick_filter') == 'today' ? 'btn-success' : 'btn-light text-muted border-0' }}"
-                        >
-                            <i class="bi bi-calendar-event me-1"></i> Hari Ini
-                        </a>
-
-                        <a
-                            href="{{ route('laporan.index', array_merge(request()->except(['page']), ['quick_filter' => 'my_upload'])) }}"
-                            class="btn btn-sm rounded-pill px-3 shadow-sm {{ request('quick_filter') == 'my_upload' ? 'btn-success' : 'btn-light text-muted border-0' }}"
-                        >
-                            <i class="bi bi-person-fill me-1"></i> Unggahan Saya
-                        </a>
-
-                        <a
-                            href="{{ route('laporan.index', array_merge(request()->except(['page']), ['quick_filter' => 'pdf'])) }}"
-                            class="btn btn-sm rounded-pill px-3 shadow-sm {{ request('quick_filter') == 'pdf' ? 'btn-success' : 'btn-light text-muted border-0' }}"
-                        >
-                            <i class="bi bi-file-earmark-pdf me-1"></i> File PDF
-                        </a>
-
-                        {{-- Separator --}}
-                        <div
-                            class="vr mx-1 d-none d-md-block"
-                            style="opacity: 0.1"
-                        ></div>
-
-                        {{-- Category Quick Filters --}}
-                        @foreach ($categories as $cat)
-                            <a
-                                href="{{ route('laporan.index', array_merge(request()->except(['page']), ['category_id' => $cat->id])) }}"
-                                class="btn btn-sm rounded-pill px-3 shadow-sm {{ request('category_id') == $cat->id ? 'btn-success' : 'btn-light text-muted border-0' }}"
-                            >
-                                {{ $cat->nama }}
-                            </a>
-                        @endforeach
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        
+                        {{-- Dropdown Quick Filter --}}
+                        <div class="dropdown quick-filter-dropdown">
+                            @php
+                                $activeQuickFilterText = 'Pilih Filter Cepat...';
+                                if(request('quick_filter') == 'today') $activeQuickFilterText = 'Hari Ini';
+                                elseif(request('quick_filter') == 'my_upload') $activeQuickFilterText = 'Unggahan Saya';
+                                elseif(request('quick_filter') == 'pdf') $activeQuickFilterText = 'File PDF';
+                                elseif(request('category_id')) {
+                                    $cat = $categories->firstWhere('id', request('category_id'));
+                                    if($cat) $activeQuickFilterText = $cat->nama;
+                                }
+                            @endphp
+                            
+                            <button class="btn btn-sm btn-light rounded-pill px-3 shadow-sm dropdown-toggle border-0" type="button" id="laporanQuickFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-lightning-charge-fill text-warning me-1"></i> {{ $activeQuickFilterText }}
+                            </button>
+                            <ul class="dropdown-menu shadow border-0 rounded-3 mt-1" aria-labelledby="laporanQuickFilterDropdown">
+                                <li>
+                                    <a class="dropdown-item {{ !request()->has('quick_filter') && !request()->has('category_id') ? 'active bg-light text-dark' : '' }}" href="{{ route('laporan.index', request()->except(['quick_filter', 'category_id', 'page'])) }}">
+                                        Semua Dokumen
+                                    </a>
+                                </li>
+                                
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header text-uppercase text-muted" style="font-size: 0.75rem;">Filter Sistem</h6></li>
+                                
+                                <li>
+                                    <a class="dropdown-item {{ request('quick_filter') == 'today' ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('laporan.index', array_merge(request()->except(['page', 'category_id']), ['quick_filter' => 'today'])) }}">
+                                        <i class="bi bi-calendar-event me-2"></i> Hari Ini
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ request('quick_filter') == 'my_upload' ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('laporan.index', array_merge(request()->except(['page', 'category_id']), ['quick_filter' => 'my_upload'])) }}">
+                                        <i class="bi bi-person-fill me-2"></i> Unggahan Saya
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ request('quick_filter') == 'pdf' ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('laporan.index', array_merge(request()->except(['page', 'category_id']), ['quick_filter' => 'pdf'])) }}">
+                                        <i class="bi bi-file-earmark-pdf me-2"></i> File PDF
+                                    </a>
+                                </li>
+                                
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header text-uppercase text-muted" style="font-size: 0.75rem;">Kategori</h6></li>
+                                
+                                @foreach ($categories as $cat)
+                                    <li>
+                                        <a class="dropdown-item {{ request('category_id') == $cat->id ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('laporan.index', array_merge(request()->except(['page', 'quick_filter']), ['category_id' => $cat->id])) }}">
+                                            {{ $cat->nama }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        
+                        {{-- Active Filter Tags --}}
+                        <div class="d-flex flex-wrap gap-2 ms-2">
+                            @if(request('search'))
+                                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+                                    <span class="fw-normal">Pencarian: <strong>{{ request('search') }}</strong></span>
+                                    <a href="{{ route('laporan.index', request()->except(['search', 'page'])) }}" class="text-muted hover-danger text-decoration-none">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            @if(request('tanggal_dari') || request('tanggal_sampai'))
+                                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+                                    <span class="fw-normal">Tanggal: <strong>{{ request('tanggal_dari') }} s/d {{ request('tanggal_sampai') }}</strong></span>
+                                    <a href="{{ route('laporan.index', request()->except(['tanggal_dari', 'tanggal_sampai', 'page'])) }}" class="text-muted hover-danger text-decoration-none">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            @if(request('uploader_id'))
+                                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+                                    <span class="fw-normal">Pengunggah Difilter</span>
+                                    <a href="{{ route('laporan.index', request()->except(['uploader_id', 'page'])) }}" class="text-muted hover-danger text-decoration-none">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            @if(request('bank_id'))
+                                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+                                    <span class="fw-normal">Bank Difilter</span>
+                                    <a href="{{ route('laporan.index', request()->except(['bank_id', 'page'])) }}" class="text-muted hover-danger text-decoration-none">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            
+                            @if(!empty(array_filter([request('search'), request('category_id'), request('uploader_id'), request('tanggal_dari'), request('tanggal_sampai'), request('quick_filter'), request('bank_id')])))
+                                <a href="{{ route('laporan.index') }}" class="btn btn-sm btn-link text-danger text-decoration-none">Reset Semua</a>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- Filter Status & Result Counter --}}
-    @php
-    $activeFilters = array_filter([
-        request('search'),
-        request('category_id'),
-        request('bank_id'),
-        request('uploader_id'),
-        request('tanggal_dari'),
-        request('tanggal_sampai'),
-    ]);
-@endphp
-
-    @if (!empty($activeFilters))
-        <div
-            class="alert alert-secondary py-2 px-3 mb-3 d-flex justify-content-between align-items-center shadow-sm border-0"
-        >
-            <span>
-                <i class="bi bi-funnel-fill text-sipsr-primary me-2"></i>
-                <strong>{{ count($activeFilters) }} filter aktif</strong>
-                diterapkan.
-            </span>
-            <a
-                href="{{ route('laporan.index') }}"
-                class="btn btn-sm btn-danger rounded-pill px-3"
-            >
-                <i class="bi bi-x-circle me-1"></i>Clear All
-            </a>
-        </div>
-    @endif
 
     {{-- Offcanvas Advanced Filter Panel --}}
     <div

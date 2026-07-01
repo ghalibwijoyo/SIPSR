@@ -14,6 +14,12 @@
     <title>@yield ('title', 'ArsiPSR')</title>
     <link rel="icon" href="{{ asset('logo.png') }}" type="image/png" />
     @vite (['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .quick-filter-dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0;
+        }
+    </style>
 </head>
 <body>
     <div class="d-flex vh-100 overflow-hidden">
