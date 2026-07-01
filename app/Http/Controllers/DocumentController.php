@@ -31,15 +31,9 @@ class DocumentController extends Controller
             }
         }
 
-        // ── Quick filters ───────────────────────────────────
-        if ($request->filled('quick_filter')) {
-            if ($request->quick_filter === 'pdf') {
-                $query->where('file_name', 'LIKE', '%.pdf');
-            } elseif ($request->quick_filter === 'my_upload') {
-                $query->where('uploader_id', auth()->id());
-            } elseif ($request->quick_filter === 'today') {
-                $query->whereDate('created_at', Carbon::today());
-            }
+        // ── Filter Data Milik Saya ──────────────────────────
+        if ($request->boolean('milik_saya')) {
+            $query->where('uploader_id', auth()->id());
         }
 
         // ── Smart Filters via Scopes ────────────────────────

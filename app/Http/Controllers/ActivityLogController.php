@@ -25,6 +25,11 @@ class ActivityLogController extends Controller
             $query->where('user_id', $request->user_id);
         }
 
+        // ── Filter Data Milik Saya ──────────────────────────
+        if ($request->boolean('milik_saya')) {
+            $query->where('user_id', auth()->id());
+        }
+
         // ── Filter: tanggal ────────────────────────────────
         if ($request->filled('tanggal_dari') && $request->filled('tanggal_sampai')) {
             if ($request->tanggal_dari > $request->tanggal_sampai) {

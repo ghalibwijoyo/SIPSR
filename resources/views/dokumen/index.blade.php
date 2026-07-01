@@ -68,65 +68,11 @@
                     </div>
                 </div>
 
-                <!-- Quick Filter Dropdown & Removable Tags -->
+                <!-- Active Filter Tags -->
                 <div class="col-12 mt-2">
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         
-                        {{-- Dropdown Quick Filter --}}
-                        <div class="dropdown quick-filter-dropdown">
-                            @php
-                                $activeQuickFilterText = 'Pilih Filter Cepat...';
-                                if(request('quick_filter') == 'today') $activeQuickFilterText = 'Hari Ini';
-                                elseif(request('quick_filter') == 'my_upload') $activeQuickFilterText = 'Unggahan Saya';
-                                elseif(request('quick_filter') == 'pdf') $activeQuickFilterText = 'File PDF';
-                                elseif(request('category_id')) {
-                                    $cat = $categories->firstWhere('id', request('category_id'));
-                                    if($cat) $activeQuickFilterText = $cat->nama;
-                                }
-                            @endphp
-                            
-                            <button class="btn btn-sm btn-light rounded-pill px-3 shadow-sm dropdown-toggle border-0" type="button" id="quickFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-lightning-charge-fill text-warning me-1"></i> {{ $activeQuickFilterText }}
-                            </button>
-                            <ul class="dropdown-menu shadow border-0 rounded-3 mt-1" aria-labelledby="quickFilterDropdown">
-                                <li>
-                                    <a class="dropdown-item {{ !request()->has('quick_filter') && !request()->has('category_id') ? 'active bg-light text-dark' : '' }}" href="{{ route('dokumen.index', request()->except(['quick_filter', 'category_id', 'page'])) }}">
-                                        Semua Dokumen
-                                    </a>
-                                </li>
-                                
-                                <li><hr class="dropdown-divider"></li>
-                                <li><h6 class="dropdown-header text-uppercase text-muted" style="font-size: 0.75rem;">Filter Sistem</h6></li>
-                                
-                                <li>
-                                    <a class="dropdown-item {{ request('quick_filter') == 'today' ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('dokumen.index', array_merge(request()->except(['page', 'category_id']), ['quick_filter' => 'today'])) }}">
-                                        <i class="bi bi-calendar-event me-2"></i> Hari Ini
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request('quick_filter') == 'my_upload' ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('dokumen.index', array_merge(request()->except(['page', 'category_id']), ['quick_filter' => 'my_upload'])) }}">
-                                        <i class="bi bi-person-fill me-2"></i> Unggahan Saya
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request('quick_filter') == 'pdf' ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('dokumen.index', array_merge(request()->except(['page', 'category_id']), ['quick_filter' => 'pdf'])) }}">
-                                        <i class="bi bi-file-earmark-pdf me-2"></i> File PDF
-                                    </a>
-                                </li>
-                                
-                                <li><hr class="dropdown-divider"></li>
-                                <li><h6 class="dropdown-header text-uppercase text-muted" style="font-size: 0.75rem;">Kategori</h6></li>
-                                
-                                @foreach ($categories as $cat)
-                                    <li>
-                                        <a class="dropdown-item {{ request('category_id') == $cat->id ? 'active bg-sipsr-primary text-white' : '' }}" href="{{ route('dokumen.index', array_merge(request()->except(['page', 'quick_filter']), ['category_id' => $cat->id])) }}">
-                                            {{ $cat->nama }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        
+
                         {{-- Active Filter Tags --}}
                         <div class="d-flex flex-wrap gap-2 ms-2">
                             @if(request('search'))
@@ -170,7 +116,16 @@
                                 </span>
                             @endif
                             
-                            @if(!empty(array_filter([request('search'), request('category_id'), request('uploader_id'), request('tanggal_dari'), request('tanggal_sampai'), request('format'), request('quick_filter'), request('bank_id')])))
+                            @if(request('milik_saya'))
+                                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+                                    <span class="fw-normal"><i class="bi bi-person-fill text-sipsr-primary me-1"></i>Hanya Unggahan Saya</span>
+                                    <a href="{{ route('dokumen.index', request()->except(['milik_saya', 'page'])) }}" class="text-muted hover-danger text-decoration-none">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            
+                            @if(!empty(array_filter([request('search'), request('category_id'), request('uploader_id'), request('tanggal_dari'), request('tanggal_sampai'), request('format'), request('milik_saya'), request('bank_id')])))
                                 <a href="{{ route('dokumen.index') }}" class="btn btn-sm btn-link text-danger text-decoration-none">Reset Semua</a>
                             @endif
                         </div>
@@ -208,6 +163,16 @@
                     name="search"
                     value="{{ request('search') }}"
                 />
+
+                <!-- Data Milik Saya -->
+                <div class="mb-4">
+                    <div class="form-check form-switch form-check-inline">
+                        <input class="form-check-input" type="checkbox" role="switch" id="filter_milik_saya" name="milik_saya" value="1" {{ request('milik_saya') ? 'checked' : '' }}>
+                        <label class="form-check-label fw-bold small text-dark" for="filter_milik_saya">
+                            Hanya Tampilkan Unggahan Saya
+                        </label>
+                    </div>
+                </div>
 
                 <!-- Category -->
                 <div class="mb-4">

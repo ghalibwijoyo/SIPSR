@@ -100,6 +100,10 @@ class Document extends Model
             return $query;
         }
 
+        if (! is_array($formats)) {
+            $formats = [$formats];
+        }
+
         return $query->where(function ($q) use ($formats) {
             foreach ($formats as $format) {
                 if ($format === 'pdf') {
