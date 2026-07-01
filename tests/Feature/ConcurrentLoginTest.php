@@ -14,9 +14,11 @@ class ConcurrentLoginTest extends TestCase
     public function test_logging_in_invalidates_other_sessions_by_updating_password_hash()
     {
         // 1. Setup User
-        $user = User::factory()->create([
+        $user = User::create([
             'username' => 'testuser',
             'password' => Hash::make('password123'),
+            'nama_lengkap' => 'Test User',
+            'role' => 'STAFF',
             'is_active' => true,
         ]);
 
