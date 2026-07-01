@@ -13,10 +13,13 @@
     @vite (['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-sipsr-gradient">
-    <div class="min-vh-100 d-flex align-items-center justify-content-center">
+    <canvas id="palm-canopy-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.9;"></canvas>
+    
+    <div class="min-vh-100 d-flex align-items-center justify-content-center" style="position: relative; z-index: 10;">
         @yield ('content')
     </div>
 
     @stack ('scripts')
+    <script src="{{ asset('js/palm-canopy.js') }}"></script>
 </body>
 </html>
