@@ -33,23 +33,16 @@
                     PSR Tanaman — PTPN IV Regional IV</p>
                 </div>
 
-                {{-- Error Alert --}}
-                @if ($errors->any())
-                    <div
-                        class="alert alert-danger alert-dismissible fade show py-2 px-3"
-                        role="alert"
-                        id="login-error-alert"
-                    >
-                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                        {{ $errors->first() }}
-                        <button
-                            type="button"
-                            class="btn-close btn-close-sm"
-                            data-bs-dismiss="alert"
-                            aria-label="Close"
-                        ></button>
-                    </div>
-                @endif
+                {{-- Error Alert Container --}}
+                <div id="login-error-container">
+                    @if ($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show py-2 px-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            {{ $errors->first() }}
+                            <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+                </div>
 
                 {{-- Login Form --}}
                 <form
@@ -131,5 +124,66 @@
                     icon.classList.replace("bi-eye-slash-fill", "bi-eye-fill");
                 }
             });
+
+        // AJAX Login Form Handler
+        const loginForm = document.getElementById('login-form');
+        const btnLogin = document.getElementById('btn-login');
+        const errorContainer = document.getElementById('login-error-container');
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(loginForm);
+                
+                // Set loading state
+                btnLogin.disabled = true;
+                btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Loading...';
+                errorContainer.innerHTML = ''; // Clear previous error
+                
+                try {
+                    const response = await fetch(loginForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        // Tampilkan error
+                        const errorMsg = data.message || 'Terjadi kesalahan saat login.';
+                        errorContainer.innerHTML = `
+                            <div class="alert alert-danger alert-dismissible fade show py-2 px-3" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                ${errorMsg}
+                                <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `;
+                        
+                        // Picu animasi denyut merah di canvas
+                        window.dispatchEvent(new Event('loginFailed'));
+                    }
+                } catch (error) {
+                    errorContainer.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show py-2 px-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            Terjadi kesalahan koneksi.
+                            <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
+                    window.dispatchEvent(new Event('loginFailed'));
+                } finally {
+                    // Reset button state
+                    btnLogin.disabled = false;
+                    btnLogin.innerHTML = '<i class="bi bi-box-arrow-in-right me-1"></i>Masuk';
+                }
+            });
+        }
     </script>
 @endpush

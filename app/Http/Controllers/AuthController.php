@@ -34,6 +34,13 @@ class AuthController extends Controller
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'message' => 'Akun Anda dinonaktifkan. Hubungi Admin.',
+                        'errors' => ['username' => ['Akun Anda dinonaktifkan. Hubungi Admin.']]
+                    ], 422);
+                }
+
                 return back()->withErrors([
                     'username' => 'Akun Anda dinonaktifkan. Hubungi Admin.',
                 ])->onlyInput('username');
@@ -44,7 +51,18 @@ class AuthController extends Controller
             // Activity log
             ActivityLog::log('LOGIN_BERHASIL', 'User berhasil login ke sistem');
 
+            if ($request->wantsJson()) {
+                return response()->json(['redirect' => session()->pull('url.intended', '/dashboard')]);
+            }
+
             return redirect()->intended('/dashboard')->with('login_success', true);
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Username atau password salah.',
+                'errors' => ['username' => ['Username atau password salah.']]
+            ], 422);
         }
 
         return back()->withErrors([

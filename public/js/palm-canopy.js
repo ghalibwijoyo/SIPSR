@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.moveTo(lastX, lastY);
                 ctx.lineTo(curX, curY);
                 ctx.lineWidth = 7 * (1 - t) + 1; // 8 at base, 1 at tip
-                ctx.strokeStyle = this.tree.stemColor;
+                ctx.strokeStyle = lerpColor(this.tree.stemColor, '#cc0000', errorPulse);
                 ctx.stroke();
 
                 lastX = curX;
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Draw leaves
             ctx.lineWidth = 1.2;
-            ctx.strokeStyle = this.tree.leafColor;
+            ctx.strokeStyle = lerpColor(this.tree.leafColor, '#ff1111', errorPulse);
             
             for (const leaf of this.leaves) {
                 leaf.draw(ctx, sx, sy, cpX, cpY, tipX, tipY, currentAngle, sway, mouse);
@@ -236,6 +236,25 @@ document.addEventListener('DOMContentLoaded', () => {
     let wind = { x: 0, y: 0 };
     let lastMouse = { x: width/2, y: height/2 };
     
+    // Login Error Pulse State
+    let errorPulse = 0;
+    let errorPulsePhase = 0; // 0: idle, 1: fade in, 2: fade out
+    window.addEventListener('loginFailed', () => {
+        errorPulsePhase = 1; // Start fade in from current value
+    });
+
+    // Color utility for blending hex colors
+    function lerpColor(color1, color2, factor) {
+        if (factor <= 0) return color1;
+        if (factor >= 1) return color2;
+        const c1 = [parseInt(color1.slice(1,3), 16), parseInt(color1.slice(3,5), 16), parseInt(color1.slice(5,7), 16)];
+        const c2 = [parseInt(color2.slice(1,3), 16), parseInt(color2.slice(3,5), 16), parseInt(color2.slice(5,7), 16)];
+        const r = Math.round(c1[0] + factor * (c2[0] - c1[0]));
+        const g = Math.round(c1[1] + factor * (c2[1] - c1[1]));
+        const b = Math.round(c1[2] + factor * (c2[2] - c1[2]));
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+    
     window.addEventListener('mousemove', (e) => {
         mouse.x = e.clientX;
         mouse.y = e.clientY;
@@ -253,6 +272,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animate(time) {
         ctx.clearRect(0, 0, width, height);
+
+        if (errorPulsePhase === 1) {
+            errorPulse += 0.033; // Fade in to red (~0.5s at 60fps)
+            if (errorPulse >= 1.0) {
+                errorPulse = 1.0;
+                errorPulsePhase = 2; // Move to fade out
+            }
+        } else if (errorPulsePhase === 2) {
+            errorPulse -= 0.008; // Fade out back to green (~2s at 60fps)
+            if (errorPulse <= 0) {
+                errorPulse = 0;
+                errorPulsePhase = 0; // Idle
+            }
+        }
 
         // Wind decay (friction)
         wind.x *= 0.92;
