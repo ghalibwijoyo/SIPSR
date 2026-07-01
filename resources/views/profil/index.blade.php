@@ -19,7 +19,7 @@
                         <i class="bi bi-person-fill"></i>
                     </div>
                     <h5 class="fw-bold mb-1">{{ $user->nama_lengkap }}</h5>
-                    <p class="text-muted mb-3">{{ $user->username }}</p>
+                    <p class="text-muted mb-3">{{ $user->nik }}</p>
 
                     <div class="d-flex justify-content-center gap-2 mb-0">
                         <span
@@ -73,19 +73,18 @@
                         @method ('PUT')
 
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label"
-                                >Username</label
+                            <label class="col-sm-3 col-form-label text-muted"
+                                >NIK</label
                             >
                             <div class="col-sm-9">
                                 <input
                                     type="text"
-                                    name="username"
-                                    class="form-control"
-                                    value="{{ $user->username }}"
-                                    required
+                                    class="form-control bg-light"
+                                    value="{{ $user->nik }}"
+                                    readonly
                                 />
                                 <small class="form-text text-muted"
-                                    >Username digunakan untuk login.</small
+                                    >NIK digunakan untuk login dan tidak dapat diubah.</small
                                 >
                             </div>
                         </div>

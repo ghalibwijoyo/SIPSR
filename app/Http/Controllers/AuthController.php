@@ -22,7 +22,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'username' => ['required', 'string'],
+            'nik' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
 
@@ -37,13 +37,13 @@ class AuthController extends Controller
                 if ($request->wantsJson()) {
                     return response()->json([
                         'message' => 'Akun Anda dinonaktifkan. Hubungi Admin.',
-                        'errors' => ['username' => ['Akun Anda dinonaktifkan. Hubungi Admin.']]
+                        'errors' => ['nik' => ['Akun Anda dinonaktifkan. Hubungi Admin.']]
                     ], 422);
                 }
 
                 return back()->withErrors([
-                    'username' => 'Akun Anda dinonaktifkan. Hubungi Admin.',
-                ])->onlyInput('username');
+                    'nik' => 'Akun Anda dinonaktifkan. Hubungi Admin.',
+                ])->onlyInput('nik');
             }
 
             // Invalidate other sessions for this user
@@ -63,14 +63,14 @@ class AuthController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json([
-                'message' => 'Username atau password salah.',
-                'errors' => ['username' => ['Username atau password salah.']]
+                'message' => 'NIK atau password salah.',
+                'errors' => ['nik' => ['NIK atau password salah.']]
             ], 422);
         }
 
         return back()->withErrors([
-            'username' => 'Username atau password salah.',
-        ])->onlyInput('username');
+            'nik' => 'NIK atau password salah.',
+        ])->onlyInput('nik');
     }
 
     /**

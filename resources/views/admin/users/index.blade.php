@@ -25,7 +25,7 @@
                 <i class="bi bi-info-circle-fill me-3 fs-3 text-success"></i>
                 <div>
                     <strong
-                        >Berhasil mereset password untuk {{ session('new_password_info')['username'] }}!</strong
+                        >Berhasil mereset password untuk {{ session('new_password_info')['nik'] }}!</strong
                     ><br />
                     Password baru:
                     <code
@@ -60,7 +60,7 @@
                     <thead class="table-light">
                         <tr>
                             <th class="px-4 py-3">Nama Lengkap</th>
-                            <th class="px-4 py-3">Username</th>
+                            <th class="px-4 py-3">NIK</th>
                             <th class="px-4 py-3">Role</th>
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3 text-end text-nowrap">Aksi</th>
@@ -72,7 +72,7 @@
                                 <td class="px-4 py-3 fw-medium">
                                     {{ $user->nama_lengkap }}
                                 </td>
-                                <td class="px-4 py-3">{{ $user->username }}</td>
+                                <td class="px-4 py-3">{{ $user->nik }}</td>
                                 <td class="px-4 py-3">
                                     @if ($user->role === 'ADMIN')
                                         <span class="badge bg-danger"
@@ -191,12 +191,12 @@
                         @method ('PUT')
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label">Username</label>
+                                <label class="form-label">NIK</label>
                                 <input
                                     type="text"
-                                    name="username"
+                                    name="nik"
                                     class="form-control"
-                                    value="{{ $user->username }}"
+                                    value="{{ $user->nik }}"
                                     required
                                 />
                             </div>
@@ -295,7 +295,7 @@
                         @csrf
                         @method ('PATCH')
                         <div class="modal-body">
-                            <p class="text-muted small">Mereset password untuk <strong>{{ $user->username }}</strong>.</p>
+                            <p class="text-muted small">Mereset password untuk <strong>{{ $user->nik }}</strong>.</p>
                             <div class="mb-3">
                                 <label class="form-label">Password Baru</label>
                                 <div class="input-group">
@@ -361,7 +361,7 @@
                             ></i>
                         </div>
                         <h5 class="mb-2">Konfirmasi</h5>
-                        <p class="text-muted mb-4">Anda yakin ingin {{ $user->is_active ? 'menonaktifkan' : 'mengaktifkan' }} pengguna <strong>{{ $user->username }}</strong>?</p>
+                        <p class="text-muted mb-4">Anda yakin ingin {{ $user->is_active ? 'menonaktifkan' : 'mengaktifkan' }} pengguna <strong>{{ $user->nik }}</strong>?</p>
                         <form
                             action="{{ route('users.toggle-active', $user->id) }}"
                             method="POST"
@@ -409,7 +409,7 @@
                             <i class="bi bi-trash text-danger fs-1"></i>
                         </div>
                         <h5 class="mb-2">Hapus Akun</h5>
-                        <p class="text-muted mb-4">Anda yakin ingin menghapus pengguna <strong>{{ $user->username }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
+                        <p class="text-muted mb-4">Anda yakin ingin menghapus pengguna <strong>{{ $user->nik }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
                         <form
                             action="{{ route('users.destroy', $user->id) }}"
                             method="POST"
@@ -455,10 +455,10 @@
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Username</label>
+                            <label class="form-label">NIK</label>
                             <input
                                 type="text"
-                                name="username"
+                                name="nik"
                                 class="form-control"
                                 required
                             />

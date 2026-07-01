@@ -411,7 +411,7 @@
                                         {{ $log->user->nama_lengkap ?? '-' }}
                                     </div>
                                     <div class="small text-muted">
-                                        {{ $log->user->username ?? '-' }}
+                                        {{ $log->user->nik ?? '-' }}
                                     </div>
                                 </td>
                                 <td>

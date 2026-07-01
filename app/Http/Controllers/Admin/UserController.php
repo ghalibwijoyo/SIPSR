@@ -21,24 +21,24 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'username' => ['required', 'string', 'max:255', 'unique:users'],
+            'nik' => ['required', 'string', 'max:255', 'unique:users,nik'],
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'regex:/[a-zA-Z]/', 'regex:/[0-9]/'],
             'role' => ['required', Rule::in(['ADMIN', 'STAFF'])],
         ], [
             'password.regex' => 'Password harus mengandung kombinasi huruf dan angka.',
-            'username.unique' => 'Username sudah digunakan, silakan pilih yang lain.',
+            'nik.unique' => 'NIK sudah digunakan, silakan pilih yang lain.',
         ]);
 
         $user = User::create([
-            'username' => $validated['username'],
+            'nik' => $validated['nik'],
             'nama_lengkap' => $validated['nama_lengkap'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'is_active' => true,
         ]);
 
-        ActivityLog::log('TAMBAH_USER', 'Menambahkan pengguna baru: '.$user->username);
+        ActivityLog::log('TAMBAH_USER', 'Menambahkan pengguna baru: '.$user->nik);
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
@@ -46,22 +46,22 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'nik' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'role' => ['required', Rule::in(['ADMIN', 'STAFF'])],
             'is_active' => ['required', 'boolean'],
         ], [
-            'username.unique' => 'Username sudah digunakan, silakan pilih yang lain.',
+            'nik.unique' => 'NIK sudah digunakan, silakan pilih yang lain.',
         ]);
 
         $user->update([
-            'username' => $validated['username'],
+            'nik' => $validated['nik'],
             'nama_lengkap' => $validated['nama_lengkap'],
             'role' => $validated['role'],
             'is_active' => $validated['is_active'],
         ]);
 
-        ActivityLog::log('EDIT_USER', 'Memperbarui data pengguna: '.$user->username);
+        ActivityLog::log('EDIT_USER', 'Memperbarui data pengguna: '.$user->nik);
 
         return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui.');
     }
@@ -74,14 +74,19 @@ class UserController extends Controller
         }
 
         $user->is_active = ! $user->is_active;
+        if (!$user->is_active) {
+            $user->deactivated_at = now();
+        } else {
+            $user->deactivated_at = null;
+        }
         $user->save();
 
         $action = $user->is_active ? 'AKTIFKAN_USER' : 'NONAKTIFKAN_USER';
         $statusText = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
 
-        ActivityLog::log($action, ucfirst($statusText).' pengguna: '.$user->username);
+        ActivityLog::log($action, ucfirst($statusText).' pengguna: '.$user->nik);
 
-        return redirect()->route('users.index')->with('success', "Pengguna {$user->username} berhasil $statusText.");
+        return redirect()->route('users.index')->with('success', "Pengguna {$user->nik} berhasil $statusText.");
     }
 
     public function resetPassword(Request $request, User $user)
@@ -96,12 +101,12 @@ class UserController extends Controller
             'password' => Hash::make($validated['new_password']),
         ]);
 
-        ActivityLog::log('RESET_PASSWORD', 'Mereset password pengguna: '.$user->username);
+        ActivityLog::log('RESET_PASSWORD', 'Mereset password pengguna: '.$user->nik);
 
         return redirect()->route('users.index')
             ->with('success', 'Password berhasil direset.')
             ->with('new_password_info', [
-                'username' => $user->username,
+                'nik' => $user->nik,
                 'password' => $validated['new_password'],
             ]);
     }
@@ -112,15 +117,23 @@ class UserController extends Controller
             return redirect()->route('users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
+        if ($user->is_active) {
+            return redirect()->route('users.index')->with('error', 'Akun harus dinonaktifkan terlebih dahulu sebelum dapat dihapus.');
+        }
+
+        if (!$user->deactivated_at || $user->deactivated_at->copy()->addMonths(3)->isFuture()) {
+            return redirect()->route('users.index')->with('error', 'Akun hanya dapat dihapus jika telah nonaktif selama minimal 3 bulan.');
+        }
+
         if ($user->documents()->exists()) {
             return redirect()->route('users.index')->with('error', 'Akun tidak dapat dihapus karena pengguna ini telah mengunggah dokumen.');
         }
 
-        $username = $user->username;
+        $nik = $user->nik;
         $user->delete();
 
-        ActivityLog::log('HAPUS_USER', 'Menghapus pengguna: '.$username);
+        ActivityLog::log('HAPUS_USER', 'Menghapus pengguna: '.$nik);
 
-        return redirect()->route('users.index')->with('success', "Pengguna {$username} berhasil dihapus.");
+        return redirect()->route('users.index')->with('success', "Pengguna {$nik} berhasil dihapus.");
     }
 }

@@ -11,28 +11,28 @@ class UserSeeder extends Seeder
     {
         $users = [
             [
-                'username' => 'admin',
+                'nik' => 'admin',
                 'password' => 'Admin1234',
                 'nama_lengkap' => 'Administrator',
                 'role' => 'ADMIN',
                 'is_active' => true,
             ],
             [
-                'username' => 'budi_psr',
+                'nik' => 'budi_psr',
                 'password' => 'Staff1234',
                 'nama_lengkap' => 'Budi Santoso',
                 'role' => 'STAFF',
                 'is_active' => true,
             ],
             [
-                'username' => 'sari_psr',
+                'nik' => 'sari_psr',
                 'password' => 'Staff1234',
                 'nama_lengkap' => 'Sari Dewi',
                 'role' => 'STAFF',
                 'is_active' => true,
             ],
             [
-                'username' => 'eko_psr',
+                'nik' => 'eko_psr',
                 'password' => 'Staff1234',
                 'nama_lengkap' => 'Eko Prasetyo',
                 'role' => 'STAFF',

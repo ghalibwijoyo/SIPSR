@@ -21,21 +21,16 @@ class ProfilController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'nama_lengkap' => ['required', 'string', 'max:255'],
-        ], [
-            'username.unique' => 'Username sudah digunakan, silakan pilih yang lain.',
         ]);
 
         $oldName = $user->nama_lengkap;
-        $oldUsername = $user->username;
         
-        $user->username = $validated['username'];
         $user->nama_lengkap = $validated['nama_lengkap'];
         $user->save();
 
-        if ($oldName !== $user->nama_lengkap || $oldUsername !== $user->username) {
-            ActivityLog::log('EDIT_USER', 'Memperbarui informasi profil (Nama/Username).');
+        if ($oldName !== $user->nama_lengkap) {
+            ActivityLog::log('EDIT_USER', 'Memperbarui nama profil.');
         }
 
         return redirect()->route('profil.show')->with('success', 'Profil berhasil diperbarui.');

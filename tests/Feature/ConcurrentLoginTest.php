@@ -15,7 +15,7 @@ class ConcurrentLoginTest extends TestCase
     {
         // 1. Setup User
         $user = User::create([
-            'username' => 'testuser',
+            'nik' => 'testuser',
             'password' => Hash::make('password123'),
             'nama_lengkap' => 'Test User',
             'role' => 'STAFF',
@@ -26,7 +26,7 @@ class ConcurrentLoginTest extends TestCase
 
         // 2. User login (ini akan menjalankan Auth::logoutOtherDevices yang mengubah hash password)
         $response = $this->post('/login', [
-            'username' => 'testuser',
+            'nik' => 'testuser',
             'password' => 'password123',
         ]);
 

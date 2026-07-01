@@ -126,17 +126,17 @@ class Document extends Model
 
     public function uploader(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'uploader_id');
+        return $this->belongsTo(User::class, 'uploader_id')->withTrashed();
     }
 
     public function updatedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'updated_by_id');
+        return $this->belongsTo(User::class, 'updated_by_id')->withTrashed();
     }
 
     public function deletedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'deleted_by_id');
+        return $this->belongsTo(User::class, 'deleted_by_id')->withTrashed();
     }
 
     public function histories(): HasMany

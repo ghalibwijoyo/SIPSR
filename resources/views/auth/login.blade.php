@@ -55,15 +55,15 @@
                     <div class="form-floating mb-3">
                         <input
                             type="text"
-                            class="form-control @error('username') is-invalid @enderror"
-                            id="username"
-                            name="username"
-                            value="{{ old('username') }}"
-                            placeholder="Masukkan username"
+                            class="form-control @error('nik') is-invalid @enderror"
+                            id="nik"
+                            name="nik"
+                            value="{{ old('nik') }}"
+                            placeholder="Masukkan NIK"
                             autofocus
                             required
                         />
-                        <label for="username">Username</label>
+                        <label for="nik">NIK</label>
                     </div>
 
                     <div class="form-floating mb-4 position-relative">

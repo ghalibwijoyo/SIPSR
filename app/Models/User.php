@@ -4,19 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Cache;
 
 class User extends Authenticatable
 {
-    use HasUuids;
+    use HasUuids, SoftDeletes;
 
     protected $fillable = [
-        'username',
+        'nik',
         'password',
         'nama_lengkap',
         'role',
         'is_active',
+        'deactivated_at',
     ];
 
     protected $hidden = [
@@ -28,6 +30,7 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'deactivated_at' => 'datetime',
         ];
     }
 
